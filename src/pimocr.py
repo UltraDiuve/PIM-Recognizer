@@ -61,10 +61,11 @@ class PyocrWrappedOCR(BaseOCR):
         'Cuneiform (sh)'.
         """
         if tool_name is None:
-            raise ValueError("Please specify a tool.")
+            raise RuntimeError('No tool as been specified')
         tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
         if tool_name not in tool_list:
-            raise ValueError(f'Tool {tool_name} not installed on current env.')
+            raise RuntimeError(f'Tool {tool_name} not installed on current '
+                               'env.')
         for pyocr_tool in pyocr.get_available_tools():
             if pyocr_tool.get_name() == tool_name:
                 self.tool = pyocr_tool
@@ -123,7 +124,9 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     This class instanciates the pyocr raw text functionnality.
     """
     def __init__(self, **kwargs):
-        filtered_kwargs = {key: val for key, val in kwargs.items() if key == 'tesseract_layout'}
+        builder_args = ['tesseract_layout']
+        filtered_kwargs = {key: val for key, val in kwargs.items()
+                           if key in builder_args}
         self.builder = pyocr.builders.TextBuilder(**filtered_kwargs)
         super().__init__(**kwargs)
 
