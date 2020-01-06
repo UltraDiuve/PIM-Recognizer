@@ -108,7 +108,7 @@ class TextOCR(BaseOCR):
         print(self.result)
         print(words)
         print(len(words))
-        return len(words)
+        return(len(words))
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
