@@ -104,13 +104,26 @@ class TextOCR(BaseOCR):
         return(len(words))
 
 
+class WordBoxOCR(BaseOCR):
+    """Abstract class for WordBox OCR functionnalities
+
+    This class describes the text only OCR functionnalities, and
+    should not be instanciated.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def count_result(self):
+        super().count_result()
+
+
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiate a text only pyocr wrapped tool
 
     This class instanciates the pyocr raw text functionnality.
     """
     def __init__(self, **kwargs):
-        self.builder = pyocr.builders.TextBuilder()
+        self.builder = pyocr.builders.TextBuilder(**kwargs)
         super().__init__(**kwargs)
 
     def show(self, **kwargs):
@@ -118,3 +131,12 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
     def count_result(self):
         return(super().count_result())
+
+
+class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
+    """Class that instantiate a wordbox pyocr wrapped tool
+
+    This class instanciates the pyocr raw text functionnality.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
