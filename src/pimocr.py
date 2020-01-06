@@ -105,6 +105,8 @@ class TextOCR(BaseOCR):
         super().count_result()
         words = self.result.split()
         print('tamere le debuyg')
+        print(self.result)
+        print(words)
         return(len(words))
 
 
