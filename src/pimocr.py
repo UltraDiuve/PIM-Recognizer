@@ -84,9 +84,6 @@ class PyocrWrappedOCR(BaseOCR):
     def get_result(self, *args, **kwargs):
         pass
 
-    def count_result(self):
-        super().count_result()
-
 
 class TextOCR(BaseOCR):
     """Abstract class for text only OCR functionnalities
