@@ -96,7 +96,7 @@ class TextOCR(BaseOCR):
 
     def show(self, ax=None, **kwargs):
         super().show(ax, **kwargs)
-        ax.set_xlabel('Result count: ' + str(self.count_result))
+        ax.set_xlabel('Result count: ' + str(self.count_result()))
 
     def count_result(self):
         super().count_result()
