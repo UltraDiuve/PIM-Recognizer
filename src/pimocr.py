@@ -41,7 +41,7 @@ class BaseOCR(object):
         if self.file is None:
             raise RuntimeError('File has not been set prior to running tool')
 
-    def count_result(self):
+    def count_words(self):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to '
                                'counting results')
@@ -102,10 +102,10 @@ class TextOCR(BaseOCR):
 
     def show(self, ax=None, **kwargs):
         super().show(ax, **kwargs)
-        ax.set_xlabel('Result count: ' + str(self.count_result()))
+        ax.set_xlabel('Result count: ' + str(self.count_words()))
 
-    def count_result(self):
-        super().count_result()
+    def count_words(self):
+        super().count_words()
         words = self.result.split()
         return(len(words))
 
@@ -119,8 +119,9 @@ class WordBoxOCR(BaseOCR):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def count_result(self):
-        super().count_result()
+    def count_words(self):
+        super().count_words()
+        return(len(self.result))
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
@@ -134,9 +135,6 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     def show(self, **kwargs):
         super().show(**kwargs)
 
-    def count_result(self):
-        return(super().count_result())
-
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     """Class that instantiate a wordbox pyocr wrapped tool
@@ -144,4 +142,4 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     This class instanciates the pyocr raw text functionnality.
     """
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
