@@ -64,7 +64,7 @@ class PyocrWrappedOCR(BaseOCR):
             raise ValueError("Please specify a tool.")
         tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
         if tool_name not in tool_list:
-            raise ValueError(f"Tool {tool_name} not installed on current env.")
+            raise ValueError(f'Tool {tool_name} not installed on current env.')
         for pyocr_tool in pyocr.get_available_tools():
             if pyocr_tool.get_name() == tool_name:
                 self.tool = pyocr_tool
@@ -99,11 +99,12 @@ class TextOCR(BaseOCR):
 
     def show(self, ax=None, **kwargs):
         super().show(ax, **kwargs)
-        ax.set_xlabel('Result count: ' + self.count_result)
+        ax.set_xlabel('Result count: ' + str(self.count_result))
 
     def count_result(self):
         super().count_result()
         words = self.result.split()
+        print('tamere le debuyg')
         return(len(words))
 
 
