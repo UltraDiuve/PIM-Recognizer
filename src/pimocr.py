@@ -53,7 +53,7 @@ class PyocrWrappedOCR(BaseOCR):
     This class defines some functions for OCR tools based on pyocr library, and
     should not be instanciated.
     """
-    def __init__(self, tool_name=None, **kwargs):
+    def __init__(self, tool_name=None, builder=None, **kwargs):
         """Constructor method for pyocr wrapped tools.
 
         tool_name arg should always be provided, and from the following list
@@ -70,6 +70,11 @@ class PyocrWrappedOCR(BaseOCR):
             if pyocr_tool.get_name() == tool_name:
                 self.tool = pyocr_tool
                 break
+
+        builder_args = ['tesseract_layout']
+        filtered_kwargs = {key: val for key, val in kwargs.items()
+                           if key in builder_args}
+        self.builder = builder(**filtered_kwargs)
         super().__init__(tool_name=tool_name, wrapper='pyocr')
 
     def show(self, **kwargs):
@@ -124,11 +129,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     This class instanciates the pyocr raw text functionnality.
     """
     def __init__(self, **kwargs):
-        builder_args = ['tesseract_layout']
-        filtered_kwargs = {key: val for key, val in kwargs.items()
-                           if key in builder_args}
-        self.builder = pyocr.builders.TextBuilder(**filtered_kwargs)
-        super().__init__(**kwargs)
+        super().__init__(builder=pyocr.builders.TextBuilder, **kwargs)
 
     def show(self, **kwargs):
         super().show(**kwargs)
