@@ -16,8 +16,8 @@ class BaseOCR(object):
         self.wrapper = wrapper
         self.tool_name = tool_name
 
-    def __str__(self):
-        print(':'.join(self.wrapper, self.tool_name))
+    def __str__(self):  
+        print(':'.join([self.wrapper, self.tool_name]))
 
     def set_file(self):
         pass
@@ -72,7 +72,7 @@ class TextOCR(BaseOCR):
     should not be instanciated.
     """
     def __init__(self):
-        pass
+        super.__init__(**kwargs)
 
     def set_file(self):
         pass
