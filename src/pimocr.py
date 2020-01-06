@@ -27,8 +27,11 @@ class BaseOCR(object):
         full_path = os.path.join(path, filename)
         self.image = Image.open(full_path)
         self.mp_image = mpimg.imread(full_path)
+        self.result = None
 
     def show(self, ax=None):
+        if self.result is None:
+            raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
 
     def get_result(self, *args, **kwargs):
@@ -36,10 +39,12 @@ class BaseOCR(object):
 
     def run_tool(self):
         if self.file is None:
-            raise RuntimeError("File has not been set prior to running tool")
+            raise RuntimeError('File has not been set prior to running tool')
 
     def count_result(self):
-        pass
+        if self.result is None:
+            raise RuntimeError('Tool has not been run prior to '
+                               'counting results')
 
 
 class PyocrWrappedOCR(BaseOCR):
@@ -92,10 +97,12 @@ class TextOCR(BaseOCR):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def show(self, **kwargs):
-        super().show(**kwargs)
+    def show(self, ax=None, **kwargs):
+        super().show(ax, **kwargs)
+        ax.set_xlabel('Result count: ' + self.count_result)
 
     def count_result(self):
+        super().count_result()
         words = self.result.split()
         return(len(words))
 
@@ -111,6 +118,3 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
     def show(self, **kwargs):
         super().show(**kwargs)
-
-    def get_result(self, *args, **kwargs):
-        pass
