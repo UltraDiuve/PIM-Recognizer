@@ -124,4 +124,4 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
         super().show(**kwargs)
 
     def count_result(self):
-        super().count_result()
+        return(super().count_result())
