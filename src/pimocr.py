@@ -123,7 +123,8 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     This class instanciates the pyocr raw text functionnality.
     """
     def __init__(self, **kwargs):
-        self.builder = pyocr.builders.TextBuilder(**kwargs)
+        filtered_kwargs = {key: val for key, val in kwargs.items() if key == 'tesseract_layout'}
+        self.builder = pyocr.builders.TextBuilder(**filtered_kwargs)
         super().__init__(**kwargs)
 
     def show(self, **kwargs):
