@@ -3,9 +3,11 @@
 This module defines various classes to run OCR functionnalities from several
 libraries or online tools.
 """
-import pyocr
-from PIL import Image
 import os
+from PIL import Image
+import matplotlib.image as mpimg
+
+import pyocr
 
 
 class BaseOCR(object):
@@ -22,10 +24,12 @@ class BaseOCR(object):
         print(':'.join([self.wrapper, self.tool_name]))
 
     def set_file(self, path=None, filename=None):
-        self.image = Image.open(os.path.join(path, filename))
+        full_path = os.path.join(path, filename)
+        self.image = Image.open(full_path)
+        self.mpimage = mpimg.imread(full_path)
 
     def show(self, ax):
-        pass
+        ax.imshow(self.mpimage)
 
     def get_result(self, *args, **kwargs):
         return(self.result)
@@ -62,8 +66,8 @@ class PyocrWrappedOCR(BaseOCR):
                 break
         super().__init__(tool_name=tool_name, wrapper='pyocr')
 
-    def show(self, ax):
-        pass
+    def show(self, **kwargs):
+        super().show(**kwargs)
 
     def run_tool(self, lang='fra', **kwargs):
         self.result = self.tool.image_to_string(
@@ -76,8 +80,7 @@ class PyocrWrappedOCR(BaseOCR):
         pass
 
     def count_result(self):
-        words = self.result.split()
-        return(len(words))
+        super().count_result()
 
 
 class TextOCR(BaseOCR):
@@ -89,14 +92,12 @@ class TextOCR(BaseOCR):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def show(self, ax):
-        pass
-
-    def get_result(self, *args, **kwargs):
-        pass
+    def show(self, **kwargs):
+        super().show(**kwargs)
 
     def count_result(self):
-        pass
+        words = self.result.split()
+        return(len(words))
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
@@ -112,7 +113,4 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
         pass
 
     def get_result(self, *args, **kwargs):
-        pass
-
-    def count_result(self):
         pass
