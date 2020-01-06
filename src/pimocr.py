@@ -101,13 +101,7 @@ class TextOCR(BaseOCR):
     def count_result(self):
         super().count_result()
         words = self.result.split()
-        print('tamere le debuyg')
-        print(self.result)
-        print(words)
-        print(len(words))
-        res = len(words)
-        print(res)
-        return(res)
+        return(len(words))
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
