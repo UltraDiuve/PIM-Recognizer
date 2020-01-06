@@ -107,6 +107,7 @@ class TextOCR(BaseOCR):
         print('tamere le debuyg')
         print(self.result)
         print(words)
+        print(len(words))
         return(len(words))
 
 
