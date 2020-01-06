@@ -87,7 +87,7 @@ class TextOCR(BaseOCR):
     should not be instanciated.
     """
     def __init__(self, **kwargs):
-        super.__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def set_file(self):
         pass
