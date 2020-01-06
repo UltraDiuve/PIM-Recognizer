@@ -26,10 +26,10 @@ class BaseOCR(object):
     def set_file(self, path=None, filename=None):
         full_path = os.path.join(path, filename)
         self.image = Image.open(full_path)
-        self.mpimage = mpimg.imread(full_path)
+        self.mp_image = mpimg.imread(full_path)
 
-    def show(self, ax):
-        ax.imshow(self.mpimage)
+    def show(self, ax=None):
+        ax.imshow(self.mp_image)
 
     def get_result(self, *args, **kwargs):
         return(self.result)
@@ -109,8 +109,8 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
         self.builder = pyocr.builders.TextBuilder()
         super().__init__(**kwargs)
 
-    def show(self, ax):
-        pass
+    def show(self, **kwargs):
+        super().show(**kwargs)
 
     def get_result(self, *args, **kwargs):
         pass
