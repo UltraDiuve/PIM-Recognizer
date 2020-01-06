@@ -132,9 +132,6 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.TextBuilder, **kwargs)
 
-    def show(self, **kwargs):
-        super().show(**kwargs)
-
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     """Class that instantiate a wordbox pyocr wrapped tool
