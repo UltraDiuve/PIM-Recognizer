@@ -33,6 +33,7 @@ class BaseOCR(object):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
+        ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def get_result(self, *args, **kwargs):
         return(self.result)
@@ -100,10 +101,6 @@ class TextOCR(BaseOCR):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def show(self, ax=None, **kwargs):
-        super().show(ax, **kwargs)
-        ax.set_xlabel('Result count: ' + str(self.count_words()))
-
     def count_words(self):
         super().count_words()
         words = self.result.split()
@@ -122,6 +119,10 @@ class WordBoxOCR(BaseOCR):
     def count_words(self):
         super().count_words()
         return(len(self.result))
+
+    def show(self, ax=None, **kwargs):
+        super().show(ax=ax, **kwargs)
+        ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
