@@ -21,7 +21,7 @@ class BaseOCR(object):
     def __str__(self):
         print(':'.join([self.wrapper, self.tool_name]))
 
-    def set_file(self, path, filename):
+    def set_file(self, path=None, filename=None):
         self.image = Image.open(os.path.join(path, filename))
 
     def show(self, ax):
@@ -89,9 +89,6 @@ class TextOCR(BaseOCR):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def set_file(self):
-        pass
-
     def show(self, ax):
         pass
 
@@ -110,9 +107,6 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     def __init__(self, **kwargs):
         self.builder = pyocr.builders.TextBuilder()
         super().__init__(**kwargs)
-
-    def set_file(self, path, filename):
-        super().set_file(path, filename)
 
     def show(self, ax):
         pass
