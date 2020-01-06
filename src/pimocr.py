@@ -4,6 +4,8 @@ This module defines various classes to run OCR functionnalities from several
 libraries or online tools.
 """
 import pyocr
+from PIL import Image
+import os
 
 
 class BaseOCR(object):
@@ -16,19 +18,23 @@ class BaseOCR(object):
         self.wrapper = wrapper
         self.tool_name = tool_name
 
-    def __str__(self):  
+    def __str__(self):
         print(':'.join([self.wrapper, self.tool_name]))
 
-    def set_file(self):
-        pass
+    def set_file(self, path, filename):
+        self.image = Image.open(os.path.join(path, filename))
 
     def show(self, ax):
         pass
 
-    def get_results(self, *args, **kwargs):
-        pass
+    def get_result(self, *args, **kwargs):
+        return(self.result)
 
-    def count_results(self):
+    def run_tool(self):
+        if self.file is None:
+            raise RuntimeError("File has not been set prior to running tool")
+
+    def count_result(self):
         pass
 
 
@@ -50,19 +56,28 @@ class PyorcWrappedOCR(BaseOCR):
         tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
         if tool_name not in tool_list:
             raise ValueError(f"Tool {tool_name} not installed on current env.")
+        for pyocr_tool in pyocr.get_available_tools():
+            if pyocr_tool.get_name() == tool_name:
+                self.tool = pyocr_tool
+                break
         super().__init__(tool_name=tool_name, wrapper='pyocr')
-
-    def set_file(self):
-        pass
 
     def show(self, ax):
         pass
 
-    def get_results(self, *args, **kwargs):
+    def run_tool(self, lang='fra', **kwargs):
+        self.result = self.tool.image_to_string(
+            self.image,
+            lang=lang,
+            builder=self.builder
+        )
+
+    def get_result(self, *args, **kwargs):
         pass
 
-    def count_results(self):
-        pass
+    def count_result(self):
+        words = self.result.split()
+        return(len(words))
 
 
 class TextOCR(BaseOCR):
@@ -71,7 +86,7 @@ class TextOCR(BaseOCR):
     This class describes the text only OCR functionnalities, and
     should not be instanciated.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         super.__init__(**kwargs)
 
     def set_file(self):
@@ -80,10 +95,10 @@ class TextOCR(BaseOCR):
     def show(self, ax):
         pass
 
-    def get_results(self, *args, **kwargs):
+    def get_result(self, *args, **kwargs):
         pass
 
-    def count_results(self):
+    def count_result(self):
         pass
 
 
@@ -96,14 +111,14 @@ class PyocrTextOCR(PyorcWrappedOCR, TextOCR):
         self.builder = pyocr.builders.TextBuilder()
         super().__init__(**kwargs)
 
-    def set_file(self):
-        pass
+    def set_file(self, path, filename):
+        super().set_file(path, filename)
 
     def show(self, ax):
         pass
 
-    def get_results(self, *args, **kwargs):
+    def get_result(self, *args, **kwargs):
         pass
 
-    def count_results(self):
+    def count_result(self):
         pass
