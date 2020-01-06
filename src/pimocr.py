@@ -38,7 +38,7 @@ class BaseOCR(object):
         pass
 
 
-class PyorcWrappedOCR(BaseOCR):
+class PyocrWrappedOCR(BaseOCR):
     """Abstract class for pyocr wrapped tools
 
     This class defines some functions for OCR tools based on pyocr library, and
@@ -102,7 +102,7 @@ class TextOCR(BaseOCR):
         pass
 
 
-class PyocrTextOCR(PyorcWrappedOCR, TextOCR):
+class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiate a text only pyocr wrapped tool
 
     This class instanciates the pyocr raw text functionnality.
