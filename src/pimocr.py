@@ -155,7 +155,7 @@ class WordBox(object):
     This class instanciates a wordbox object that can be retrieved from an OCR
     tool and then be drawn on an axes.
     """
-    def __init__(self, x, y, witdh, height):
+    def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
         self.width = width
