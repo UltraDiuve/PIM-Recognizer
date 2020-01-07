@@ -6,6 +6,7 @@ libraries or online tools.
 import os
 from PIL import Image
 import matplotlib.image as mpimg
+import matplotlib.patches as mpatch
 
 import pyocr
 
@@ -141,3 +142,26 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     """
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
+
+
+class WordBox(object):
+    """Represents a wordbox object returned by an OCR tool
+
+    This class instanciate a wordbox object that can be retrieved from an OCR
+    tool and then be drawn on an axes.
+    """
+    def __init__(self, box_position):
+        self.box_position = box_position
+        self.x = box_position[0][0]
+        self.y = box_position[0][1]
+        self.width = box_position[1][0] - self.x
+        self.height = box_position[1][1] - self.y
+
+    def to_rect_coord(self):
+        return(((self.x, self.y), self.width, self.height))
+
+    def draw(self, ax=None, fill=False, color='red', lw=2, **kwargs):
+        ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(),
+                                      fill=fill,
+                                      color=color,
+                                      lw=lw))
