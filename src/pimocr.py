@@ -38,8 +38,7 @@ class BaseOCR(object):
                        bottom=False,
                        left=False,
                        labelbottom=False,
-                       labelleft=False
-                      )
+                       labelleft=False)
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def get_result(self, *args, **kwargs):
@@ -91,6 +90,7 @@ class PyocrWrappedOCR(BaseOCR):
             lang=lang,
             builder=self.builder
         )
+        super().run_tool(**kwargs)
 
     def get_result(self, *args, **kwargs):
         pass
@@ -127,7 +127,7 @@ class WordBoxOCR(BaseOCR):
     def show(self, ax=None, **kwargs):
         super().show(ax=ax, **kwargs)
         for OCRbox in self.result:
-            pass     
+            pass
         ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
 
 
@@ -139,6 +139,10 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.TextBuilder, **kwargs)
 
+    def run_tool(self, **kwargs):
+        super().run_tool(**kwargs)
+        self.text = self.result
+
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     """Class that instantiate a wordbox pyocr wrapped tool
@@ -148,6 +152,10 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
 
+    def run_tool(self, **kwargs):
+        super().run_tool(**kwargs)
+        self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
+
 
 class WordBox(object):
     """Represents a generic wordbox object returned by an OCR tool
@@ -155,11 +163,12 @@ class WordBox(object):
     This class instanciates a wordbox object that can be retrieved from an OCR
     tool and then be drawn on an axes.
     """
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, content):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.content = content
 
     def to_rect_coord(self):
         return(((self.x, self.y), self.width, self.height))
@@ -182,4 +191,5 @@ class PyocrWordBox(WordBox):
         y = pyocrbox.position[0][1]
         width = pyocrbox.position[1][0] - x
         height = pyocrbox.position[1][1] - y
-        super().__init__(x=x, y=y, width=width, height=height)
+        content = pyocrbox.content
+        super().__init__(x=x, y=y, width=width, height=height, content=content)
