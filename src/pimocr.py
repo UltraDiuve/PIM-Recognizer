@@ -34,7 +34,7 @@ class BaseOCR(object):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
-        ax.tick_param(bottom=False, left=False)
+        ax.tick_params(bottom=False, left=False)
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def get_result(self, *args, **kwargs):
