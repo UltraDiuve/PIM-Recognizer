@@ -53,6 +53,9 @@ class BaseOCR(object):
             raise RuntimeError('Tool has not been run prior to '
                                'counting results')
 
+    def structure_results(self):
+        pass
+
 
 class PyocrWrappedOCR(BaseOCR):
     """Abstract class for pyocr wrapped tools
@@ -107,8 +110,7 @@ class TextOCR(BaseOCR):
 
     def count_words(self):
         super().count_words()
-        words = self.result.split()
-        return(len(words))
+        return(len(self.words))
 
 
 class WordBoxOCR(BaseOCR):
@@ -122,13 +124,17 @@ class WordBoxOCR(BaseOCR):
 
     def count_words(self):
         super().count_words()
-        return(len(self.result))
+        return(len(self.words))
 
     def show(self, ax=None, **kwargs):
         super().show(ax=ax, **kwargs)
         for OCRbox in self.result:
             pass
         ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
+
+    def structure_results(self, **kwargs):
+        self.words = [wordbox.content for wordbox in self.wordboxes]
+        super().structure_results(**kwargs)
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
@@ -141,7 +147,11 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
-        self.text = self.result
+        self.structure_results(**kwargs)
+
+    def structure_results(self, **kwargs):
+        self.words = self.result.split()
+        super.structure_results()
 
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
@@ -154,7 +164,11 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
+        self.structure_results(**kwargs)
+
+    def structure_results(self, **kwargs):
         self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
+        super.structure_results(**kwargs)
 
 
 class WordBox(object):
