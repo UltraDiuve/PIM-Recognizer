@@ -41,9 +41,6 @@ class BaseOCR(object):
                        labelleft=False)
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
-    def get_result(self, *args, **kwargs):
-        return(self.result)
-
     def run_tool(self):
         if self.image is None:
             raise RuntimeError('File has not been set prior to running tool')
@@ -85,7 +82,7 @@ class PyocrWrappedOCR(BaseOCR):
         filtered_kwargs = {key: val for key, val in kwargs.items()
                            if key in builder_args}
         self.builder = builder(**filtered_kwargs)
-        super().__init__(tool_name=tool_name, wrapper='pyocr')
+        super().__init__(tool_name=tool_name, wrapper='pyocr', **kwargs)
 
     def run_tool(self, lang='fra', **kwargs):
         self.result = self.tool.image_to_string(
@@ -94,9 +91,6 @@ class PyocrWrappedOCR(BaseOCR):
             builder=self.builder
         )
         super().run_tool(**kwargs)
-
-    def get_result(self, *args, **kwargs):
-        pass
 
 
 class TextOCR(BaseOCR):
