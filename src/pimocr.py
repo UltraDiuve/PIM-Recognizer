@@ -60,7 +60,8 @@ class PyocrWrappedOCR(BaseOCR):
     This class defines some functions for OCR tools based on pyocr library, and
     should not be instanciated.
     """
-    def __init__(self, tool_name=None, builder=None, **kwargs):
+    def __init__(self, tool_name=None, builder=None,
+                 tesseract_layout=None, **kwargs):
         """Constructor method for pyocr wrapped tools.
 
         tool_name arg should always be provided, and from the following list
@@ -79,8 +80,8 @@ class PyocrWrappedOCR(BaseOCR):
                 break
 
         builder_args = ['tesseract_layout']
-        filtered_kwargs = {key: val for key, val in kwargs.items()
-                           if key in builder_args}
+        filtered_kwargs = {key: val for key, val in locals.items()
+                           if key in builder_args and val is not None}
         self.builder = builder(**filtered_kwargs)
         super().__init__(tool_name=tool_name, wrapper='pyocr', **kwargs)
 
