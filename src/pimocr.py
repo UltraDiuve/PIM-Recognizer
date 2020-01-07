@@ -34,6 +34,7 @@ class BaseOCR(object):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
+        ax.tick_param(bottom=False, left=False)
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def get_result(self, *args, **kwargs):
@@ -78,9 +79,6 @@ class PyocrWrappedOCR(BaseOCR):
                            if key in builder_args}
         self.builder = builder(**filtered_kwargs)
         super().__init__(tool_name=tool_name, wrapper='pyocr')
-
-    def show(self, **kwargs):
-        super().show(**kwargs)
 
     def run_tool(self, lang='fra', **kwargs):
         self.result = self.tool.image_to_string(
