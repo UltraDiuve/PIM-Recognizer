@@ -34,7 +34,12 @@ class BaseOCR(object):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
-        ax.tick_params(bottom=False, left=False)
+        ax.tick_params(which='both',
+                       bottom=False,
+                       left=False,
+                       labelbottom=False,
+                       labelleft=False
+                      )
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def get_result(self, *args, **kwargs):
@@ -121,6 +126,8 @@ class WordBoxOCR(BaseOCR):
 
     def show(self, ax=None, **kwargs):
         super().show(ax=ax, **kwargs)
+        for OCRbox in self.result:
+            
         ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
 
 
@@ -143,17 +150,16 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
 
 
 class WordBox(object):
-    """Represents a wordbox object returned by an OCR tool
+    """Represents a generic wordbox object returned by an OCR tool
 
-    This class instanciate a wordbox object that can be retrieved from an OCR
+    This class instanciates a wordbox object that can be retrieved from an OCR
     tool and then be drawn on an axes.
     """
-    def __init__(self, box_position):
-        self.box_position = box_position
-        self.x = box_position[0][0]
-        self.y = box_position[0][1]
-        self.width = box_position[1][0] - self.x
-        self.height = box_position[1][1] - self.y
+    def __init__(self, x, y, witdh, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
     def to_rect_coord(self):
         return(((self.x, self.y), self.width, self.height))
@@ -163,3 +169,17 @@ class WordBox(object):
                                       fill=fill,
                                       color=color,
                                       lw=lw))
+
+
+class PyocrWordBox(WordBox):
+    """Represents a wordbox object returned by pyocr
+
+    This class instanciates a wordbox object that can be retrieved from pyocr.
+    """
+    def __init__(self, pyocrbox):
+        self.pyocrbox = pyocrbox
+        x = pyocrbox.box_position[0][0]
+        y = pyocrbox.box_position[0][1]
+        width = pyocrbox.box_position[1][0] - x
+        height = pyocrbox.box_position[1][1] - y
+        super().__init__(x=x, y=y, width=width, height=height)
