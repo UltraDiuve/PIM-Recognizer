@@ -127,7 +127,7 @@ class WordBoxOCR(BaseOCR):
     def show(self, ax=None, **kwargs):
         super().show(ax=ax, **kwargs)
         for OCRbox in self.result:
-            
+            pass     
         ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
 
 
