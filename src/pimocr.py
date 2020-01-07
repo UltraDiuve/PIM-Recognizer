@@ -178,8 +178,8 @@ class PyocrWordBox(WordBox):
     """
     def __init__(self, pyocrbox):
         self.pyocrbox = pyocrbox
-        x = pyocrbox.box_position[0][0]
-        y = pyocrbox.box_position[0][1]
-        width = pyocrbox.box_position[1][0] - x
-        height = pyocrbox.box_position[1][1] - y
+        x = pyocrbox.position[0][0]
+        y = pyocrbox.position[0][1]
+        width = pyocrbox.position[1][0] - x
+        height = pyocrbox.position[1][1] - y
         super().__init__(x=x, y=y, width=width, height=height)
