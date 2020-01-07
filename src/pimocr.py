@@ -80,7 +80,7 @@ class PyocrWrappedOCR(BaseOCR):
                 break
 
         builder_args = ['tesseract_layout']
-        filtered_kwargs = {key: val for key, val in locals.items()
+        filtered_kwargs = {key: val for key, val in locals().items()
                            if key in builder_args and val is not None}
         self.builder = builder(**filtered_kwargs)
         super().__init__(tool_name=tool_name, wrapper='pyocr', **kwargs)
