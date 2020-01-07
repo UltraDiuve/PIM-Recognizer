@@ -151,7 +151,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
     def structure_results(self, **kwargs):
         self.words = self.result.split()
-        super.structure_results()
+        super().structure_results()
 
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
@@ -168,7 +168,7 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
 
     def structure_results(self, **kwargs):
         self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
-        super.structure_results(**kwargs)
+        super().structure_results(**kwargs)
 
 
 class WordBox(object):
