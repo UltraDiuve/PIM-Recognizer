@@ -132,7 +132,7 @@ class WordBoxOCR(BaseOCR):
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
-    """Class that instantiate a text only pyocr wrapped tool
+    """Class that instantiates a text only pyocr wrapped tool
 
     This class instanciates the pyocr raw text functionnality.
     """
@@ -149,7 +149,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
-    """Class that instantiate a wordbox pyocr wrapped tool
+    """Class that instantiates a wordbox pyocr wrapped tool
 
     This class instanciates the pyocr raw text functionnality.
     """
@@ -192,7 +192,9 @@ class WordBox(object):
 class PyocrWordBox(WordBox):
     """Represents a wordbox object returned by pyocr
 
-    This class instanciates a wordbox object that can be retrieved from pyocr.
+    This class instanciates a wordbox object that can be retrieved from pyocr,
+    be it through WordBox builder or LineBox builder (wordboxes are children
+    of lineboxes).
     """
     def __init__(self, pyocrbox):
         self.pyocrbox = pyocrbox
@@ -202,3 +204,20 @@ class PyocrWordBox(WordBox):
         height = pyocrbox.position[1][1] - y
         content = pyocrbox.content
         super().__init__(x=x, y=y, width=width, height=height, content=content)
+
+
+class FilterableOCR(BaseOCR):
+    """Abstract class for tools whose results can be filtered (e.g. confidence)
+
+    This class describes how tools whose results can be filtered should
+    behave. It applies to tools that provide confidence parameters, but also
+    to the ones that can return objects (lines, boxes, ...) with empty content.
+    """
+    def __init__(self, conf_low=0, conf_high=100, filter_empty=True,
+                 filter_conf=True, **kwargs):
+        self.conf_low = conf_low
+        self.conf_high = conf_high
+        self.filter_empty = filter_empty
+        self.filter_conf = filter_conf
+        super().__init__(**kwargs)
+        print('TODO !!! Where to filter ?')
