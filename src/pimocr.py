@@ -45,7 +45,7 @@ class BaseOCR(object):
         return(self.result)
 
     def run_tool(self):
-        if self.file is None:
+        if self.image is None:
             raise RuntimeError('File has not been set prior to running tool')
 
     def count_words(self):
