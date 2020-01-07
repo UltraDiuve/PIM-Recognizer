@@ -121,11 +121,10 @@ class WordBoxOCR(BaseOCR):
         super().count_words()
         return(len(self.words))
 
-    def show(self, ax=None, **kwargs):
+    def show(self, ax=None, fill=True, color='red', lw=2, **kwargs):
         super().show(ax=ax, **kwargs)
-        for OCRbox in self.result:
-            pass
-        ax.set_title('TODO ! Montre quon a bien maj ou il fo!')
+        for wordbox in self.wordboxes:
+            wordbox.draw(ax=ax, fill=fill, color=color, lw=lw, **kwargs)
 
     def structure_results(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -186,7 +185,8 @@ class WordBox(object):
         ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(),
                                       fill=fill,
                                       color=color,
-                                      lw=lw))
+                                      lw=lw,
+                                      **kwargs))
 
 
 class PyocrWordBox(WordBox):
