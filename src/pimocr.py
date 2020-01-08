@@ -202,7 +202,7 @@ class WordBox(object):
             verticalalignment = 'center'
             horizontalalignment = 'center'
         ax.annotate(self.content, xy, verticalalignment=verticalalignment,
-                    horizontalalignement=horizontalalignment, color=color,
+                    horizontalalignment=horizontalalignment, color=color,
                     **kwargs)
 
     def center(self):
