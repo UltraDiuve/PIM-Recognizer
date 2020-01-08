@@ -77,6 +77,7 @@ class FilterableOCR(BaseOCR):
             for wordbox in self.raw_wordboxes:
                 if wordbox.confidence() >= conf_level:
                     self.wordboxes.append(wordbox)
+        self.structure_results()
 
     def reset_filter(self):
         try:
@@ -84,6 +85,7 @@ class FilterableOCR(BaseOCR):
             del(self.raw_wordboxes)
         except AttributeError:
             pass
+        self.structure_results()
 
 
 class PyocrWrappedOCR(BaseOCR):
