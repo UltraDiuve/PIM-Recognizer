@@ -202,7 +202,7 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
-        self.parse_results(**kwargs)
+        self.parse_result(**kwargs)
 
     def parse_result(self, **kwargs):
         self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
