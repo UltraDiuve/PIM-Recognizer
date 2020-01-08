@@ -196,11 +196,14 @@ class WordBox(object):
         if where == 'above left':
             xy = (self.x, self.y)
             verticalalignment = 'baseline'
+            horizontalalignment = 'left'
         if where == 'center':
             xy = self.center()
             verticalalignment = 'center'
+            horizontalalignment = 'center'
         ax.annotate(self.content, xy, verticalalignment=verticalalignment,
-                    color=color, **kwargs)
+                    horizontalalignement=horizontalalignment, color=color,
+                    **kwargs)
 
     def center(self):
         """Returns the center of the box
