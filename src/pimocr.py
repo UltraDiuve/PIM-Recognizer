@@ -70,7 +70,7 @@ class FilterableOCR(BaseOCR):
         super().__init__(**kwargs)
 
     def filter(self, conf_level=80):
-        self.reset_filer()
+        self.reset_filter()
         self.raw_wordboxes = self.wordboxes.copy()
         self.wordboxes = []
         if self.filter_conf:
