@@ -127,7 +127,7 @@ class WordBoxOCR(BaseOCR):
         for wordbox in self.wordboxes:
             wordbox.draw(ax=ax, fill=fill, color=color, lw=lw, **kwargs)
             if annotate:
-                wordbox.annotate(ax, **kwargs)
+                wordbox.annotate(ax, where='center', **kwargs)
 
     def structure_results(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -191,8 +191,21 @@ class WordBox(object):
                                       lw=lw,
                                       **kwargs))
 
-    def annotate(self, ax, **kwargs):
-        ax.annotate(self.content, (self.x, self.y), **kwargs)
+    def annotate(self, ax, where='above left', color='blue', **kwargs):
+
+        if where == 'above left':
+            xy = (self.x, self.y)
+            verticalalignment = 'baseline'
+        if where == 'center':
+            xy = self.center()
+            verticalalignment = 'center'
+        ax.annotate(self.content, xy, verticalalignment=verticalalignment,
+                    color=color, **kwargs)
+
+    def center(self):
+        """Returns the center of the box
+        """
+        return((self.x + self.width / 2, self.y + self.width / 2))
 
 
 class PyocrWordBox(WordBox):
