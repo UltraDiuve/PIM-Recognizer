@@ -205,6 +205,12 @@ class PyocrWordBox(WordBox):
         content = pyocrbox.content
         super().__init__(x=x, y=y, width=width, height=height, content=content)
 
+    def confidence(self):
+        return(self.pyocrbox.confidence)
+
+    def is_empty(self):
+        return(self.pyocrbox.content.strip() == '')
+
 
 class FilterableOCR(BaseOCR):
     """Abstract class for tools whose results can be filtered (e.g. confidence)
