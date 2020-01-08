@@ -54,6 +54,38 @@ class BaseOCR(object):
         pass
 
 
+class FilterableOCR(BaseOCR):
+    """Abstract class for tools whose results can be filtered (e.g. confidence)
+
+    This class describes how tools whose results can be filtered should
+    behave. It applies to tools that provide confidence parameters, but also
+    to the ones that can return objects (lines, boxes, ...) with empty content.
+    """
+    def __init__(self, conf_low=0, conf_high=100, filter_empty=True,
+                 filter_conf=True, **kwargs):
+        self.conf_low = conf_low
+        self.conf_high = conf_high
+        self.filter_empty = filter_empty
+        self.filter_conf = filter_conf
+        super().__init__(**kwargs)
+
+    def filter(self, conf_level=80):
+        self.reset_filer()
+        self.raw_wordboxes = self.wordboxes.copy()
+        self.wordboxes = []
+        if self.filter_conf:
+            for wordbox in self.raw_wordboxes:
+                if wordbox.confidence() >= conf_level:
+                    self.wordboxes.append(wordbox)
+
+    def reset_filter(self):
+        try:
+            self.wordboxes = self.raw_wordboxes.copy()
+            del(self.raw_wordboxes)
+        except AttributeError:
+            pass
+
+
 class PyocrWrappedOCR(BaseOCR):
     """Abstract class for pyocr wrapped tools
 
@@ -155,7 +187,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
         super().structure_results()
 
 
-class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR):
+class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
     """Class that instantiates a wordbox pyocr wrapped tool
 
     This class instanciates the pyocr raw text functionnality.
@@ -213,6 +245,9 @@ class WordBox(object):
         """
         return((self.x + self.width / 2, self.y + self.height / 2))
 
+    def is_empty(self):
+        return(self.content.strip() == '')
+
 
 class PyocrWordBox(WordBox):
     """Represents a wordbox object returned by pyocr
@@ -232,23 +267,3 @@ class PyocrWordBox(WordBox):
 
     def confidence(self):
         return(self.pyocrbox.confidence)
-
-    def is_empty(self):
-        return(self.pyocrbox.content.strip() == '')
-
-
-class FilterableOCR(BaseOCR):
-    """Abstract class for tools whose results can be filtered (e.g. confidence)
-
-    This class describes how tools whose results can be filtered should
-    behave. It applies to tools that provide confidence parameters, but also
-    to the ones that can return objects (lines, boxes, ...) with empty content.
-    """
-    def __init__(self, conf_low=0, conf_high=100, filter_empty=True,
-                 filter_conf=True, **kwargs):
-        self.conf_low = conf_low
-        self.conf_high = conf_high
-        self.filter_empty = filter_empty
-        self.filter_conf = filter_conf
-        super().__init__(**kwargs)
-        print('TODO !!! Where to filter ?')
