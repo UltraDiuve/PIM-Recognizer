@@ -205,7 +205,7 @@ class WordBox(object):
     def center(self):
         """Returns the center of the box
         """
-        return((self.x + self.width / 2, self.y + self.width / 2))
+        return((self.x + self.width / 2, self.y + self.height / 2))
 
 
 class PyocrWordBox(WordBox):
