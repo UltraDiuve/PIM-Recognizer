@@ -50,8 +50,11 @@ class BaseOCR(object):
             raise RuntimeError('Tool has not been run prior to '
                                'counting results')
 
-    def structure_results(self):
+    def refresh_internals(self):
         pass
+
+    def parse_result(self):
+        self.refresh_internals()
 
 
 class FilterableOCR(BaseOCR):
@@ -77,7 +80,7 @@ class FilterableOCR(BaseOCR):
             for wordbox in self.raw_wordboxes:
                 if wordbox.confidence() >= conf_level:
                     self.wordboxes.append(wordbox)
-        self.structure_results()
+        self.refresh_internals()
 
     def reset_filter(self):
         try:
@@ -85,7 +88,7 @@ class FilterableOCR(BaseOCR):
             del(self.raw_wordboxes)
         except AttributeError:
             pass
-        self.structure_results()
+        self.refresh_internals()
 
 
 class PyocrWrappedOCR(BaseOCR):
@@ -141,6 +144,10 @@ class TextOCR(BaseOCR):
         super().count_words()
         return(len(self.words))
 
+    def parse_result(self, **kwargs):
+        self.words = self.result.split()
+        super().parse_result(**kwargs)
+
 
 class WordBoxOCR(BaseOCR):
     """Abstract class for WordBox OCR functionnalities
@@ -167,9 +174,9 @@ class WordBoxOCR(BaseOCR):
                     where = 'above left'
                 wordbox.annotate(ax, where=where, **kwargs)
 
-    def structure_results(self, **kwargs):
+    def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
-        super().structure_results(**kwargs)
+        super().refresh_internals(**kwargs)
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
@@ -182,11 +189,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
-        self.structure_results(**kwargs)
-
-    def structure_results(self, **kwargs):
-        self.words = self.result.split()
-        super().structure_results()
+        self.parse_result(**kwargs)
 
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
@@ -199,11 +202,11 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
-        self.structure_results(**kwargs)
+        self.parse_results(**kwargs)
 
-    def structure_results(self, **kwargs):
+    def parse_result(self, **kwargs):
         self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
-        super().structure_results(**kwargs)
+        super().parse_result(**kwargs)
 
 
 class WordBox(object):
