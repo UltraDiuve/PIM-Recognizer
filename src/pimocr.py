@@ -191,9 +191,8 @@ class WordBox(object):
                                       lw=lw,
                                       **kwargs))
 
-    def annotate(self, ax, annot_color='blue', **kwargs):
-        ax.annotate(self.content, (self.x, self.y), color=annot_color,
-                    **kwargs)
+    def annotate(self, ax, **kwargs):
+        ax.annotate(self.content, (self.x, self.y), **kwargs)
 
 
 class PyocrWordBox(WordBox):
