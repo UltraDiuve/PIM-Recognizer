@@ -121,10 +121,13 @@ class WordBoxOCR(BaseOCR):
         super().count_words()
         return(len(self.words))
 
-    def show(self, ax=None, fill=True, color='red', lw=2, **kwargs):
+    def show(self, ax=None, fill=True, color='red', lw=2, annotate=True,
+             **kwargs):
         super().show(ax=ax, **kwargs)
         for wordbox in self.wordboxes:
             wordbox.draw(ax=ax, fill=fill, color=color, lw=lw, **kwargs)
+            if annotate:
+                wordbox.annotate(ax, **kwargs)
 
     def structure_results(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -187,6 +190,10 @@ class WordBox(object):
                                       color=color,
                                       lw=lw,
                                       **kwargs))
+
+    def annotate(self, ax, annot_color='blue', **kwargs):
+        ax.annotate(self.content, (self.x, self.y), color=annot_color,
+                    **kwargs)
 
 
 class PyocrWordBox(WordBox):
