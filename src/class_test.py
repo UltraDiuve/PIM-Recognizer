@@ -8,9 +8,6 @@ class A(object):
 
 
 class B(A):
-    def bar(self):
-        print('from bottom : bar')
-
     def baz(self):
         print('from bottom : baz')
         super().baz()
