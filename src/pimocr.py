@@ -127,7 +127,11 @@ class WordBoxOCR(BaseOCR):
         for wordbox in self.wordboxes:
             wordbox.draw(ax=ax, fill=fill, color=color, lw=lw, **kwargs)
             if annotate:
-                wordbox.annotate(ax, where='center', **kwargs)
+                if fill:
+                    where = 'center'
+                else:
+                    where = 'above left'
+                wordbox.annotate(ax, where=where, **kwargs)
 
     def structure_results(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -192,7 +196,6 @@ class WordBox(object):
                                       **kwargs))
 
     def annotate(self, ax, where='above left', color='blue', **kwargs):
-
         if where == 'above left':
             xy = (self.x, self.y)
             verticalalignment = 'baseline'
