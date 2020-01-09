@@ -7,6 +7,7 @@ import os
 from PIL import Image
 import matplotlib.image as mpimg
 import matplotlib.patches as mpatch
+import requests
 
 import pyocr
 
@@ -129,6 +130,31 @@ class PyocrWrappedOCR(BaseOCR):
             builder=self.builder
         )
         super().run_tool(**kwargs)
+
+
+class AzureWrappedOCR(BaseOCR):
+    """Abstract class for Microsoft Azure wrapped OCR tools
+
+    This class defines some functions for OCR tools based on Microsoft Azure
+    services.
+    """
+    def __init__(self, endpoint, suffix='/vision/v2.0/ocr', **kwargs):
+        self.url = endpoint + suffix
+        super().__init__(wrapper='Azure', tool_name='OCR', **kwargs)
+
+    def set_file(self, path=None, filename=None, **kwargs):
+        full_path = os.path.join(path, filename)
+        self.binaryfile = open(full_path, 'rb')
+        super().__init__(path=path, filename=filename, **kwargs)
+
+    def run_tool(self, subscriptionkey, proxies=None, **kwargs):
+        super().run_tool(**kwargs)
+        headers = {'Content-Type': 'application/octet-stream',
+                   'Ocp-Apim-Subscription-Key': subscriptionkey}
+        self.result = requests.post(self.url,
+                                    proxies=proxies,
+                                    data=self.binaryfile,
+                                    headers=headers).json()
 
 
 class TextOCR(BaseOCR):
