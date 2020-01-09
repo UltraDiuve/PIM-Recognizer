@@ -145,7 +145,7 @@ class AzureWrappedOCR(BaseOCR):
     def set_file(self, path=None, filename=None, **kwargs):
         full_path = os.path.join(path, filename)
         self.binaryfile = open(full_path, 'rb')
-        super().__init__(path=path, filename=filename, **kwargs)
+        super().set_file(path=path, filename=filename, **kwargs)
 
     def run_tool(self, subscriptionkey, proxies=None, **kwargs):
         super().run_tool(**kwargs)
