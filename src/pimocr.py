@@ -272,6 +272,12 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
                           for pyocrlinebox in self.result]
         super().parse_result(**kwargs)
 
+    def refresh_internals(self, **kwargs):
+        self.wordboxes = [PyocrWordBox(wordbox)
+                          for linebox in self.lineboxes
+                          for wordbox in linebox.word_boxes]
+        super().refresh_internals(**kwargs)
+
 
 class Box(object):
     """Represents a generic box object returned by an OCR tool
