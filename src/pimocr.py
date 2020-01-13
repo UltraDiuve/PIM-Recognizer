@@ -175,7 +175,7 @@ class TextOCR(BaseOCR):
         super().parse_result(**kwargs)
 
 
-class WordBoxOCR(BaseOCR):
+class WordBoxOCR(TextOCR):
     """Abstract class for WordBox OCR functionnalities
 
     This class describes the text only OCR functionnalities, and
