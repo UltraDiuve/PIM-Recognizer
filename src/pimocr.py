@@ -219,6 +219,12 @@ class LineBoxOCR(WordBoxOCR):
         for linebox in self.lineboxes:
             linebox.draw(ax=ax, **kwargs)
 
+    def refresh_internals(self, **kwargs):
+        self.wordboxes = [PyocrWordBox(wordbox)
+                          for linebox in self.lineboxes
+                          for wordbox in linebox.word_boxes]
+        super().refresh_internals(**kwargs)
+
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiates a text only pyocr wrapped tool
@@ -271,12 +277,6 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
         self.lineboxes = [PyocrLineBox(pyocrlinebox)
                           for pyocrlinebox in self.result]
         super().parse_result(**kwargs)
-
-    def refresh_internals(self, **kwargs):
-        self.wordboxes = [PyocrWordBox(wordbox)
-                          for linebox in self.lineboxes
-                          for wordbox in linebox.word_boxes]
-        super().refresh_internals(**kwargs)
 
 
 class Box(object):
