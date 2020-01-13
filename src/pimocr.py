@@ -220,7 +220,7 @@ class LineBoxOCR(WordBoxOCR):
             linebox.draw(ax=ax, **kwargs)
 
     def refresh_internals(self, **kwargs):
-        self.wordboxes = [PyocrWordBox(wordbox)
+        self.wordboxes = [wordbox
                           for linebox in self.lineboxes
                           for wordbox in linebox.childrenboxes]
         super().refresh_internals(**kwargs)
