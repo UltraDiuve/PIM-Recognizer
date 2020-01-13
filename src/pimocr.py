@@ -261,7 +261,7 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
     This class instanciates the pyocr lineboxes recognition functionnality.
     """
     def __init__(self, **kwargs):
-        super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
+        super().__init__(builder=pyocr.builders.LineBoxBuilder, **kwargs)
 
     def run_tool(self, **kwargs):
         super().run_tool(**kwargs)
