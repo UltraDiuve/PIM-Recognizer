@@ -9,8 +9,8 @@ The return of the tool is kept raw.
 - parse_result: will use the content of the 'result' attribute to provide the
 instance with its type-related attributes (internals). e.g. the lines for a
 LineBoxOCR.
-- refresh_internals: will (re)syncrhonize the internals of super levels with the
-content of the current instance. e.g. will (re)compute the WordBoxes for a
+- refresh_internals: will (re)syncrhonize the internals of super levels with
+the content of the current instance. e.g. will (re)compute the WordBoxes for a
 LineBoxOCR.
 """
 import os
@@ -173,18 +173,15 @@ class TextOCR(BaseOCR):
     This class describes the text only OCR functionnalities, and
     should not be instanciated.
     """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     def count_words(self):
         super().count_words()
         return(len(self.words))
 
 
 class WordBoxOCR(TextOCR):
-    """Abstract class for WordBox OCR functionnalities
+    """Abstract class for wordbox OCR functionnalities
 
-    This class describes the text only OCR functionnalities, and
+    This class describes the OCR functionnalities regarding wordboxes, and
     should not be instanciated.
     """
     def __init__(self, **kwargs):
@@ -211,6 +208,18 @@ class WordBoxOCR(TextOCR):
         super().refresh_internals(**kwargs)
 
 
+class LineBoxOCR(WordBoxOCR):
+    """Abstract class for linebox OCR functionnalities
+
+    This class describes the OCR functionnalities regarding lineboxes, and
+    should not be instanciated.
+    """
+    def show(self, ax=None, **kwargs):
+        super().show(ax=ax, **kwargs)
+        for linebox in self.lineboxes:
+            linebox.draw(ax=ax, **kwargs)
+
+
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiates a text only pyocr wrapped tool
 
@@ -231,7 +240,7 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
     """Class that instantiates a wordbox pyocr wrapped tool
 
-    This class instanciates the pyocr raw text functionnality.
+    This class instanciates the pyocr wordboxes recognition functionnality.
     """
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
@@ -241,8 +250,25 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
         self.parse_result(**kwargs)
 
     def parse_result(self, **kwargs):
-        self.wordboxes = [PyocrWordBox(pyocrbox) for pyocrbox in self.result]
+        self.wordboxes = [PyocrWordBox(pyocrwordbox)
+                          for pyocrwordbox in self.result]
         super().parse_result(**kwargs)
+
+
+class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
+    """Class that instantiates a linebox pyocr wrapped tool
+
+    This class instanciates the pyocr lineboxes recognition functionnality.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
+
+    def run_tool(self, **kwargs):
+        super().run_tool(**kwargs)
+        self.parse_result(**kwargs)
+
+    def parse_result(self, **kwargs):
+        self.lineboxes = ['zob']
 
 
 class Box(object):
@@ -261,7 +287,7 @@ class Box(object):
     def to_rect_coord(self):
         return(((self.x, self.y), self.width, self.height))
 
-    def draw(self, ax=None, fill=False, color='red', lw=2, **kwargs):
+    def draw(self, ax, fill=False, color='red', lw=2, **kwargs):
         ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(),
                                       fill=fill,
                                       color=color,
@@ -297,14 +323,35 @@ class PyocrWordBox(Box):
     be it through wordbox builder or linebox builder (wordboxes are children
     of lineboxes).
     """
-    def __init__(self, pyocrbox):
-        self.pyocrbox = pyocrbox
-        x = pyocrbox.position[0][0]
-        y = pyocrbox.position[0][1]
-        width = pyocrbox.position[1][0] - x
-        height = pyocrbox.position[1][1] - y
-        content = pyocrbox.content
+    def __init__(self, pyocrwordbox):
+        self.pyocrwordbox = pyocrwordbox
+        x = pyocrwordbox.position[0][0]
+        y = pyocrwordbox.position[0][1]
+        width = pyocrwordbox.position[1][0] - x
+        height = pyocrwordbox.position[1][1] - y
+        content = pyocrwordbox.content
         super().__init__(x=x, y=y, width=width, height=height, content=content)
 
     def confidence(self):
-        return(self.pyocrbox.confidence)
+        return(self.pyocrwordbox.confidence)
+
+
+class PyocrLineBox(Box):
+    """Represents a linebox object returned by pyocr
+
+    This class instanciates a linebox object that can be retrieved from pyocr,
+    through the linebox builder.
+    """
+    def __init__(self, pyocrlinebox):
+        self.pyocrlinebox = pyocrlinebox
+        x = pyocrlinebox.position[0][0]
+        y = pyocrlinebox.position[0][1]
+        width = pyocrlinebox.position[1][0] - x
+        height = pyocrlinebox.position[1][1] - y
+        content = pyocrlinebox.content
+        self.childrenboxes = [PyocrWordBox(pyocrwordbox)
+                              for pyocrwordbox in pyocrlinebox.word_boxes]
+        super().__init__(x=x, y=y, width=width, height=height, content=content)
+
+    def confidence(self):
+        raise NotImplementedError('Pyocr lineboxes do not have confidence')
