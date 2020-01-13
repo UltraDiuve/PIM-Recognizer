@@ -268,7 +268,9 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
         self.parse_result(**kwargs)
 
     def parse_result(self, **kwargs):
-        self.lineboxes = ['zob']
+        self.lineboxes = [PyocrLineBox(pyocrlinebox)
+                          for pyocrlinebox in self.result]
+        super().parse_result(**kwargs)
 
 
 class Box(object):
