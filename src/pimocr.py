@@ -2,6 +2,16 @@
 
 This module defines various classes to run OCR functionnalities from several
 libraries or online tools.
+
+Key concepts:
+- run_tool: will run the tool and get its return into the 'result' atttribute.
+The return of the tool is kept raw.
+- parse_result: will use the content of the 'result' attribute to provide the
+instance with its type-related attributes (internals). e.g. the lines for a
+LineBoxOCR.
+- refresh_internals: will (re)syncrhonize the internals of super levels with the
+content of the current instance. e.g. will (re)compute the WordBoxes for a
+LineBoxOCR.
 """
 import os
 from PIL import Image
@@ -170,10 +180,6 @@ class TextOCR(BaseOCR):
         super().count_words()
         return(len(self.words))
 
-    def parse_result(self, **kwargs):
-        self.words = self.result.split()
-        super().parse_result(**kwargs)
-
 
 class WordBoxOCR(TextOCR):
     """Abstract class for WordBox OCR functionnalities
@@ -217,6 +223,10 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
         super().run_tool(**kwargs)
         self.parse_result(**kwargs)
 
+    def parse_result(self, **kwargs):
+        self.words = self.result.split()
+        super().parse_result(**kwargs)
+
 
 class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
     """Class that instantiates a wordbox pyocr wrapped tool
@@ -235,10 +245,10 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
         super().parse_result(**kwargs)
 
 
-class WordBox(object):
-    """Represents a generic wordbox object returned by an OCR tool
+class Box(object):
+    """Represents a generic box object returned by an OCR tool
 
-    This class instanciates a wordbox object that can be retrieved from an OCR
+    This class instanciates a box object that can be retrieved from an OCR
     tool and then be drawn on an axes.
     """
     def __init__(self, x, y, width, height, content):
@@ -280,11 +290,11 @@ class WordBox(object):
         return(self.content.strip() == '')
 
 
-class PyocrWordBox(WordBox):
+class PyocrWordBox(Box):
     """Represents a wordbox object returned by pyocr
 
     This class instanciates a wordbox object that can be retrieved from pyocr,
-    be it through WordBox builder or LineBox builder (wordboxes are children
+    be it through wordbox builder or linebox builder (wordboxes are children
     of lineboxes).
     """
     def __init__(self, pyocrbox):
