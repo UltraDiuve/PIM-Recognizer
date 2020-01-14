@@ -401,7 +401,7 @@ class AzureLineBox(Box):
     """
     def __init__(self, azurelinebox):
         self.azurelinebox = azurelinebox
-        dimensions = list(map(int, azureareabox['boundingBox'].split(',')))
+        dimensions = list(map(int, azurelinebox['boundingBox'].split(',')))
         x = dimensions[0]
         y = dimensions[1]
         width = dimensions[2]
