@@ -41,7 +41,7 @@ class BaseOCR(object):
         self.mp_image = mpimg.imread(full_path)
         self.result = None
 
-    def show(self, ax):
+    def show(self, ax, what):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
@@ -220,7 +220,7 @@ class LineBoxOCR(WordBoxOCR):
 
     def show(self, ax, what, annotate=True, format_line=None,
              format_annotate_line=None, **kwargs):
-        super().show(ax=ax, **kwargs)
+        super().show(ax, what, **kwargs)
         if what == 'lines' or 'lines' in what:
             for linebox in self.lineboxes:
                 linebox.show(ax,
