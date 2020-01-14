@@ -197,7 +197,7 @@ class WordBoxOCR(TextOCR):
         for wordbox in self.wordboxes:
             wordbox.show(ax,
                          format_box=format_box,
-                         format_annotate=format_annotate, 
+                         format_annotate=format_annotate,
                          **kwargs)
 
     def refresh_internals(self, **kwargs):
@@ -315,22 +315,22 @@ class Box(object):
         """
         return((self.x + self.width / 2, self.y + self.height / 2))
 
-    def show(self, annotate=True, format_box=None, format_annotate=None):
+    def show(self, ax, annotate=True, format_box=None, format_annotate=None):
         default_box_format = {
-            'color':'red', 
-            'lw':2, 
-            'fill':True
+            'color': 'red',
+            'lw': 2,
+            'fill': True
         }
         default_box_format.update(format_box)
         where = 'center' if default_box_format['fill'] else 'above left'
         default_annotate_format = {
-            'color':'blue',
-            'where':where
+            'color': 'blue',
+            'where': where
         }
         default_annotate_format.update(format_annotate)
-        wordbox.draw(ax=ax, **default_box_format)
-            if annotate:
-                wordbox.annotate(ax, **default_annotate_format)
+        self.draw(ax=ax, **default_box_format)
+        if annotate:
+            self.annotate(ax, **default_annotate_format)
 
     def is_empty(self):
         return(self.content.strip() == '')
