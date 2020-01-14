@@ -321,13 +321,15 @@ class Box(object):
             'lw': 2,
             'fill': True
         }
-        default_box_format.update(format_box)
+        if format_box is not None:
+            default_box_format.update(format_box)
         where = 'center' if default_box_format['fill'] else 'above left'
         default_annotate_format = {
             'color': 'blue',
             'where': where
         }
-        default_annotate_format.update(format_annotate)
+        if format_annotate is not None:
+            default_annotate_format.update(format_annotate)
         self.draw(ax=ax, **default_box_format)
         if annotate:
             self.annotate(ax, **default_annotate_format)
