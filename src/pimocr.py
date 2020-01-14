@@ -57,11 +57,11 @@ class BaseOCR(object):
             raise RuntimeError('File has not been set prior to running tool')
         self.parse_result()
 
-    def refresh_internals(self):
-        pass
-
     def parse_result(self):
         self.refresh_internals()
+
+    def refresh_internals(self):
+        pass
 
     def count_words(self):
         if self.result is None:
@@ -290,6 +290,7 @@ class AzureAreaBoxOCR(AzureWrappedOCR, AreaBoxOCR):
     def parse_result(self, **kwargs):
         self.areas = [AzureAreaBox(region)
                       for region in self.result['regions']]
+        super().parse_result(**kwargs)
 
 
 class Box(object):
