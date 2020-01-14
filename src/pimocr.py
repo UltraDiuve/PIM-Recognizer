@@ -199,8 +199,7 @@ class WordBoxOCR(TextOCR):
             for wordbox in self.wordboxes:
                 wordbox.show(ax,
                              format_box=format_box,
-                             format_annotate=format_annotate,
-                             **kwargs)
+                             format_annotate=format_annotate)
 
     def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -226,8 +225,7 @@ class LineBoxOCR(WordBoxOCR):
             for linebox in self.lineboxes:
                 linebox.show(ax,
                              format_box=format_line,
-                             format_annotate=format_annotate_line,
-                             **kwargs)
+                             format_annotate=format_annotate_line)
 
 
 class AreaBoxOCR(LineBoxOCR):
@@ -249,8 +247,7 @@ class AreaBoxOCR(LineBoxOCR):
             for areabox in self.areaboxes:
                 areabox.show(ax,
                              format_box=format_area,
-                             format_annotate=format_annotate_area,
-                             **kwargs)
+                             format_annotate=format_annotate_area)
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiates a text only pyocr wrapped tool
