@@ -191,14 +191,15 @@ class WordBoxOCR(TextOCR):
         super().count_words()
         return(len(self.words))
 
-    def show(self, ax, annotate=True, format_box=None, format_annotate=None,
-             **kwargs):
-        super().show(ax=ax, **kwargs)
-        for wordbox in self.wordboxes:
-            wordbox.show(ax,
-                         format_box=format_box,
-                         format_annotate=format_annotate,
-                         **kwargs)
+    def show(self, ax, what, annotate=True, format_box=None,
+             format_annotate=None, **kwargs):
+        super().show(ax, what, **kwargs)
+        if what == 'words' or 'words' in what:
+            for wordbox in self.wordboxes:
+                wordbox.show(ax,
+                            format_box=format_box,
+                            format_annotate=format_annotate,
+                            **kwargs)
 
     def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -217,14 +218,15 @@ class LineBoxOCR(WordBoxOCR):
                           for wordbox in linebox.childrenboxes]
         super().refresh_internals(**kwargs)
 
-    def show(self, ax, annotate=True, format_line=None,
+    def show(self, ax, what, annotate=True, format_line=None,
              format_annotate_line=None, **kwargs):
         super().show(ax=ax, **kwargs)
-        for linebox in self.lineboxes:
-            linebox.show(ax,
-                         format_box=format_line,
-                         format_annotate=format_annotate_line,
-                         **kwargs)
+        if what == 'lines' or 'lines' in what:
+            for linebox in self.lineboxes:
+                linebox.show(ax,
+                            format_box=format_line,
+                            format_annotate=format_annotate_line,
+                            **kwargs)
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
