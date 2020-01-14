@@ -292,10 +292,8 @@ class Box(object):
     def to_rect_coord(self):
         return(((self.x, self.y), self.width, self.height))
 
-    def draw(self, ax, format_dict=None, **kwargs):
-        ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(),
-                                      **format_dict,
-                                      **kwargs))
+    def draw(self, ax, **kwargs):
+        ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(), **kwargs))
 
     def annotate(self, ax, where='above left', color='blue', **kwargs):
         if where == 'above left':
