@@ -280,7 +280,7 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
         super().parse_result(**kwargs)
 
 
-class AzureAreoBoxOCR(AzureWrappedOCR, AreaBoxOCR):
+class AzureAreaBoxOCR(AzureWrappedOCR, AreaBoxOCR):
     """ Class that instanciate the Azure OCR Tool
 
     This class instanciates the Azure OCR tool functionalities. As Azure only
