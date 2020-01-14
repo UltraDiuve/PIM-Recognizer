@@ -354,7 +354,7 @@ class Box(object):
     def get_content(self, sep):
         if self.content is None:
             self.content = sep.join([child.get_content()
-                                     for child in childrenboxes])
+                                     for child in self.childrenboxes])
         return(self.content)
 
 
