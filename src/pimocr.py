@@ -393,6 +393,21 @@ class PyocrLineBox(Box):
         raise NotImplementedError('Pyocr lineboxes do not have confidence')
 
 
+class AzureLineBox(Box):
+    """Represents a line box returned by Azure API
+
+    This class instanciates a linebox object that can be retrieved from Azure
+    API.
+    """
+    def __init__(self, azurelinebox):
+        self.azurelinebox = azurelinebox
+        dimensions = list(map(int, azureareabox['boundingBox'].split(',')))
+        x = dimensions[0]
+        y = dimensions[1]
+        width = dimensions[2]
+        height = dimensions[3]       
+        super().__init__(x=x, y=y, width=width, height=height, content=None) 
+
 class AzureAreaBox(Box):
     """Represents an area box returned by Azure API
 
@@ -406,4 +421,6 @@ class AzureAreaBox(Box):
         y = dimensions[1]
         width = dimensions[2]
         height = dimensions[3]
-        super().__init__(x=x, y=y, width=width, height=height, content='')
+        self.childrenboxes = [AzureLineBox(azurelinebox)
+                              for azurelinebox in self.azureareabox['lines']]
+        super().__init__(x=x, y=y, width=width, height=height, content=None)
