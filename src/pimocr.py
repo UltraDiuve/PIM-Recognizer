@@ -195,9 +195,12 @@ class WordBoxOCR(TextOCR):
     def show(self, ax, what, annotate=True, format_box=None,
              format_annotate=None, **kwargs):
         super().show(ax, what, **kwargs)
+        if annotate_what == 'words' or 'words' in annotate_what:
+            annotate = True
         if what == 'words' or 'words' in what:
             for wordbox in self.wordboxes:
                 wordbox.show(ax,
+                             annotate=annotate,
                              format_box=format_box,
                              format_annotate=format_annotate)
 
@@ -221,9 +224,12 @@ class LineBoxOCR(WordBoxOCR):
     def show(self, ax, what, annotate=True, format_line=None,
              format_annotate_line=None, **kwargs):
         super().show(ax, what, **kwargs)
+        if annotate_what == 'lines' or 'lines' in annotate_what:
+            annotate = True
         if what == 'lines' or 'lines' in what:
             for linebox in self.lineboxes:
                 linebox.show(ax,
+                             annotate=annotate,
                              format_box=format_line,
                              format_annotate=format_annotate_line)
 
@@ -240,12 +246,15 @@ class AreaBoxOCR(LineBoxOCR):
                           for linebox in areabox.childrenboxes]
         super().refresh_internals(**kwargs)
 
-    def show(self, ax, what, annotate=True, format_area=None,
+    def show(self, ax, what, annotate_what={'words'}, format_area=None,
              format_annotate_area=None, **kwargs):
-        super().show(ax, what, **kwargs)
+        super().show(ax, what, annotate_what, **kwargs)
+        if annotate_what == 'areas' or 'areas' in annotate_what:
+            annotate = True
         if what == 'areas' or 'areas' in what:
             for areabox in self.areaboxes:
                 areabox.show(ax,
+                             annotate=annotate,
                              format_box=format_area,
                              format_annotate=format_annotate_area)
 
