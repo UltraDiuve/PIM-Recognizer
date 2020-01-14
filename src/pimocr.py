@@ -41,7 +41,7 @@ class BaseOCR(object):
         self.mp_image = mpimg.imread(full_path)
         self.result = None
 
-    def show(self, ax=None):
+    def show(self, ax):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
@@ -191,17 +191,14 @@ class WordBoxOCR(TextOCR):
         super().count_words()
         return(len(self.words))
 
-    def show(self, ax=None, fill=True, color='red', lw=2, annotate=True,
+    def show(self, ax, annotate=True, format_box=None, format_annotate=None,
              **kwargs):
         super().show(ax=ax, **kwargs)
         for wordbox in self.wordboxes:
-            wordbox.draw(ax=ax, fill=fill, color=color, lw=lw, **kwargs)
-            if annotate:
-                if fill:
-                    where = 'center'
-                else:
-                    where = 'above left'
-                wordbox.annotate(ax, where=where, **kwargs)
+            wordbox.show(ax,
+                         format_box=format_box,
+                         format_annotate=format_annotate, 
+                         **kwargs)
 
     def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -295,11 +292,9 @@ class Box(object):
     def to_rect_coord(self):
         return(((self.x, self.y), self.width, self.height))
 
-    def draw(self, ax, fill=False, color='red', lw=2, **kwargs):
+    def draw(self, ax, format_dict=None, **kwargs):
         ax.add_patch(mpatch.Rectangle(*self.to_rect_coord(),
-                                      fill=fill,
-                                      color=color,
-                                      lw=lw,
+                                      **format_dict,
                                       **kwargs))
 
     def annotate(self, ax, where='above left', color='blue', **kwargs):
@@ -319,6 +314,23 @@ class Box(object):
         """Returns the center of the box
         """
         return((self.x + self.width / 2, self.y + self.height / 2))
+
+    def show(self, annotate=True, format_box=None, format_annotate=None)
+        default_box_format = {
+            'color':'red', 
+            'lw':2, 
+            'fill':True
+        }
+        default_box_format.update(format_box)
+        where = 'center' if default_box_format['fill'] else 'above left'
+        default_annotate_format = {
+            'color':'blue'
+            'where':where
+        }
+        default_annotate_format.update(format_annotate)
+        wordbox.draw(ax=ax, **default_box_format)
+            if annotate:
+                wordbox.annotate(ax, **default_annotate_format)
 
     def is_empty(self):
         return(self.content.strip() == '')
