@@ -315,7 +315,7 @@ class Box(object):
         """
         return((self.x + self.width / 2, self.y + self.height / 2))
 
-    def show(self, annotate=True, format_box=None, format_annotate=None)
+    def show(self, annotate=True, format_box=None, format_annotate=None):
         default_box_format = {
             'color':'red', 
             'lw':2, 
