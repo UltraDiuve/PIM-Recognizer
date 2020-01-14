@@ -231,9 +231,26 @@ class LineBoxOCR(WordBoxOCR):
 
 
 class AreaBoxOCR(LineBoxOCR):
-    """TODO !!!"""
-    pass
+    """Abstract class for areabox OCR functionnalities
 
+    This class describes the OCR functionnalities regarding areaboxes, and
+    should not be instanciated.
+    """
+    def refresh_internals(self, **kwargs):
+        self.lineboxes = [linebox
+                          for areabox in self.areaboxes
+                          for linebox in areabox.childrenboxes]
+        super().refresh_internals(**kwargs)
+
+    def show(self, ax, what, annotate=True, format_area=None,
+             format_annotate_area=None, **kwargs):
+        super().show(ax, what, **kwargs)
+        if what == 'areas' or 'areas' in what:
+            for areabox in self.areaboxes:
+                areabox.show(ax,
+                             format_box=format_area,
+                             format_annotate=format_annotate_area,
+                             **kwargs)
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiates a text only pyocr wrapped tool
