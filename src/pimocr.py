@@ -211,16 +211,20 @@ class LineBoxOCR(WordBoxOCR):
     This class describes the OCR functionnalities regarding lineboxes, and
     should not be instanciated.
     """
-    def show(self, ax=None, **kwargs):
-        super().show(ax=ax, **kwargs)
-        for linebox in self.lineboxes:
-            linebox.draw(ax=ax, **kwargs)
-
     def refresh_internals(self, **kwargs):
         self.wordboxes = [wordbox
                           for linebox in self.lineboxes
                           for wordbox in linebox.childrenboxes]
         super().refresh_internals(**kwargs)
+
+    def show(self, ax, annotate=True, format_line=None,
+             format_annotate_line=None, **kwargs):
+        super().show(ax=ax, **kwargs)
+        for linebox in self.lineboxes:
+            linebox.show(ax,
+                         format_box=format_line,
+                         format_annotate=format_annotate_line,
+                         **kwargs)
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
