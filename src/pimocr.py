@@ -270,10 +270,6 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.LineBoxBuilder, **kwargs)
 
-    def run_tool(self, **kwargs):
-        super().run_tool(**kwargs)
-        self.parse_result(**kwargs)
-
     def parse_result(self, **kwargs):
         self.lineboxes = [PyocrLineBox(pyocrlinebox)
                           for pyocrlinebox in self.result]
