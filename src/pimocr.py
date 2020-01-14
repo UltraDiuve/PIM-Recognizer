@@ -401,7 +401,7 @@ class AzureAreaBox(Box):
     """
     def __init__(self, azureareabox):
         self.azureareabox = azureareabox
-        dimensions = list(map(int, azureareabox['boundingBox']))
+        dimensions = list(map(int, azureareabox['boundingBox'].split(',')))
         x = dimensions[0]
         y = dimensions[1]
         width = dimensions[2]
