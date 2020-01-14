@@ -401,3 +401,9 @@ class AzureAreaBox(Box):
     """
     def __init__(self, azureareabox):
         self.azureareabox = azureareabox
+        dimensions = list(map(int, azureareabox['boundingbox']))
+        x = dimensions[0]
+        y = dimensions[1]
+        width = dimensions[2]
+        height = dimensions[3]
+        super().__init__(x=x, y=y, width=width, height=height)
