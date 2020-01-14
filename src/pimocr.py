@@ -301,7 +301,7 @@ class AzureAreaBoxOCR(AzureWrappedOCR, AreaBoxOCR):
     AzureWrappedOCR.
     """
     def parse_result(self, **kwargs):
-        self.areas = [AzureAreaBox(region)
+        self.areaboxes = [AzureAreaBox(region)
                       for region in self.result['regions']]
         super().parse_result(**kwargs)
 
