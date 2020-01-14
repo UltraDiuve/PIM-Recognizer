@@ -324,7 +324,7 @@ class Box(object):
         default_box_format.update(format_box)
         where = 'center' if default_box_format['fill'] else 'above left'
         default_annotate_format = {
-            'color':'blue'
+            'color':'blue',
             'where':where
         }
         default_annotate_format.update(format_annotate)
