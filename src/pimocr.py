@@ -348,7 +348,7 @@ class Box(object):
 
     def show(self, ax, annotate=True, format_box=None, format_annotate=None):
         default_box_format = {
-            'color': 'red',
+            'facecolor': 'red',
             'lw': 2,
             'fill': True
         }
