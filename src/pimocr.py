@@ -55,17 +55,18 @@ class BaseOCR(object):
     def run_tool(self):
         if self.image is None:
             raise RuntimeError('File has not been set prior to running tool')
-
-    def count_words(self):
-        if self.result is None:
-            raise RuntimeError('Tool has not been run prior to '
-                               'counting results')
+        self.parse_result()
 
     def refresh_internals(self):
         pass
 
     def parse_result(self):
         self.refresh_internals()
+
+    def count_words(self):
+        if self.result is None:
+            raise RuntimeError('Tool has not been run prior to '
+                               'counting results')
 
 
 class FilterableOCR(BaseOCR):
@@ -146,7 +147,7 @@ class AzureWrappedOCR(BaseOCR):
     """Abstract class for Microsoft Azure wrapped OCR tools
 
     This class defines some functions for OCR tools based on Microsoft Azure
-    services.
+    services. It should not be instanciated.
     """
     def __init__(self, endpoint, suffix='/vision/v2.0/ocr', **kwargs):
         self.url = endpoint + suffix
@@ -158,13 +159,13 @@ class AzureWrappedOCR(BaseOCR):
         super().set_file(path=path, filename=filename, **kwargs)
 
     def run_tool(self, subscriptionkey, proxies=None, **kwargs):
-        super().run_tool(**kwargs)
         headers = {'Content-Type': 'application/octet-stream',
                    'Ocp-Apim-Subscription-Key': subscriptionkey}
         self.result = requests.post(self.url,
                                     proxies=proxies,
                                     data=self.binaryfile,
                                     headers=headers).json()
+        super().run_tool(**kwargs)
 
 
 class TextOCR(BaseOCR):
@@ -197,9 +198,9 @@ class WordBoxOCR(TextOCR):
         if what == 'words' or 'words' in what:
             for wordbox in self.wordboxes:
                 wordbox.show(ax,
-                            format_box=format_box,
-                            format_annotate=format_annotate,
-                            **kwargs)
+                             format_box=format_box,
+                             format_annotate=format_annotate,
+                             **kwargs)
 
     def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -224,9 +225,14 @@ class LineBoxOCR(WordBoxOCR):
         if what == 'lines' or 'lines' in what:
             for linebox in self.lineboxes:
                 linebox.show(ax,
-                            format_box=format_line,
-                            format_annotate=format_annotate_line,
-                            **kwargs)
+                             format_box=format_line,
+                             format_annotate=format_annotate_line,
+                             **kwargs)
+
+
+class AreaBoxOCR(LineBoxOCR):
+    """TODO !!!"""
+    pass
 
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
@@ -236,10 +242,6 @@ class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.TextBuilder, **kwargs)
-
-    def run_tool(self, **kwargs):
-        super().run_tool(**kwargs)
-        self.parse_result(**kwargs)
 
     def parse_result(self, **kwargs):
         self.words = self.result.split()
@@ -253,10 +255,6 @@ class PyocrWordBoxOCR(PyocrWrappedOCR, WordBoxOCR, FilterableOCR):
     """
     def __init__(self, **kwargs):
         super().__init__(builder=pyocr.builders.WordBoxBuilder, **kwargs)
-
-    def run_tool(self, **kwargs):
-        super().run_tool(**kwargs)
-        self.parse_result(**kwargs)
 
     def parse_result(self, **kwargs):
         self.wordboxes = [PyocrWordBox(pyocrwordbox)
@@ -280,6 +278,17 @@ class PyocrLineBoxOCR(PyocrWrappedOCR, LineBoxOCR):
         self.lineboxes = [PyocrLineBox(pyocrlinebox)
                           for pyocrlinebox in self.result]
         super().parse_result(**kwargs)
+
+
+class AzureAreoBoxOCR(AzureWrappedOCR, AreaBoxOCR):
+    """ Class that instanciate the Azure OCR Tool
+
+    This class instanciates the Azure OCR tool functionalities. As Azure only
+    provides LineBox OCR functions, this class is the only one inheriting of
+    AzureWrappedOCR.
+    """
+    def parse_result(self, **kwargs):
+        self.areas = [AzureAreaBox(region) for region in self.result['region']]
 
 
 class Box(object):
@@ -381,3 +390,13 @@ class PyocrLineBox(Box):
 
     def confidence(self):
         raise NotImplementedError('Pyocr lineboxes do not have confidence')
+
+
+class AzureAreaBox(Box):
+    """Represents an area box returned by Azure API
+
+    This class instanciates an areabox object that can be retrieved from Azure
+    API.
+    """
+    def __init__(self, azureareabox):
+        self.azureareabox = azureareabox
