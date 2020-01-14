@@ -192,8 +192,8 @@ class WordBoxOCR(TextOCR):
         super().count_words()
         return(len(self.words))
 
-    def show(self, ax, what, annotate=True, format_box=None,
-             format_annotate=None, **kwargs):
+    def show(self, ax, what, annotate_what={'words'}, format_word=None,
+             format_annotate_word=None, **kwargs):
         super().show(ax, what, **kwargs)
         if annotate_what == 'words' or 'words' in annotate_what:
             annotate = True
@@ -201,8 +201,8 @@ class WordBoxOCR(TextOCR):
             for wordbox in self.wordboxes:
                 wordbox.show(ax,
                              annotate=annotate,
-                             format_box=format_box,
-                             format_annotate=format_annotate)
+                             format_box=format_word,
+                             format_annotate=format_annotate_word)
 
     def refresh_internals(self, **kwargs):
         self.words = [wordbox.content for wordbox in self.wordboxes]
@@ -221,7 +221,7 @@ class LineBoxOCR(WordBoxOCR):
                           for wordbox in linebox.childrenboxes]
         super().refresh_internals(**kwargs)
 
-    def show(self, ax, what, annotate=True, format_line=None,
+    def show(self, ax, what, annotate_what={'words'}, format_line=None,
              format_annotate_line=None, **kwargs):
         super().show(ax, what, **kwargs)
         if annotate_what == 'lines' or 'lines' in annotate_what:
