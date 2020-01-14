@@ -351,8 +351,40 @@ class Box(object):
     def is_empty(self):
         return(self.content.strip() == '')
 
+    def get_content(self, sep):
+        if self.content is None:
+            self.content = sep.join([child.get_content()
+                                     for child in childrenboxes])
+        return(self.content)
 
-class PyocrWordBox(Box):
+
+class WordBox(Box):
+    """Represents a generic wordbox object
+
+    This class should not be instanciated.
+    """
+    def get_content(self):
+        return(super().get_content(sep=''))
+
+
+class LineBox(Box):
+    """Represents a generic linebox object
+
+    This class should not be instanciated.
+    """
+    def get_content(self):
+        return(super().get_content(sep=' '))
+
+class AreaBox(Box):
+    """Represents a generic areabox object
+
+    This class should not be instanciated.
+    """
+    def get_content(self):
+        return(super().get_content(sep='\n'))
+
+
+class PyocrWordBox(WordBox):
     """Represents a wordbox object returned by pyocr
 
     This class instanciates a wordbox object that can be retrieved from pyocr,
@@ -372,7 +404,7 @@ class PyocrWordBox(Box):
         return(self.pyocrwordbox.confidence)
 
 
-class PyocrLineBox(Box):
+class PyocrLineBox(LineBox):
     """Represents a linebox object returned by pyocr
 
     This class instanciates a linebox object that can be retrieved from pyocr,
@@ -393,7 +425,7 @@ class PyocrLineBox(Box):
         raise NotImplementedError('Pyocr lineboxes do not have confidence')
 
 
-class AzureWordBox(Box):
+class AzureWordBox(WordBox):
     """Represents a word box returned by Azure API
 
     This class instanciates a wordbox object that can be retrieved from Azure
@@ -409,8 +441,11 @@ class AzureWordBox(Box):
         content = azurewordbox['text']
         super().__init__(x=x, y=y, width=width, height=height, content=content)
 
+    def confidence(self):
+        raise NotImplementedError('Azure wordboxes do not have confidence')
 
-class AzureLineBox(Box):
+
+class AzureLineBox(LineBox):
     """Represents a line box returned by Azure API
 
     This class instanciates a linebox object that can be retrieved from Azure
@@ -426,9 +461,12 @@ class AzureLineBox(Box):
         self.childrenboxes = [AzureWordBox(azurewordbox)
                               for azurewordbox in azurelinebox['words']]
         super().__init__(x=x, y=y, width=width, height=height, content=None)
+        self.get_content()
 
+    def confidence(self):
+        raise NotImplementedError('Azure lineboxes do not have confidence')
 
-class AzureAreaBox(Box):
+class AzureAreaBox(AreaBox):
     """Represents an area box returned by Azure API
 
     This class instanciates an areabox object that can be retrieved from Azure
@@ -444,3 +482,7 @@ class AzureAreaBox(Box):
         self.childrenboxes = [AzureLineBox(azurelinebox)
                               for azurelinebox in azureareabox['lines']]
         super().__init__(x=x, y=y, width=width, height=height, content=None)
+        self.get_content()
+
+    def confidence(self):
+        raise NotImplementedError('Azure areaboxes do not have confidence')
