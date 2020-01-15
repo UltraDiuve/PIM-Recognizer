@@ -590,7 +590,7 @@ class GoogleBox(object):
         return(top_left[0], top_left[1], width, height)
 
 
-class GoogleSymbolBox(GoogleBox):
+class GoogleSymbolBox(GoogleBox, Box):
     """Represents a symbol box returned by Google Vision API
 
     This class instanciates a symbol box object that can be retrieved from
