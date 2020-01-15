@@ -119,11 +119,11 @@ class PyocrWrappedOCR(BaseOCR):
         """
         tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
         if tool_name is None:
-            raise RuntimeError(f'No tool has been specified. Installed tools'
-                                'are {tool_list}')
+            raise RuntimeError(f'No tool has been specified. Installed tools '
+                               f'are {tool_list}')
         if tool_name not in tool_list:
             raise RuntimeError(f'Tool {tool_name} not installed on current '
-                               'env. Installed tools are {tool_list}')
+                               f'env. Installed tools are {tool_list}')
         for pyocr_tool in pyocr.get_available_tools():
             if pyocr_tool.get_name() == tool_name:
                 self.tool = pyocr_tool
