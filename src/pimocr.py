@@ -577,7 +577,7 @@ class AzureAreaBox(AreaBox):
 
 class GoogleBox(Box):
     def bbox_to_dimensions(self, boundingBox):
-        """ Returns a tuple (x, y, width, height) from a Google boundingBox
+        """Returns a tuple (x, y, width, height) from a Google boundingBox
 
         Note: this function assumes RECTANGULAR boundingBoxes.
         """
@@ -590,24 +590,41 @@ class GoogleBox(Box):
         return(top_left[0], top_left[1], width, height)
 
 
-class GoogleLineBox(GoogleBox, LineBox):
-    """ MEGATODO !!!
-    
-    Represents a line box returned by Google Vision API
+class GoogleWordBox(GoogleBox, WordBox):
+    """Represents a word box returned by Google Vision API
 
-    This class instanciates a linebox object that can be retrieved from Google
+    This class instanciates a wordbox object that can be retrieved from Google
     Vision API.
     """
-    def __init__(self, googleareabox):
-        self.googleareabox = googleareabox
-        dimensions = self.bbox_to_dimensions(googleareabox['boundingBox'])
+    def __init__(self, googlelinebox):
+        self.googlelinebox = googlelinebox
+        dimensions = self.bbox_to_dimensions(googlelinebox['boundingBox'])
         x = dimensions[0]
         y = dimensions[1]
         width = dimensions[2]
         height = dimensions[3]
         self.childrenboxes = []
-        # self.childrenboxes = [AzureLineBox(azurelinebox)
-        #                      for azurelinebox in azureareabox['lines']]
+        # self.childrenboxes = [GoogleWordBox(googlewordbox)
+        #                      for googlewordbox in googlelinebox['words']]
+        super().__init__(x=x, y=y, width=width, height=height, content=None)
+        self.get_content()
+
+
+class GoogleLineBox(GoogleBox, LineBox):
+    """Represents a line box returned by Google Vision API
+
+    This class instanciates a linebox object that can be retrieved from Google
+    Vision API.
+    """
+    def __init__(self, googlelinebox):
+        self.googlelinebox = googlelinebox
+        dimensions = self.bbox_to_dimensions(googlelinebox['boundingBox'])
+        x = dimensions[0]
+        y = dimensions[1]
+        width = dimensions[2]
+        height = dimensions[3]
+        self.childrenboxes = [GoogleWordBox(googlewordbox)
+                              for googlewordbox in googlelinebox['words']]
         super().__init__(x=x, y=y, width=width, height=height, content=None)
         self.get_content()
 
