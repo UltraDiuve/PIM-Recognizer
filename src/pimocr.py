@@ -212,7 +212,7 @@ class GoogleWrappedOCR(BaseOCR):
             ]
         }
         payload = json.dumps(raw_pld)
-        self.result = requests.post(self.url,
+        self.result = requests.post(self.endpoint,
                                     proxies=self.proxies,
                                     params=params,
                                     data=payload,
