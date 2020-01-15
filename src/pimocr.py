@@ -581,7 +581,7 @@ class GoogleAreaBox(AreaBox):
     This class instanciates an areabox object that can be retrieved from Google
     Vision API.
     """
-    def bbox_to_dimensions(boundingBox):
+    def bbox_to_dimensions(self, boundingBox):
         """ Returns a tuple (x, y, width, height) from a Google boundingBox
 
         Note: this function assumes RECTANGULAR boundingBoxes.
