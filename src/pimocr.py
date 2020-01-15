@@ -41,7 +41,7 @@ class BaseOCR(object):
         self.mp_image = mpimg.imread(full_path)
         self.result = None
 
-    def show(self, ax, what):
+    def show(self, ax, what, annotate_what={'words'}):
         if self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
