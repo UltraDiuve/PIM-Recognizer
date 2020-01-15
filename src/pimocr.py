@@ -194,7 +194,7 @@ class WordBoxOCR(TextOCR):
 
     def show(self, ax, what, annotate_what={'words'}, format_word=None,
              format_annotate_word=None, **kwargs):
-        super().show(ax, what, **kwargs)
+        super().show(ax, what, annotate_what=annotate_what, **kwargs)
         annotate = (annotate_what == 'words' or 'words' in annotate_what)
         if what == 'words' or 'words' in what:
             for wordbox in self.wordboxes:
@@ -222,7 +222,7 @@ class LineBoxOCR(WordBoxOCR):
 
     def show(self, ax, what, annotate_what={'words'}, format_line=None,
              format_annotate_line=None, **kwargs):
-        super().show(ax, what, **kwargs)
+        super().show(ax, what, annotate_what=annotate_what, **kwargs)
         annotate = (annotate_what == 'lines' or 'lines' in annotate_what)
         if what == 'lines' or 'lines' in what:
             for linebox in self.lineboxes:
@@ -246,7 +246,7 @@ class AreaBoxOCR(LineBoxOCR):
 
     def show(self, ax, what, annotate_what={'words'}, format_area=None,
              format_annotate_area=None, **kwargs):
-        super().show(ax, what, annotate_what, **kwargs)
+        super().show(ax, what, annotate_what=annotate_what, **kwargs)
         annotate = (annotate_what == 'areas' or 'areas' in annotate_what)
         if what == 'areas' or 'areas' in what:
             for areabox in self.areaboxes:
@@ -254,6 +254,7 @@ class AreaBoxOCR(LineBoxOCR):
                              annotate=annotate,
                              format_box=format_area,
                              format_annotate=format_annotate_area)
+
 
 class PyocrTextOCR(PyocrWrappedOCR, TextOCR):
     """Class that instantiates a text only pyocr wrapped tool
@@ -305,7 +306,7 @@ class AzureAreaBoxOCR(AzureWrappedOCR, AreaBoxOCR):
     """
     def parse_result(self, **kwargs):
         self.areaboxes = [AzureAreaBox(region)
-                      for region in self.result['regions']]
+                          for region in self.result['regions']]
         super().parse_result(**kwargs)
 
 
@@ -391,6 +392,7 @@ class LineBox(Box):
     """
     def get_content(self):
         return(super().get_content(sep=' '))
+
 
 class AreaBox(Box):
     """Represents a generic areabox object
@@ -482,6 +484,7 @@ class AzureLineBox(LineBox):
 
     def confidence(self):
         raise NotImplementedError('Azure lineboxes do not have confidence')
+
 
 class AzureAreaBox(AreaBox):
     """Represents an area box returned by Azure API
