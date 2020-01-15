@@ -603,8 +603,8 @@ class GoogleSymbolBox(GoogleBox):
         y = dimensions[1]
         width = dimensions[2]
         height = dimensions[3]
-        self.content = googlesymbolbox['text']
-        super().__init__(x=x, y=y, width=width, height=height, content=None)
+        content = googlesymbolbox['text']
+        super().__init__(x=x, y=y, width=width, height=height, content=content)
         self.get_content()
 
 
