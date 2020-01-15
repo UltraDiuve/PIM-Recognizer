@@ -587,7 +587,7 @@ class GoogleAreaBox(AreaBox):
         Note: this function assumes RECTANGULAR boundingBoxes.
         """
         vertices = {'x': [vertex['x'] for vertex in boundingBox['vertices']],
-                    'y': [vertex['x'] for vertex in boundingBox['vertices']]}
+                    'y': [vertex['y'] for vertex in boundingBox['vertices']]}
         top_left = (min(vertices['x']), min(vertices['y']))
         bottom_right = (max(vertices['x']), max(vertices['y']))
         width = bottom_right[0] - top_left[0]
