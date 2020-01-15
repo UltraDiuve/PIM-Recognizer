@@ -18,6 +18,8 @@ from PIL import Image
 import matplotlib.image as mpimg
 import matplotlib.patches as mpatch
 import requests
+from base64 import b64encode
+import json
 
 import pyocr
 
@@ -169,6 +171,51 @@ class AzureWrappedOCR(BaseOCR):
         self.result = requests.post(self.url,
                                     proxies=self.proxies,
                                     data=self.binaryfile,
+                                    headers=headers).json()
+        super().run_tool(**kwargs)
+
+
+class GoogleWrappedOCR(BaseOCR):
+    """Abstract class for Google Vision wrapped OCR tools
+
+    This class defines some functions for OCR tools based on Google Vision
+    services. It should not be instanciated.
+    """
+    def __init__(self, endpoint,  apikey, proxies=None, **kwargs):
+        self.endpoint = endpoint
+        self.apikey = apikey
+        self.proxies = proxies
+        super().__init__(wrapper='Google', tool_name='Vision', **kwargs)
+
+    def set_file(self, path=None, filename=None, **kwargs):
+        full_path = os.path.join(path, filename)
+        with open(full_path, 'rb') as file:
+            self.b64file = b64encode(file.read()).decode()
+        super().set_file(path=path, filename=filename, **kwargs)
+
+    def run_tool(self, **kwargs):
+        headers = {'Content-Type': 'application/json'}
+        params = {'key': self.apikey}
+        raw_pld = {
+            'requests': [
+                {
+                    'image': {
+                        'content': self.b64file
+                        },
+                    'features': [
+                        {
+                            'type': 'DOCUMENT_TEXT_DETECTION',
+                            'maxResults': 10
+                        }
+                    ]
+                }
+            ]
+        }
+        payload = json.dumps(raw_pld)
+        self.result = requests.post(self.url,
+                                    proxies=self.proxies,
+                                    params=params,
+                                    data=payload,
                                     headers=headers).json()
         super().run_tool(**kwargs)
 
