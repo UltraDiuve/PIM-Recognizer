@@ -601,6 +601,7 @@ class GoogleAreaBox(AreaBox):
         y = dimensions[1]
         width = dimensions[2]
         height = dimensions[3]
+        self.childrenboxes = None
         # self.childrenboxes = [AzureLineBox(azurelinebox)
         #                      for azurelinebox in azureareabox['lines']]
         super().__init__(x=x, y=y, width=width, height=height, content=None)
