@@ -117,12 +117,13 @@ class PyocrWrappedOCR(BaseOCR):
         (see pyocr documentation): 'Tesseract (sh)', 'Tesseract (C-API)' or
         'Cuneiform (sh)'.
         """
-        if tool_name is None:
-            raise RuntimeError('No tool as been specified')
         tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
+        if tool_name is None:
+            raise RuntimeError(f'No tool has been specified. Installed tools'
+                                'are {tool_list}')
         if tool_name not in tool_list:
             raise RuntimeError(f'Tool {tool_name} not installed on current '
-                               'env.')
+                               'env. Installed tools are {tool_list}')
         for pyocr_tool in pyocr.get_available_tools():
             if pyocr_tool.get_name() == tool_name:
                 self.tool = pyocr_tool
@@ -149,8 +150,11 @@ class AzureWrappedOCR(BaseOCR):
     This class defines some functions for OCR tools based on Microsoft Azure
     services. It should not be instanciated.
     """
-    def __init__(self, endpoint, suffix='/vision/v2.0/ocr', **kwargs):
+    def __init__(self, endpoint,  subscriptionkey, suffix='/vision/v2.0/ocr',
+                 proxies=None, **kwargs):
         self.url = endpoint + suffix
+        self.subscriptionkey = subscriptionkey
+        self.proxies = proxies
         super().__init__(wrapper='Azure', tool_name='OCR', **kwargs)
 
     def set_file(self, path=None, filename=None, **kwargs):
@@ -158,11 +162,11 @@ class AzureWrappedOCR(BaseOCR):
         self.binaryfile = open(full_path, 'rb')
         super().set_file(path=path, filename=filename, **kwargs)
 
-    def run_tool(self, subscriptionkey, proxies=None, **kwargs):
+    def run_tool(self, **kwargs):
         headers = {'Content-Type': 'application/octet-stream',
-                   'Ocp-Apim-Subscription-Key': subscriptionkey}
+                   'Ocp-Apim-Subscription-Key': self.subscriptionkey}
         self.result = requests.post(self.url,
-                                    proxies=proxies,
+                                    proxies=self.proxies,
                                     data=self.binaryfile,
                                     headers=headers).json()
         super().run_tool(**kwargs)
