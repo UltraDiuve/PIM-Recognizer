@@ -443,6 +443,15 @@ class Box(object):
         return(self.content)
 
 
+class SymbolBox(Box):
+    """Represents a generic symbolbox object
+
+    This class should not be instanciated.
+    """
+    def get_content(self):
+        return(super().get_content(sep=None))    
+
+
 class WordBox(Box):
     """Represents a generic wordbox object
 
@@ -605,7 +614,7 @@ class GoogleSymbolBox(GoogleBox, Box):
         height = dimensions[3]
         content = googlesymbolbox['text']
         super().__init__(x=x, y=y, width=width, height=height, content=content)
-        self.get_content(sep=None)
+        self.get_content()
 
 
 class GoogleWordBox(GoogleBox, WordBox):
