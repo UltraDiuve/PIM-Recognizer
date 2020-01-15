@@ -353,12 +353,27 @@ class AzureAreaBoxOCR(AzureWrappedOCR, AreaBoxOCR):
     """ Class that instanciate the Azure OCR Tool
 
     This class instanciates the Azure OCR tool functionalities. As Azure only
-    provides LineBox OCR functions, this class is the only one inheriting of
+    provides Areabox OCR functions, this class is the only one inheriting of
     AzureWrappedOCR.
     """
     def parse_result(self, **kwargs):
         self.areaboxes = [AzureAreaBox(region)
                           for region in self.result['regions']]
+        super().parse_result(**kwargs)
+
+
+class GoogleAreaBoxOCR(GoogleWrappedOCR, AreaBoxOCR):
+    """ Class that instanciate the Google Vision OCR Tool
+
+    This class instanciates the Google Vision tool functionalities. As pages
+    are not taken into account in this version of pimocr, it inherits from
+    AreaBoxOCR.
+    """
+    def parse_result(self, **kwargs):
+        blocklist = (self.result['responses'][0]['fullTextAnnotation']
+                     ['pages'][0]['blocks'])
+        self.areaboxes = [GoogleAreaBox(block)
+                          for block in blocklist]
         super().parse_result(**kwargs)
 
 
@@ -558,3 +573,35 @@ class AzureAreaBox(AreaBox):
 
     def confidence(self):
         raise NotImplementedError('Azure areaboxes do not have confidence')
+
+
+class GoogleAreaBox(AreaBox):
+    """Represents an area box returned by Google Vision API
+
+    This class instanciates an areabox object that can be retrieved from Google
+    Vision API.
+    """
+    def bbox_to_dimensions(boundingBox):
+        """ Returns a tuple (x, y, width, height) from a Google boundingBox
+
+        Note: this function assumes RECTANGULAR boundingBoxes.
+        """
+        vertices = {'x': [vertex['x'] for vertex in boundingBox],
+                    'y': [vertex['x'] for vertex in boundingBox]}
+        top_left = (min(vertices['x']), min(vertices['y']))
+        bottom_right = (max(vertices['x']), max(vertices['y']))
+        width = bottom_right[0] - top_left[0]
+        height = bottom_right[1] - top_left[1]
+        return(top_left[0], top_left[1], width, height)
+
+    def __init__(self, googleareabox):
+        self.googleareabox = googleareabox
+        dimensions = self.bbox_to_dimensions(googleareabox['boundingBox'])
+        x = dimensions[0]
+        y = dimensions[1]
+        width = dimensions[2]
+        height = dimensions[3]
+        # self.childrenboxes = [AzureLineBox(azurelinebox)
+        #                      for azurelinebox in azureareabox['lines']]
+        super().__init__(x=x, y=y, width=width, height=height, content=None)
+        # self.get_content()
