@@ -117,7 +117,8 @@ class PyocrWrappedOCR(BaseOCR):
         (see pyocr documentation): 'Tesseract (sh)', 'Tesseract (C-API)' or
         'Cuneiform (sh)'.
         """
-        tool_list = map(lambda x: x.get_name(), pyocr.get_available_tools())
+        tool_list = list(map(lambda x: x.get_name(),
+                         pyocr.get_available_tools()))
         if tool_name is None:
             raise RuntimeError(f'No tool has been specified. Installed tools '
                                f'are {tool_list}')
