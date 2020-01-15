@@ -605,7 +605,7 @@ class GoogleSymbolBox(GoogleBox, Box):
         height = dimensions[3]
         content = googlesymbolbox['text']
         super().__init__(x=x, y=y, width=width, height=height, content=content)
-        self.get_content()
+        self.get_content(sep=None)
 
 
 class GoogleWordBox(GoogleBox, WordBox):
