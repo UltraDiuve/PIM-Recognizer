@@ -575,12 +575,7 @@ class AzureAreaBox(AreaBox):
         raise NotImplementedError('Azure areaboxes do not have confidence')
 
 
-class GoogleAreaBox(AreaBox):
-    """Represents an area box returned by Google Vision API
-
-    This class instanciates an areabox object that can be retrieved from Google
-    Vision API.
-    """
+class GoogleBox(Box):
     def bbox_to_dimensions(self, boundingBox):
         """ Returns a tuple (x, y, width, height) from a Google boundingBox
 
@@ -594,6 +589,15 @@ class GoogleAreaBox(AreaBox):
         height = bottom_right[1] - top_left[1]
         return(top_left[0], top_left[1], width, height)
 
+
+class GoogleLineBox(GoogleBox, LineBox):
+    """ MEGATODO !!!
+    
+    Represents a line box returned by Google Vision API
+
+    This class instanciates a linebox object that can be retrieved from Google
+    Vision API.
+    """
     def __init__(self, googleareabox):
         self.googleareabox = googleareabox
         dimensions = self.bbox_to_dimensions(googleareabox['boundingBox'])
@@ -605,4 +609,23 @@ class GoogleAreaBox(AreaBox):
         # self.childrenboxes = [AzureLineBox(azurelinebox)
         #                      for azurelinebox in azureareabox['lines']]
         super().__init__(x=x, y=y, width=width, height=height, content=None)
-        # self.get_content()
+        self.get_content()
+
+
+class GoogleAreaBox(GoogleBox, AreaBox):
+    """Represents an area box returned by Google Vision API
+
+    This class instanciates an areabox object that can be retrieved from Google
+    Vision API.
+    """
+    def __init__(self, googleareabox):
+        self.googleareabox = googleareabox
+        dimensions = self.bbox_to_dimensions(googleareabox['boundingBox'])
+        x = dimensions[0]
+        y = dimensions[1]
+        width = dimensions[2]
+        height = dimensions[3]
+        self.childrenboxes = [GoogleLineBox(googlelinebox)
+                              for googlelinebox in googleareabox['paragraphs']]
+        super().__init__(x=x, y=y, width=width, height=height, content=None)
+        self.get_content()
