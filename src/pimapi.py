@@ -25,20 +25,19 @@ def get_json_info(env, uid):
 
 class Config:
 
-    def __init__(self):
-        self.path = os.getcwd()
-        stream = open(self.path+"/conf/config.yaml", 'r')
-        data = yaml.load(stream)
-        config_keys = data.keys()
+    def __init__(self, env):
+        if env not in {'dev', 'int', 'rec', 'qat', 'prd'}:
+            raise ValueError(f'Specified env : {env} not expected')
+        self.path = os.path.join(os.path.dirname(__file__),
+                                 '../cfg/config.yaml')
+        stream = open(self.path, 'r')
+        data = yaml.safe_load(stream)
+        config_keys = data['cross_env'].keys()
         for k in config_keys:
-            setattr(self, k, data.get(k))
-        if (os.path.isfile(self.path+"/conf/config-override.yaml")):
-            stream = open(self.path+"/conf/config-override.yaml", 'r')
-            data = yaml.load(stream)
-            config_keys = data.keys()
-            for k in config_keys:
-                setattr(self, k, data.get(k))
-
+            setattr(self, k, data['cross_env'][k])
+        config_keys = data[env].keys()
+        for k in config_keys:
+            setattr(self, k, data[env][k])
 
 """
 config = Config()
