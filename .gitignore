@@ -1,3 +1,7 @@
+# Repository specific ignores
+cfg/
+dumps/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
