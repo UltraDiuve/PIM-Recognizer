@@ -1,22 +1,22 @@
 cross-env:
-  suffixid: nuxeo/api/v1/id/
+  suffixid: None
 dev:
-  baseurl: http://devpim/
+  baseurl: None
   password: None
   user: None
 int:
-  baseurl: http://intpim/
+  baseurl: None
   password: None
   user: None
 rec:
-  baseurl: https://rec-produits.groupe-pomona.fr/
-  password: Ch@nt@L
-  user: consult
+  baseurl: None
+  password: None
+  user: None
 qat:
   baseurl: None
   password: None
   user: None
 prd:
-  baseurl: https://produits.groupe-pomona.fr/
-  password: Ch@nt@L
-  user: consult
+  baseurl: None
+  password: None
+  user: None

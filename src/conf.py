@@ -17,9 +17,9 @@ class Config:
                                  '../cfg/config.yaml')
         stream = open(self.path, 'r')
         data = yaml.safe_load(stream)
-        config_keys = data['cross_env'].keys()
+        config_keys = data['cross-env'].keys()
         for k in config_keys:
-            setattr(self, k, data['cross_env'][k])
+            setattr(self, k, data['cross-env'][k])
         config_keys = data[env].keys()
         for k in config_keys:
             setattr(self, k, data[env][k])
