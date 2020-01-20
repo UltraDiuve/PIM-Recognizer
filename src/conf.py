@@ -26,8 +26,6 @@ class Config:
 
 
 """
-config = Config()
-And then any file that wants to use it:
-
-from lib.project.Config import config
+from src import conf
+cfg = conf.Config('rec')
 """
