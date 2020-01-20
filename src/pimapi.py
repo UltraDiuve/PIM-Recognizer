@@ -5,10 +5,11 @@ This module aims to enable to fetch data from PIM system, into local folders.
 
 import requests
 import os
-import conf
+
+from . import conf
 
 
-class requester(object):
+class Requester(object):
     """Requester class to retrieve information from PIM
     """
     def __init__(self, env):
