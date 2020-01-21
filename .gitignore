@@ -1,11 +1,11 @@
 # Repository specific ignores
 cfg/
-dumps/*
-!dumps/dev/.gitkeep 
-!dumps/int/.gitkeep 
-!dumps/rec/.gitkeep 
-!dumps/qat/.gitkeep 
-!dumps/prd/.gitkeep 
+#dumps/*
+!dumps/dev/.gitkeep
+!dumps/int/.gitkeep
+!dumps/rec/.gitkeep
+!dumps/qat/.gitkeep
+!dumps/prd/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
