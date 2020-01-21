@@ -13,6 +13,7 @@ class Config:
     def __init__(self, env):
         if env not in {'dev', 'int', 'rec', 'qat', 'prd'}:
             raise ValueError(f'Specified env : {env} not expected')
+        self.env = env
         self.path = os.path.join(os.path.dirname(__file__),
                                  '../cfg/config.yaml')
         stream = open(self.path, 'r')
