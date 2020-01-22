@@ -1,6 +1,6 @@
 # Repository specific ignores
 cfg/
-#dumps/*
+dumps/*
 !dumps/dev/.gitkeep
 !dumps/int/.gitkeep
 !dumps/rec/.gitkeep
