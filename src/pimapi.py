@@ -36,6 +36,8 @@ class Requester(object):
     """
     def __init__(self, env, proxies='default'):
         self.cfg = conf.Config(env)
+        self.session = requests.Session()
+        self.session.auth = (self.cfg.user, self.cfg.password)
         if proxies == 'default':
             try:
                 proxies = self.cfg.proxies
@@ -55,6 +57,7 @@ class Requester(object):
         nx_properties describes which schemes are to be retrieved. Setting it
         to '*' means all data. Setting it to None returns only Nuxeo standard
         data.
+        TODO : deprecate
         """
         headers = {'Content-Type': 'application/json',
                    'X-NXproperties': nx_properties}
@@ -78,6 +81,8 @@ class Requester(object):
 
     def fetch_from_PIM(self, iter_uid=None, nx_properties='*', **kwargs):
         """Fetches data from an uid iterable, from PIM
+
+        If no uid iterable is provided, no filter is applied to the selection.
         """
         query = (f"SELECT * "
                  f"FROM Document "
@@ -104,12 +109,10 @@ class Requester(object):
         params['pageSize'] = page_size
         params['currentPageIndex'] = 0
         self.result = []
-        self.result.append(requests.get(url,
-                                        proxies=self.proxies,
-                                        headers=headers,
-                                        params=params,
-                                        auth=(self.cfg.user,
-                                              self.cfg.password)))
+        self.result.append(self.session.get(url,
+                                            proxies=self.proxies,
+                                            headers=headers,
+                                            params=params))
         resultsCount = self.result[0].json()['resultsCount']
         returnCount = resultsCount
         if max_page != -1 and resultsCount > (max_page * page_size):
@@ -132,12 +135,10 @@ class Requester(object):
             params['currentPageIndex'] += 1
             if max_page != -1 and params['currentPageIndex'] >= max_page:
                 break
-            self.result.append(requests.get(url,
-                                            proxies=self.proxies,
-                                            headers=headers,
-                                            params=params,
-                                            auth=(self.cfg.user,
-                                                  self.cfg.password)))
+            self.result.append(self.session.get(url,
+                                                proxies=self.proxies,
+                                                headers=headers,
+                                                params=params))
         bar.finish()
 
     def check_if_fetched(self):
@@ -236,11 +237,11 @@ class Requester(object):
         self._save_directory()
 
     def _dump_file(self, file_url, path, filename='file'):
-        """TODO : refacto"""
-        resp = requests.get(file_url,
-                            proxies=self.proxies,
-                            auth=(self.cfg.user, self.cfg.password),
-                            stream=True)
+        """Dumps a file on fisk from its url"""
+        resp = self.session.get(file_url,
+                                proxies=self.proxies,
+                                auth=(self.cfg.user, self.cfg.password),
+                                stream=True)
         full_path = os.path.join(path, filename)
         with open(full_path, 'wb') as outfile:
             outfile.write(resp.content)
