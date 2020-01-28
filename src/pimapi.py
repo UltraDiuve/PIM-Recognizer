@@ -141,6 +141,7 @@ class Requester(object):
         bar.finish()
 
     def check_if_fetched(self):
+        """ TODO : deprecate"""
         if self.result is None:
             raise RuntimeError('No data has been fetched yet')
         self.result.raise_for_status()
@@ -186,10 +187,12 @@ class Requester(object):
 
         This functions dumps data from result as JSON files.
         Note that result MUST be an iterable of responses (be it from PIM or
-        from disk)
-        TODO : make it update the directory
-        TODO : TEST
+        from disk), each response should have an 'entries' list of documents.
         """
+        if not hasattr(self, '_directory'):
+            self._load_directory()
+        s_list = []
+        now = pd.Timestamp.now(tz='UTC')
         for single_result in self.result:
             doc_list = single_result.json()['entries']
             for document in doc_list:
@@ -199,41 +202,95 @@ class Requester(object):
                 full_path = os.path.join(path, filename)
                 with open(full_path, 'w+') as outfile:
                     json.dump(document, outfile)
+                s_list.append(pd.Series(now,
+                                        index=[document['uid']],
+                                        name='lastFetchedData'))
+        df = pd.concat(s_list, axis=0)
+        self._directory.update(df)
+        self._save_directory()
 
-    def dump_data(self, path=None, filename='data.json'):
-        self.check_if_fetched()
-        path = self._create_folder(path)
+    def dump_files_from_result(self):
+        """Dumps attached files from result items on disk
+
+        This functions dumps files from PIM on disk.
+        Note that result MUST be an iterable of responses (be it from PIM or
+        from disk), each response should have an 'entries' list of documents,
+        and eac document mention the files attached to it.
+        """
+        if not hasattr(self, '_directory'):
+            self._load_directory()
+        s_list = []
+        now = pd.Timestamp.now(tz='UTC')
+        for single_result in self.result:
+            doc_list = single_result.json()['entries']
+            for document in doc_list:
+                path = os.path.join(self._root_path(), document['uid'])
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                self.dump_attached_files(document, path)
+                s_list.append(pd.Series(now,
+                                        index=[document['uid']],
+                                        name='lastFetchedFiles'))
+        df = pd.concat(s_list, axis=0)
+        self._directory.update(df)
+        self._save_directory()
+
+    def _dump_file(self, file_url, path, filename='file'):
+        """TODO : refacto"""
+        resp = requests.get(file_url,
+                            proxies=self.proxies,
+                            auth=(self.cfg.user, self.cfg.password),
+                            stream=True)
         full_path = os.path.join(path, filename)
-        with open(full_path, 'w+') as outfile:
-            json.dump(self.result.json(), outfile)
+        with open(full_path, 'wb') as outfile:
+            outfile.write(resp.content)
 
-    def _dump_file(self, file_url, path=None, filename='file.pdf'):
-        path = self._create_folder(path)
-        self.resp = requests.get(file_url,
-                                 proxies=self.proxies,
-                                 auth=(self.cfg.user, self.cfg.password),
-                                 stream=True)
-        full_path = os.path.join(path, filename)
-        with open(full_path, 'wb')as outfile:
-            outfile.write(self.resp.content)
+    def fetch_modified_files(self, batch_size=100, **kwargs):
+        """Fetches modified files for uids considered modified according to dir
 
-    def dump_attached_files(self, path=None):
-        self.check_if_fetched()
-        path = self._create_folder(path)
+        TODO : cette manière de récupérer les données est bullshit... Nettoyer
+        la façon de fetcher les résultat parce qu'avec batch_size c'est tout
+        perrave.
+        """
+        self._load_directory()
+        df = self._directory
+        mask = (df.lastFetchedFiles.isna() |
+                (df.lastModified > df.lastFetchedFiles))
+        if len(mask.index) > batch_size:
+            self.fetch_from_PIM(**kwargs)
+        else:
+            self.fetch_from_PIM(iter_uid=mask.index[:batch_size], **kwargs)
+        return('pou')
+        for uid in df[mask].index:
+            print(f'Fetching files for {uid}')
+            self.get_info_from_uid(uid)
+            self.dump_attached_files()
+            self._directory.loc[uid, 'lastFetchedFiles'] = (pd.Timestamp
+                                                            .now(tz='UTC'))
+        self._save_directory()
+        print('Done!')
+
+    def dump_attached_files(self, document, path):
+        """Dumps attached files from a nuxeo document
+
+        This function fetches attached files from a nuxeo document (stored as
+        a JSON).
+        Files definitions are stored in the configuration file.
+        """
         for filekind, filedef in self.cfg.filedefs.items():
             try:
-                pointer = self.result.json()
+                pointer = document
                 for node in filedef['nuxeopath']:
                     pointer = pointer[node]
                 nxfilename = pointer['name']
                 url = (self.cfg.baseurl +
                        self.cfg.suffixfile +
                        self.cfg.nxrepo +
-                       self.uid + '/' +
+                       document['uid'] + '/' +
                        filedef['nuxeopath'][-1])
                 ext = compute_extension(nxfilename)
                 filename = filedef['dumpfilename'] + '.' + ext
-                self._dump_file(url, filename=filename)
+                self._dump_file(url, path, filename=filename)
             except TypeError:
                 pass
 
@@ -242,7 +299,10 @@ class Requester(object):
 
         This function fetches the uid directory data for the current
         environment as a pandas DataFrame.
-        To fetch all the results, set max_page attribute to -1
+        To fetch all the results, set max_page attribute to -1.
+        This function returns data as is from PIM, and requires it to be
+        formatted as a directory later on with `_format_as_directory` method.
+        (else, columns are not consistent with directory definition)
         """
         self.fetch_from_PIM(nx_properties='', **kwargs)
         df_list = []
@@ -321,31 +381,6 @@ class Requester(object):
                              new_dir[~new_dir.index.isin(cur_dir.index)]])
         self._directory = cur_dir
         self._save_directory()
-
-    def fetch_modified_files(self, batch_size=100, **kwargs):
-        """Fetches modified files for uids considered modified according to dir
-
-        TODO : cette manière de récupérer les données est bullshit... Nettoyer
-        la façon de fetcher les résultat parce qu'avec batch_size c'est tout
-        perrave.
-        """
-        self._load_directory()
-        df = self._directory
-        mask = (df.lastFetchedFiles.isna() |
-                (df.lastModified > df.lastFetchedFiles))
-        if len(mask.index) > batch_size:
-            self.fetch_from_PIM(**kwargs)
-        else:
-            self.fetch_from_PIM(iter_uid=mask.index[:batch_size], **kwargs)
-        return('pou')
-        for uid in df[mask].index:
-            print(f'Fetching files for {uid}')
-            self.get_info_from_uid(uid)
-            self.dump_attached_files()
-            self._directory.loc[uid, 'lastFetchedFiles'] = (pd.Timestamp
-                                                            .now(tz='UTC'))
-        self._save_directory()
-        print('Done!')
 
     def _save_directory(self, filename=None):
         directory_filename = filename if filename else self.cfg.uiddirectory
