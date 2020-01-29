@@ -10,25 +10,12 @@ import warnings
 import pandas as pd
 import numpy as np
 import progressbar
+import copy
+import threading
 
 from . import conf
 
 warnings.simplefilter('always', UserWarning)
-
-
-def compute_extension(filename):
-    """Computes the extension from a filename
-
-    Returns the extension. If the filename has no "." (dot) in it, returns an
-    empty string. If the computed extension has strictly more than 4
-    characters, returns the empty string."""
-    splitted = filename.split('.')
-    if len(splitted) == 1:
-        return('')
-    elif len(splitted[-1]) > 4:
-        return('')
-    else:
-        return(filename.split('.')[-1])
 
 
 class Requester(object):
@@ -45,6 +32,7 @@ class Requester(object):
                 warnings.warn('No proxy conf found - defaulted to None')
                 proxies = None
         self.proxies = proxies
+        self.rlock = threading.RLock()
         try:
             self._load_directory()
         except FileNotFoundError:
@@ -79,10 +67,50 @@ class Requester(object):
         else:
             raise NotImplementedError(f'Unexpected from argument : {from_}')
 
+    def fetch_all_from_PIM(self, nx_properties='*', max_page=None,
+                           page_size=None,):
+        query = (f"SELECT * "
+                 f"FROM Document "
+                 f"WHERE ecm:primaryType='pomProduct' "
+                 f"AND ecm:isVersion=0")
+        headers = {'Content-Type': 'application/json',
+                   'X-NXproperties': nx_properties}
+        params = {'query': query}
+        url = (self.cfg.baseurl +
+               self.cfg.suffixid +
+               self.cfg.rootuid + '/' +
+               '@search')
+        result_count = self.query_size(headers, params, url)
+        self.result = []
+        max_page = max_page if max_page else self.cfg.maxpage
+        page_size = page_size if page_size else self.cfg.pagesize
+        params['pageSize'] = page_size
+        thread_count = result_count // page_size + 1
+        threads = []
+        for page_index in range(thread_count):
+            t = threading.Thread(target=self.get_page_from_query,
+                                 args=(url, headers, params, page_index))
+            t.start()
+            threads.append(t)
+        for t in threads:
+            t.join()
+        print('Done')
+
+    def get_page_from_query(self, url, headers, params, currentPageIndex):
+        local_params = copy.deepcopy(params)
+        local_params['currentPageIndex'] = currentPageIndex
+        resp = self.session.get(url,
+                                proxies=self.proxies,
+                                headers=headers,
+                                params=local_params)
+        with self.rlock:
+            self.result.append(resp)
+
     def fetch_from_PIM(self, iter_uid=None, nx_properties='*', **kwargs):
         """Fetches data from an uid iterable, from PIM
 
         If no uid iterable is provided, no filter is applied to the selection.
+        TODO : à ajuster pour différencier le traitement complet vs. chuncks
         """
         query = (f"SELECT * "
                  f"FROM Document "
@@ -100,6 +128,26 @@ class Requester(object):
                '@search')
         self.run_query(headers, params, url, **kwargs)
 
+    def query_size(self, headers, params, url):
+        """Runs a single result query to get the number of results
+
+        This methods takes a query to be sent to Nuxeo in order to count the
+        number of results.
+        It then execute the query with page_size=1 and max_page=1 to fetch a
+        single result, and extracts the total number of results from the
+        response.
+        """
+        loc_headers = copy.deepcopy(headers)
+        loc_headers['X-NXproperties'] = ''
+        loc_params = copy.deepcopy(params)
+        loc_params['pageSize'] = 1
+        loc_params['currentPageIndex'] = 0
+        resp = self.session.get(url,
+                                proxies=self.proxies,
+                                headers=headers,
+                                params=params)
+        return(resp.json()['resultsCount'])
+
     def run_query(self, headers, params, url, threads=1, max_page=None,
                   page_size=None, **kwargs):
         if threads > 1:
@@ -115,6 +163,8 @@ class Requester(object):
                                             params=params))
         resultsCount = self.result[0].json()['resultsCount']
         returnCount = resultsCount
+        print(f'Running query with parameters max_page:{max_page}, page_size:'
+              f'{page_size}')
         if max_page != -1 and resultsCount > (max_page * page_size):
             returnCount = max_page * page_size
             warnings.warn(f'\nMax size reached ! \n'
@@ -127,8 +177,6 @@ class Requester(object):
                                       widgets=bar_widgets,
                                       redirect_stdout=True,
                                       redirect_stderr=True)
-        print(f'Running query with parameters max_page:{max_page}, page_size:'
-              f'{page_size}')
         bar.start()
         while self.result[-1].json()['isNextPageAvailable']:
             bar.update(self.result[-1].json()['currentPageOffset'] + page_size)
@@ -192,23 +240,34 @@ class Requester(object):
         """
         if not hasattr(self, '_directory'):
             self._load_directory()
-        s_list = []
         now = pd.Timestamp.now(tz='UTC')
+        threads = []
         for single_result in self.result:
-            doc_list = single_result.json()['entries']
-            for document in doc_list:
-                path = os.path.join(self._root_path(), document['uid'])
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                full_path = os.path.join(path, filename)
-                with open(full_path, 'w+') as outfile:
-                    json.dump(document, outfile)
-                s_list.append(pd.Series(now,
-                                        index=[document['uid']],
-                                        name='lastFetchedData'))
+            t = threading.Thread(target=self.dump_data_from_single_result,
+                                 args=(single_result, filename, now))
+            t.start()
+            threads.append(t)
+        for t in threads:
+            t.join()
+        print('Done !')
+
+    def dump_data_from_single_result(self, single_result, filename, now):
+        doc_list = single_result.json()['entries']
+        s_list = []
+        for document in doc_list:
+            path = os.path.join(self._root_path(), document['uid'])
+            if not os.path.exists(path):
+                os.makedirs(path)
+            full_path = os.path.join(path, filename)
+            with open(full_path, 'w+') as outfile:
+                json.dump(document, outfile)
+            s_list.append(pd.Series(now,
+                                    index=[document['uid']],
+                                    name='lastFetchedData'))
         df = pd.concat(s_list, axis=0)
-        self._directory.update(df)
-        self._save_directory()
+        with self.rlock:
+            self._directory.update(df)
+            self._save_directory()
 
     def dump_files_from_result(self):
         """Dumps attached files from result items on disk
@@ -289,7 +348,7 @@ class Requester(object):
                        self.cfg.nxrepo +
                        document['uid'] + '/' +
                        filedef['nuxeopath'][-1])
-                ext = compute_extension(nxfilename)
+                ext = Requester.compute_extension(nxfilename)
                 filename = filedef['dumpfilename'] + '.' + ext
                 self._dump_file(url, path, filename=filename)
             except TypeError:
@@ -408,3 +467,18 @@ class Requester(object):
             self.fetch_modified_data()
         if 'files' in what:
             self.fetch_modified_files()
+
+    @staticmethod
+    def compute_extension(filename):
+        """Computes the extension from a filename
+
+        Returns the extension. If the filename has no "." (dot) in it, returns
+        an empty string. If the computed extension has strictly more than 4
+        characters, returns the empty string."""
+        splitted = filename.split('.')
+        if len(splitted) == 1:
+            return('')
+        elif len(splitted[-1]) > 4:
+            return('')
+        else:
+            return(filename.split('.')[-1])
