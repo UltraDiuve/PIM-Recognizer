@@ -98,14 +98,18 @@ class Requester(object):
         This methods fetches data for a prepared query for a single page. It
         is used to implement multithreading for `fetch_all_from_PIM`
         """
-        local_params = copy.deepcopy(params)
-        local_params['currentPageIndex'] = currentPageIndex
-        resp = self.session.get(url,
-                                proxies=self.proxies,
-                                headers=headers,
-                                params=local_params)
-        with self.rlock:
-            self.result.append(resp)
+        try:
+            local_params = copy.deepcopy(params)
+            local_params['currentPageIndex'] = currentPageIndex
+            resp = self.session.get(url,
+                                    proxies=self.proxies,
+                                    headers=headers,
+                                    params=local_params)
+            with self.rlock:
+                self.result.append(resp)
+        except Exception as e:
+            print('An error occured in this thread!')
+            print(e)
 
     def fetch_list_from_PIM(self, iter_uid, batch_size=50, nx_properties='*'):
         """Fetches data from an uid iterable, from PIM
@@ -203,22 +207,26 @@ class Requester(object):
         This method dumps data from a single result passed as an argument.
         It is used for multithreading the result list.
         """
-        doc_list = single_result.json()['entries']
-        s_list = []
-        for document in doc_list:
-            path = os.path.join(self._root_path(), document['uid'])
-            if not os.path.exists(path):
-                os.makedirs(path)
-            full_path = os.path.join(path, filename)
-            with open(full_path, 'w+') as outfile:
-                json.dump(document, outfile)
-            s_list.append(pd.Series(now,
-                                    index=[document['uid']],
-                                    name='lastFetchedData'))
-        df = pd.concat(s_list, axis=0)
-        with self.rlock:
-            self._directory.update(df)
-            self._save_directory()
+        try:
+            doc_list = single_result.json()['entries']
+            s_list = []
+            for document in doc_list:
+                path = os.path.join(self._root_path(), document['uid'])
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                full_path = os.path.join(path, filename)
+                with open(full_path, 'w+') as outfile:
+                    json.dump(document, outfile)
+                s_list.append(pd.Series(now,
+                                        index=[document['uid']],
+                                        name='lastFetchedData'))
+            df = pd.concat(s_list, axis=0)
+            with self.rlock:
+                self._directory.update(df)
+                self._save_directory()
+        except Exception as e:
+            print('An error occured in this thread!')
+            print(e)
 
     def dump_files_from_result(self):
         """Dumps attached files from result items on disk
