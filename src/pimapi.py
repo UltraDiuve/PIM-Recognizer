@@ -173,8 +173,6 @@ class Requester(object):
 
     def _root_path(self):
         """Returns the root path for the dumps
-
-        TODO : set as a static method
         """
         return(os.path.join(os.path.dirname(__file__),
                             '..',
@@ -328,10 +326,9 @@ class Requester(object):
         df['lastModified'] = pd.to_datetime(df.loc[:, 'lastModified'])
         return(df)
 
-    def _directory_headers(self):
+    @staticmethod
+    def _directory_headers():
         """Returns the directory headers
-
-        TODO : set as staticmethod
         """
         headers = ['type',
                    'title',
@@ -353,30 +350,29 @@ class Requester(object):
                                                     'lastFetchedData',
                                                     'lastFetchedFiles'])
                            .set_index('uid'))
-        self._directory = self._format_as_directory(self._directory)
+        self._directory = Requester._format_as_directory(self._directory)
 
-    def _init_as_directory(self, df):
+    @staticmethod
+    def _init_as_directory(df):
         """Sets initial dates values for dataframes to be used as directories
-
-        TODO : set as staticmethod
         """
         df['lastRefreshed'] = pd.Timestamp.now(tz='UTC')
         df['lastFetchedData'] = np.nan
         df['lastFetchedFiles'] = np.nan
-        return(self._format_as_directory(df))
+        return(Requester._format_as_directory(df))
 
-    def _format_as_directory(self, df):
+    @staticmethod
+    def _format_as_directory(df):
         """Formats a dataframe as a directory from dtypes point of view
 
         This method formats a dataframe columns as to be consistent with
         directory definition. It DOES NOT set initial values (see
         `_init_as_directory`).
-        TODO : set as staticmethod
         """
         types = {'lastFetchedData': 'datetime64[ns, UTC]',
                  'lastFetchedFiles': 'datetime64[ns, UTC]'}
         df = df.astype(types)
-        df = df.loc[:, self._directory_headers()]
+        df = df.loc[:, Requester._directory_headers()]
         return(df)
 
     def reset_directory(self, page_size=None, max_page=None, filename=None):
@@ -390,7 +386,7 @@ class Requester(object):
         current directory. Only relevant usage of max_page != -1 is for
         debugging purpose.
         """
-        self._directory = self._init_as_directory(
+        self._directory = Requester._init_as_directory(
             self.get_directory(max_page=max_page, page_size=page_size))
         self._save_directory()
 
@@ -402,9 +398,9 @@ class Requester(object):
         not corrupt or lose data whatsoever.
         """
         new_dir = self.get_directory(max_page=max_page, page_size=page_size)
-        new_dir = self._init_as_directory(new_dir)
+        new_dir = Requester._init_as_directory(new_dir)
         self._load_directory(filename=filename)
-        cur_dir = self._format_as_directory(self._directory)
+        cur_dir = Requester._format_as_directory(self._directory)
         cur_dir.update(new_dir)
         cur_dir = pd.concat([cur_dir,
                              new_dir[~new_dir.index.isin(cur_dir.index)]])
