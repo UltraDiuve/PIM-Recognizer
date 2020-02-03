@@ -9,7 +9,6 @@ import json
 import warnings
 import pandas as pd
 import numpy as np
-import progressbar
 import copy
 import threading
 
@@ -475,3 +474,28 @@ class Requester(object):
             return('')
         else:
             return(filename.split('.')[-1])
+
+    def result_to_dataframe(self, format_, index=None):
+        """Formats result content as a dataframe with defined format
+
+        format_ argument is a (ordered) dict of list of strings or int, these
+        elements being the 'adress' of the data in the nuxeo json.
+        E.g.:
+        {'uid': ['uid'],
+         'ingredients': ['properties', 'pprodc:ingredientsList']}
+        No multithreading has been set up, as this is just computations and
+        not network or disk related tasks.
+        TODO: finish
+        see
+        https://stackoverflow.com/questions/20638006/convert-list-of-dictionaries-to-a-pandas-dataframe
+        """
+        dict_list = []
+        for result in self.result:
+            for document in result.json()['entries']:
+                df = pd.DataFrame(columns=format_.keys())
+                for field, adress in format_.items():
+                    pass
+        df = pd.concat(dict_list, axis=0)
+        if index:
+            df.set_index(index, inplace=True)
+        return(df)
