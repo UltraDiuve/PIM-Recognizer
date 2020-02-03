@@ -196,7 +196,7 @@ class Requester(object):
             threads.append(t)
         for t in threads:
             t.join()
-        print('Done !')
+        print('Done')
 
     def dump_data_from_single_result(self, single_result, filename, now):
         """Dumps data from a single result
@@ -247,7 +247,7 @@ class Requester(object):
             threads.append(t)
         for t in threads:
             t.join()
-        print('Done!')
+        print('Done')
 
     def dump_files_from_single_result(self, single_result, now):
         """Dumps attached files from items on disk - for a single result
@@ -475,27 +475,52 @@ class Requester(object):
         else:
             return(filename.split('.')[-1])
 
-    def result_to_dataframe(self, format_, index=None):
+    def result_to_dataframe(self, record_path=None, meta=None, mapping=None,
+                            index=None):
         """Formats result content as a dataframe with defined format
 
-        format_ argument is a (ordered) dict of list of strings or int, these
-        elements being the 'adress' of the data in the nuxeo json.
-        E.g.:
-        {'uid': ['uid'],
-         'ingredients': ['properties', 'pprodc:ingredientsList']}
-        No multithreading has been set up, as this is just computations and
-        not network or disk related tasks.
-        TODO: finish
-        see
-        https://stackoverflow.com/questions/20638006/convert-list-of-dictionaries-to-a-pandas-dataframe
+        record_path and meta are pandas json_normalize method arguments
+        mapping is a key : adress mapping that maps return dataframe keys to
+        data adress in the JSON. Reminder: json_normalize default separator
+        is '.'
+        index is the field identifier(s) for the field(s) to be used as index
         """
-        dict_list = []
-        for result in self.result:
-            for document in result.json()['entries']:
-                df = pd.DataFrame(columns=format_.keys())
-                for field, adress in format_.items():
-                    pass
-        df = pd.concat(dict_list, axis=0)
+        result_json = [result.json() for result in self.result]
+        if mapping:
+            with CleanJSONDataFrame(result_json,
+                                    record_path=record_path,
+                                    meta=meta) as df:
+                for key, path in mapping.items():
+                    df.df[key] = df.df[df.prefix + path]
+            df = df.df
+        else:
+            df = pd.io.json.json_normalize(result_json,
+                                           record_path=record_path,
+                                           meta=meta)
         if index:
             df.set_index(index, inplace=True)
         return(df)
+
+
+class CleanJSONDataFrame(object):
+    """Context manager class for cleanly importing data from JSON
+
+    This class enables to create a context manager that will:
+    - read data from a JSON into a new dataframe
+    - enable one to duplicate loaded data into new fields
+    - delete the loaded data when exiting, thus keeping only duplicated data
+    Complicated prefix is set to avoid duplicates.
+    """
+    def __init__(self, data, record_path=None, meta=None,
+                 prefix='_prev_duplc1'):
+        self.df = pd.io.json.json_normalize(data, record_path=record_path,
+                                            meta=meta, record_prefix=prefix,
+                                            meta_prefix=prefix)
+        self.prefix = prefix
+        self.columns = list(self.df.columns.values)
+
+    def __enter__(self):
+        return(self)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.df.drop([c for c in self.columns], axis=1, inplace=True)
