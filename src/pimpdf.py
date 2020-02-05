@@ -10,6 +10,7 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
+import pandas as pd
 
 
 class PDFDecoder(object):
@@ -39,3 +40,22 @@ class PDFDecoder(object):
         carriage returns (i.e. with at least a single blank line between them)
         """
         return(PDFDecoder.path_to_text(path).split('\n\n'))
+
+    @staticmethod
+    def paths_to_blocks(path_series):
+        """Decodes files for each path in path list as a blocks Dataseries
+
+        Blocks are part of the original string separated by at least 2
+        carriage returns (i.e. with at least a single blank line between them)
+        The path list must be a pandas dataseries ; the return is another
+        dataseries, with the same indexes as the initial series.
+        """
+        ds_list = []
+        for uid, path in path_series.items():
+            try:
+                blocks = PDFDecoder.path_to_blocks(path)
+                index = [uid] * len(blocks)
+                ds_list.append(pd.Series(blocks, index=index))
+            except FileNotFoundError:
+                pass
+        return(pd.concat(ds_list, axis=0))
