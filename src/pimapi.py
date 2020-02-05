@@ -491,7 +491,10 @@ class Requester(object):
                                     record_path=record_path,
                                     meta=meta) as df:
                 for key, path in mapping.items():
-                    df.df[key] = df.df[df.prefix + path]
+                    try:
+                        df.df[key] = df.df[df.prefix + path]
+                    except KeyError:
+                        df.df[key] = np.nan
             df = df.df
         else:
             df = pd.io.json.json_normalize(result_json,
@@ -499,6 +502,26 @@ class Requester(object):
                                            meta=meta)
         if index:
             df.set_index(index, inplace=True)
+        return(df)
+
+    def file_report_from_result(self, mapping, index=None):
+        """Returns a dataframe about the files contained in the result
+
+        This methods analyzes the content of the result, and generates a
+        dataframe which enables the analysis of the files on the products
+        Files to report on are based on the content of the config.yaml
+        configuration file.
+        """
+        record_path = 'entries'
+        for filekind, filedef in self.cfg.filedefs.items():
+            mapping[filekind] = '.'.join(filedef['nuxeopath']) + '.name'
+        df = self.result_to_dataframe(record_path=record_path,
+                                      mapping=mapping,
+                                      meta=None,
+                                      index=index)
+        for filekind in self.cfg.filedefs:
+            df['has_' + filekind] = df[filekind].notna()
+            del(df[filekind])
         return(df)
 
 
