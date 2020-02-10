@@ -11,6 +11,7 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 import pandas as pd
+from multiprocessing import Pool, cpu_count
 
 
 class PDFDecoder(object):
@@ -22,15 +23,21 @@ class PDFDecoder(object):
         """Decodes file at local path in the form of a long string
         """
         output_string = StringIO()
-        with open(path, 'rb') as in_file:
-            parser = PDFParser(in_file)
-            doc = PDFDocument(parser)
-            rsrcmgr = PDFResourceManager()
-            device = TextConverter(rsrcmgr, output_string, laparams=LAParams())
-            interpreter = PDFPageInterpreter(rsrcmgr, device)
-            for page in PDFPage.create_pages(doc):
-                interpreter.process_page(page)
-        return(output_string.getvalue())
+        try:
+            with open(path, 'rb') as in_file:
+                parser = PDFParser(in_file)
+                doc = PDFDocument(parser)
+                rsrcmgr = PDFResourceManager()
+                device = TextConverter(rsrcmgr, output_string,
+                                       laparams=LAParams())
+                interpreter = PDFPageInterpreter(rsrcmgr, device)
+                for page in PDFPage.create_pages(doc):
+                    interpreter.process_page(page)
+            return(output_string.getvalue())
+        except Exception as e:
+            print(e)
+            print(f'error at path: {path}')
+            return('')
 
     @staticmethod
     def path_to_blocks(path):
@@ -59,3 +66,34 @@ class PDFDecoder(object):
             except FileNotFoundError:
                 pass
         return(pd.concat(ds_list, axis=0))
+
+    @staticmethod
+    def threaded_paths_to_blocks(path_series, processes=None):
+        """Threaded version of paths_to_blocks method
+
+        It takes as input a series which index is the uid of the products,
+        and the values are the path to the document.
+        processes argument is the number of processes to launch. If omitted,
+        it defaults to the number of cpu cores on the machine.
+        """
+        processes = processes if processes else cpu_count()
+        print(f'Launching {processes} processes.')
+        with Pool(processes=processes) as pool:
+            ds_list = pool.starmap(PDFDecoder.single_path_to_blocks,
+                                   list(zip(path_series.index, path_series)))
+        return(pd.concat(ds_list, axis=0))
+
+    @staticmethod
+    def single_path_to_blocks(uid, path):
+        """Returns a series of text blocks in the document with path `path`
+
+        This method is used by threaded_path_to_blocks to enable
+        multiprocessing.
+        It takes as arguments an uid of a product (which is given back as the
+        return series repeated index) and returns a series whose values are
+        the identified text blocks in the document at path `path`
+        """
+        values = PDFDecoder.path_to_blocks(path)
+        index = [uid] * len(values)
+        ds = pd.Series(values, index=index)
+        return(ds)
