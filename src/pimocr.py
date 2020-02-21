@@ -39,7 +39,11 @@ class BaseOCR(object):
 
     def set_file(self, path=None, filename=None):
         full_path = os.path.join(path, filename)
-        self.image = Image.open(full_path)
+        try:
+            self.image = Image.open(full_path)
+        except OSError as e:
+            print(e)
+            print('Could not load image with PIL.')
         self.mp_image = mpimg.imread(full_path)
         self.result = None
 
