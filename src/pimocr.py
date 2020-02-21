@@ -44,7 +44,11 @@ class BaseOCR(object):
         except OSError as e:
             print(e)
             print('Could not load image with PIL.')
-        self.mp_image = mpimg.imread(full_path)
+        try:
+            self.mp_image = mpimg.imread(full_path)
+        except OSError as e:
+            print(e)
+            print('Could not load image with matplotlib.')
         self.result = None
 
     def show(self, ax, what, annotate_what={'words'}):
