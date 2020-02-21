@@ -215,6 +215,9 @@ class GoogleWrappedOCR(BaseOCR):
         raw_pld = {
             'requests': [
                 {
+                    'inputConfig': {
+                    #    "mimeType": "application/pdf"
+                    },
                     'image': {
                         'content': self.b64file
                         },
