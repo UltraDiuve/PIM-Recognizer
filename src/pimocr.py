@@ -52,7 +52,7 @@ class BaseOCR(object):
         self.result = None
 
     def show(self, ax, what, annotate_what={'words'}):
-        if self.result is None:
+        if not hasattr(self, 'result') or self.result is None:
             raise RuntimeError('Tool has not been run prior to showing')
         ax.imshow(self.mp_image)
         ax.tick_params(which='both',
@@ -63,7 +63,7 @@ class BaseOCR(object):
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def run_tool(self):
-        if self.image is None:
+        if not hasattr(self, 'image') or self.image is None:
             raise RuntimeError('File has not been set prior to running tool')
         self.parse_result()
 
@@ -74,7 +74,7 @@ class BaseOCR(object):
         pass
 
     def count_words(self):
-        if self.result is None:
+        if not hasattr(self, 'result') or self.result is None:
             raise RuntimeError('Tool has not been run prior to '
                                'counting results')
 
