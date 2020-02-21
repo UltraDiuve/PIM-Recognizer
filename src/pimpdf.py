@@ -19,6 +19,21 @@ class PDFDecoder(object):
     """
 
     @staticmethod
+    def content_to_text(content):
+        """Decodes the binary passed as argument
+        """
+        output_string = StringIO()
+        parser = PDFParser(content)
+        doc = PDFDocument(parser)
+        rsrcmgr = PDFResourceManager()
+        device = TextConverter(rsrcmgr, output_string,
+                               laparams=LAParams())
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
+        for page in PDFPage.create_pages(doc):
+            interpreter.process_page(page)
+        return(output_string.getvalue())
+
+    @staticmethod
     def path_to_text(path):
         """Decodes file at local path in the form of a long string
         """
