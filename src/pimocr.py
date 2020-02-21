@@ -50,6 +50,7 @@ class BaseOCR(object):
             print(e)
             print('Could not load image with matplotlib.')
         self.result = None
+        self._set_initialized_file()
 
     def show(self, ax, what, annotate_what={'words'}):
         if not hasattr(self, 'result') or self.result is None:
@@ -63,8 +64,7 @@ class BaseOCR(object):
         ax.set_xlabel('Word count: ' + str(self.count_words()))
 
     def run_tool(self):
-        if not hasattr(self, 'image') or self.image is None:
-            raise RuntimeError('File has not been set prior to running tool')
+        self._check_initialized_file()
         self.parse_result()
 
     def parse_result(self):
@@ -77,6 +77,14 @@ class BaseOCR(object):
         if not hasattr(self, 'result') or self.result is None:
             raise RuntimeError('Tool has not been run prior to '
                                'counting results')
+
+    def _set_initialized_file(self):
+        self._initialized_file = True
+
+    def _check_initialized_file(self):
+        if (not hasattr(self, '_initialized_file')
+                or not self._initialized_file):
+            raise RuntimeError('File has not been set prior to running tool')
 
 
 class FilterableOCR(BaseOCR):
