@@ -6,6 +6,8 @@ dumps/*
 !dumps/rec/.gitkeep
 !dumps/qat/.gitkeep
 !dumps/prd/.gitkeep
+ground_truth/*
+!ground_truth/test_uids.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
