@@ -178,27 +178,30 @@ class Requester(object):
                             'dumps',
                             self.cfg.env))
 
-    def dump_data_from_result(self, filename='data.json'):
+    def dump_data_from_result(self, filename='data.json',
+                              update_directory=True):
         """Dumps data from result attribute as JSON files
 
         This method dumps data from result as JSON files.
         Note that result MUST be an iterable of responses (be it from PIM or
         from disk), each response should have an 'entries' list of documents.
         """
-        if not hasattr(self, '_directory'):
+        if update_directory and not hasattr(self, '_directory'):
             self._load_directory()
         now = pd.Timestamp.now(tz='UTC')
         threads = []
         for single_result in self.result:
             t = threading.Thread(target=self.dump_data_from_single_result,
-                                 args=(single_result, filename, now))
+                                 args=(single_result, filename, now),
+                                 kwargs={'update_directory': update_directory})
             t.start()
             threads.append(t)
         for t in threads:
             t.join()
         print('Done')
 
-    def dump_data_from_single_result(self, single_result, filename, now):
+    def dump_data_from_single_result(self, single_result, filename, now,
+                                     update_directory=True):
         """Dumps data from a single result
 
         This method dumps data from a single result passed as an argument.
@@ -218,14 +221,15 @@ class Requester(object):
                                         index=[document['uid']],
                                         name='lastFetchedData'))
             df = pd.concat(s_list, axis=0)
-            with self.rlock:
-                self._directory.update(df)
-                self._save_directory()
+            if update_directory:
+                with self.rlock:
+                    self._directory.update(df)
+                    self._save_directory()
         except Exception as e:
             print('An error occured in this thread!')
             print(e)
 
-    def dump_files_from_result(self):
+    def dump_files_from_result(self, update_directory=True):
         """Dumps attached files from result items on disk
 
         This method dumps files from PIM on disk.
@@ -235,21 +239,23 @@ class Requester(object):
         and each document mention the files attached to it.
         Attached files definition MUST be set in the config.yaml file.
         """
-        if not hasattr(self, '_directory'):
+        if update_directory and not hasattr(self, '_directory'):
             self._load_directory()
         now = pd.Timestamp.now(tz='UTC')
         threads = []
         print(f'Launching {len(self.result)} threads.')
         for single_result in self.result:
             t = threading.Thread(target=self.dump_files_from_single_result,
-                                 args=(single_result, now))
+                                 args=(single_result, now),
+                                 kwargs={'update_directory': update_directory})
             t.start()
             threads.append(t)
         for t in threads:
             t.join()
         print('Done')
 
-    def dump_files_from_single_result(self, single_result, now):
+    def dump_files_from_single_result(self, single_result, now,
+                                      update_directory=True):
         """Dumps attached files from items on disk - for a single result
 
         This method dumps files from a single result into the disk. It is used
@@ -266,9 +272,10 @@ class Requester(object):
                                     index=[document['uid']],
                                     name='lastFetchedFiles'))
         df = pd.concat(s_list, axis=0)
-        with self.rlock:
-            self._directory.update(df)
-            self._save_directory()
+        if update_directory:
+            with self.rlock:
+                self._directory.update(df)
+                self._save_directory()
         print('Thread complete!')
 
     def _dump_file(self, file_url, path, filename='file'):
