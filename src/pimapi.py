@@ -179,7 +179,7 @@ class Requester(object):
                             self.cfg.env))
 
     def dump_data_from_result(self, filename='data.json',
-                              update_directory=True):
+                              update_directory=True, root_path=None):
         """Dumps data from result attribute as JSON files
 
         This method dumps data from result as JSON files.
@@ -193,7 +193,8 @@ class Requester(object):
         for single_result in self.result:
             t = threading.Thread(target=self.dump_data_from_single_result,
                                  args=(single_result, filename, now),
-                                 kwargs={'update_directory': update_directory})
+                                 kwargs={'update_directory': update_directory,
+                                         'root_path': root_path})
             t.start()
             threads.append(t)
         for t in threads:
@@ -201,7 +202,7 @@ class Requester(object):
         print('Done')
 
     def dump_data_from_single_result(self, single_result, filename, now,
-                                     update_directory=True):
+                                     update_directory=True, root_path=None):
         """Dumps data from a single result
 
         This method dumps data from a single result passed as an argument.
@@ -210,8 +211,10 @@ class Requester(object):
         try:
             doc_list = single_result.json()['entries']
             s_list = []
+            if root_path is None:
+                root_path = self._root_path()
             for document in doc_list:
-                path = os.path.join(self._root_path(), document['uid'])
+                path = os.path.join(root_path, document['uid'])
                 if not os.path.exists(path):
                     os.makedirs(path)
                 full_path = os.path.join(path, filename)
@@ -229,7 +232,7 @@ class Requester(object):
             print('An error occured in this thread!')
             print(e)
 
-    def dump_files_from_result(self, update_directory=True):
+    def dump_files_from_result(self, update_directory=True, root_path=None):
         """Dumps attached files from result items on disk
 
         This method dumps files from PIM on disk.
@@ -247,7 +250,8 @@ class Requester(object):
         for single_result in self.result:
             t = threading.Thread(target=self.dump_files_from_single_result,
                                  args=(single_result, now),
-                                 kwargs={'update_directory': update_directory})
+                                 kwargs={'update_directory': update_directory,
+                                         'root_path': root_path})
             t.start()
             threads.append(t)
         for t in threads:
@@ -255,7 +259,7 @@ class Requester(object):
         print('Done')
 
     def dump_files_from_single_result(self, single_result, now,
-                                      update_directory=True):
+                                      update_directory=True, root_path=None):
         """Dumps attached files from items on disk - for a single result
 
         This method dumps files from a single result into the disk. It is used
@@ -263,8 +267,10 @@ class Requester(object):
         """
         doc_list = single_result.json()['entries']
         s_list = []
+        if root_path is None:
+            root_path = self._root_path()
         for document in doc_list:
-            path = os.path.join(self._root_path(), document['uid'])
+            path = os.path.join(root_path, document['uid'])
             if not os.path.exists(path):
                 os.makedirs(path)
             self.dump_attached_files(document, path)
