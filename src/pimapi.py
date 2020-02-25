@@ -517,7 +517,7 @@ class Requester(object):
             df.set_index(index, inplace=True)
         return(df)
 
-    def file_report_from_result(self, mapping, index=None):
+    def file_report_from_result(self, mapping, index=None, record_path=None):
         """Returns a dataframe about the files contained in the result
 
         This methods analyzes the content of the result, and generates a
@@ -525,7 +525,8 @@ class Requester(object):
         Files to report on are based on the content of the config.yaml
         configuration file.
         """
-        record_path = 'entries'
+        if not record_path:
+            record_path = 'entries'
         for filekind, filedef in self.cfg.filedefs.items():
             mapping[filekind] = '.'.join(filedef['nuxeopath']) + '.name'
         df = self.result_to_dataframe(record_path=record_path,
