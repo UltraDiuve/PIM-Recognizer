@@ -7,7 +7,10 @@ dumps/*
 !dumps/qat/.gitkeep
 !dumps/prd/.gitkeep
 ground_truth/*
-!ground_truth/test_uids.csv
+!ground_truth/manually_labelled_ground_truth.xlsx
+!ground_truth/manually_labelled_ground_truth.csv
+!ground_truth/Règles d'annotation.xlsx
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
