@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import copy
 import threading
+from requests.exceptions import ConnectionError
 
 from . import conf
 
@@ -20,24 +21,75 @@ warnings.simplefilter('always', UserWarning)
 class Requester(object):
     """Requester class to retrieve information from PIM
     """
-    def __init__(self, env, proxies='default'):
+    def __init__(self, env, proxies='default', auth=None):
         self.cfg = conf.Config(env)
         self.session = requests.Session()
-        self.session.auth = (self.cfg.user, self.cfg.password)
+        if not auth:
+            self.session.auth = (self.cfg.user, self.cfg.password)
+        else:
+            self.session.auth = auth
         if proxies == 'default':
             try:
                 proxies = self.cfg.proxies
-            except (AttributeError, KeyError):
-                warnings.warn('No proxy conf found - defaulted to None')
+            except (AttributeError):
+                print('No proxy conf found for env : \'{self.cfg.env}\'.'
+                      'No proxy will be used.')
                 proxies = None
-        self.proxies = proxies
+        self.session.proxies = proxies
+        if proxies == 'default':
+            # We try the connection with the default proxy conf
+            # If it fails, we retry with no proxy configuration
+            # (e.g. in the case of working from outside the network)
+            try:
+                self.check_connection()
+            except (ConnectionError):
+                self.session.proxies = None
+                self.check_connection()
+        else:
+            # If a proxy configuration has been passed as an argument, we
+            # only validate the connexion with that configuration.
+            self.check_connection()
         self.rlock = threading.RLock()
         self.result = []
         try:
             self._load_directory()
         except FileNotFoundError:
-            warnings.warn('No directory found for current env. '
-                          'A new directory should be set.')
+            warnings.warn('No directory found for current env : '
+                          f' \'{self.cfg.env}\'. A new directory should be '
+                          'set.')
+
+    def check_connection(self):
+        """Checks wether the connection with the environments works
+
+        The methods tries to get content of PIM system homepage. It returns
+        True if the request is handled properly, or raises an exception.
+        Note: this method does NOT check whether credentials are correct.
+        """
+        resp = self.session.get(self.cfg.baseurl)
+        if resp.status_code != 200:
+            raise ConnectionError('Connection could not be validated during '
+                                  'check_connection method call.for '
+                                  f'environment : \'{self.cfg.env}\'')
+        return(True)
+
+    def check_credentials(self):
+        """Checks wether the credentials provided allow to connect to PIM
+
+        The methods tries to get content of PIM root document. It returns
+        True if the request is handled properly, or raises an exception.
+        Note: if the connection is invalid for another reason (e.g. incorrect
+        proyx configuration), an exception will be raised. the
+        `check_connection` method should be used prior to checking the
+        credentials.
+        """
+        resp = self.session.get(self.cfg.baseurl +
+                                self.cfg.suffixid +
+                                self.cfg.rootuid)
+        if resp.status_code != 200:
+            raise ConnectionError('Connection could not be validated during '
+                                  'check_credentials method call for '
+                                  f'environment : \'{self.cfg.env}\'')
+        return(True)
 
     def fetch(self, iter_uid=None, from_='PIM', **kwargs):
         """Fetches data from an uid iterable, either from PIM or from disk
@@ -101,7 +153,6 @@ class Requester(object):
             local_params = copy.deepcopy(params)
             local_params['currentPageIndex'] = currentPageIndex
             resp = self.session.get(url,
-                                    proxies=self.proxies,
                                     headers=headers,
                                     params=local_params)
             with self.rlock:
@@ -165,9 +216,8 @@ class Requester(object):
         loc_params['pageSize'] = 1
         loc_params['currentPageIndex'] = 0
         resp = self.session.get(url,
-                                proxies=self.proxies,
-                                headers=headers,
-                                params=params)
+                                headers=loc_headers,
+                                params=loc_params)
         return(resp.json()['resultsCount'])
 
     def _root_path(self):
@@ -287,7 +337,6 @@ class Requester(object):
     def _dump_file(self, file_url, path, filename='file'):
         """Dumps a file on fisk from its url"""
         resp = self.session.get(file_url,
-                                proxies=self.proxies,
                                 auth=(self.cfg.user, self.cfg.password),
                                 stream=True)
         full_path = os.path.join(path, filename)

@@ -23,7 +23,6 @@ class TestConf(object):
             assert hasattr(cfg, 'maxpage')
             assert hasattr(cfg, 'pagesize')
             assert hasattr(cfg, 'filedefs')
-            assert hasattr(cfg, 'proxies')
             assert hasattr(cfg, 'user')
             assert hasattr(cfg, 'password')
 
