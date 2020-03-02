@@ -315,24 +315,28 @@ class Requester(object):
         This method dumps files from a single result into the disk. It is used
         for multithreading in `dump_files_from_result` method.
         """
-        doc_list = single_result.json()['entries']
-        s_list = []
-        if root_path is None:
-            root_path = self._root_path()
-        for document in doc_list:
-            path = os.path.join(root_path, document['uid'])
-            if not os.path.exists(path):
-                os.makedirs(path)
-            self.dump_attached_files(document, path)
-            s_list.append(pd.Series(now,
-                                    index=[document['uid']],
-                                    name='lastFetchedFiles'))
-        df = pd.concat(s_list, axis=0)
-        if update_directory:
-            with self.rlock:
-                self._directory.update(df)
-                self._save_directory()
-        print('Thread complete!')
+        try:
+            doc_list = single_result.json()['entries']
+            s_list = []
+            if root_path is None:
+                root_path = self._root_path()
+            for document in doc_list:
+                path = os.path.join(root_path, document['uid'])
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                self.dump_attached_files(document, path)
+                s_list.append(pd.Series(now,
+                                        index=[document['uid']],
+                                        name='lastFetchedFiles'))
+            df = pd.concat(s_list, axis=0)
+            if update_directory:
+                with self.rlock:
+                    self._directory.update(df)
+                    self._save_directory()
+            print('Thread complete!')
+        except Exception as e:
+            print('An error occured in this thread!')
+            print(e)
 
     def _dump_file(self, file_url, path, filename='file'):
         """Dumps a file on fisk from its url"""
