@@ -4,6 +4,7 @@ This modules enables to create an estimator to identify which block is the
 ingredient list from an iterable of text blocks.
 """
 
+import os
 from io import BytesIO
 
 import numpy as np
@@ -12,6 +13,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from scipy.sparse.linalg import norm as sparse_norm
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
+from .conf import Config
 
 
 class IngredientExtractor(object):
@@ -48,6 +50,14 @@ class IngredientExtractor(object):
                                       where=X_norms != 0)
         self.similarity_ = pseudo_cosine_sim
         return(np.argmax(pseudo_cosine_sim))
+
+    def score(self, X, y):
+        """Scorer method of ingredient extractor estimator
+
+        X is an iterable of ingredient lists in the form of string
+        y is the target as the index of the correct block.
+        """
+        pass
 
 
 class PIMIngredientExtractor(IngredientExtractor):
@@ -97,3 +107,65 @@ class PIMIngredientExtractor(IngredientExtractor):
                   .split('\n\n'))
         for i, block in enumerate(blocks):
             print(i, ' | ', block, '\n')
+
+
+class PathGetter(object):
+    """Class that gets path for documents on disk
+
+    This class aims to compute the path to documents, in order to
+    fetch documents from the correct folder (depending on whether
+    they are from train set or from ground truth)
+    All these can be set at initialization, if such is not the case
+    then their values is gotten from the configuration file.
+    """
+    def __init__(self,
+                 env='prd',
+                 ground_truth_uids=None,
+                 train_set_path=None,
+                 ground_truth_path=None):
+        self.cfg = Config(env)
+        self.ground_truth_uids = ground_truth_uids
+        if train_set_path:
+            self.train_set_path = train_set_path
+        else:
+            print(self.cfg.trainsetpath)
+            self.train_set_path = os.path.join(*self.cfg.trainsetpath)
+        if ground_truth_path:
+            self.ground_truth_path = ground_truth_path
+        else:
+            self.ground_truth_path = os.path.join(*self.cfg.groundtruthpath)
+
+    def fit(self, X, y=None):
+        """No fit is required for this class.
+        """
+        return(self)
+
+    def transform(self, X):
+        """Returns the paths for the uids"""
+        if 'path' in X.columns:
+            raise RuntimeError('The Dataframe already has a column named '
+                               '\'path\'')
+        df = X
+        df['path'] = None
+        for uid in X.index:
+            if uid in self.ground_truth_uids:
+                path = os.path.join(self.ground_truth_path, uid)
+            else:
+                path = os.path.join(self.train_set_path, uid)
+            df.loc[uid, 'path'] = path
+        return(df)
+
+
+class ContentGetter(object):
+    """Class that fetches the content of documents on disk
+
+    This class fetches the data from documents on disk as BytesIO objects.
+    It requires a dataframe with a path column"""
+    def __init__(self, errors='raise'):
+        self.errors = errors
+
+    def fit(self, X=None):
+        if self.errors not in {'raise', 'ignore'}:
+            raise ValueError('errors parameter should be set to \'raise\' or '
+                             f'\'ignore\'. Got \'{self.errors}\' instead.')
+        return(self)
