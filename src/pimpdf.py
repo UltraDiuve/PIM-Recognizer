@@ -3,6 +3,7 @@
 This module aims to enable to fetch data from PIM system, into local folders.
 """
 
+from pathlib import Path
 from io import StringIO
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -37,21 +38,12 @@ class PDFDecoder(object):
     def path_to_text(path):
         """Decodes file at local path in the form of a long string
         """
-        output_string = StringIO()
         try:
-            with open(path, 'rb') as in_file:
-                parser = PDFParser(in_file)
-                doc = PDFDocument(parser)
-                rsrcmgr = PDFResourceManager()
-                device = TextConverter(rsrcmgr, output_string,
-                                       laparams=LAParams())
-                interpreter = PDFPageInterpreter(rsrcmgr, device)
-                for page in PDFPage.create_pages(doc):
-                    interpreter.process_page(page)
-            return(output_string.getvalue())
+            with open(path, mode='rb') as content:
+                return(PDFDecoder.content_to_text(content))
         except Exception as e:
             print(e)
-            print(f'error at path: {path}')
+            print(f'Could not read file at path: {path}')
             return('')
 
     @staticmethod
