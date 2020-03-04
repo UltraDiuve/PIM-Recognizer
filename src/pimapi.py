@@ -30,12 +30,14 @@ class Requester(object):
             self.session.auth = auth
         if proxies == 'default':
             try:
-                proxies = self.cfg.proxies
+                target_proxies = self.cfg.proxies
             except (AttributeError):
                 print('No proxy conf found for env : \'{self.cfg.env}\'.'
                       'No proxy will be used.')
-                proxies = None
-        self.session.proxies = proxies
+                target_proxies = None
+        else:
+            target_proxies = proxies
+        self.session.proxies = target_proxies
         if proxies == 'default':
             # We try the connection with the default proxy conf
             # If it fails, we retry with no proxy configuration
@@ -90,19 +92,6 @@ class Requester(object):
                                   'check_credentials method call for '
                                   f'environment : \'{self.cfg.env}\'')
         return(True)
-
-    def fetch(self, iter_uid=None, from_='PIM', **kwargs):
-        """Fetches data from an uid iterable, either from PIM or from disk
-
-        If no uid iterable is provided, no filter is applied to the result.
-        TODO : review this method :
-            - should call fetch all or fetch list
-            - add fetch from disk
-        """
-        if from_ == 'PIM':
-            self.fetch_from_PIM(iter_uid, **kwargs)
-        else:
-            raise NotImplementedError(f"Unexpected 'from_' argument : {from_}")
 
     def fetch_all_from_PIM(self, nx_properties='*', max_page=None,
                            page_size=None,):

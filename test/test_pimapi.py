@@ -26,7 +26,10 @@ class TestRequester(object):
         with pytest.raises(ConnectionError):
             Requester('prd', proxies=incorrect_proxies)
 
-    def test_credentials(self):
+    def test_correct_credentials(self):
+        assert Requester('prd').check_credentials()
+
+    def test_incorrect_credentials(self):
         incorrect_credentials = ('incorrect_user', 'incorrect_password')
         requester = Requester('prd', auth=incorrect_credentials)
         requester.check_connection()
