@@ -539,7 +539,7 @@ class Requester(object):
         elif len(splitted[-1]) > 4:
             return('')
         else:
-            return(filename.split('.')[-1])
+            return(filename.split('.')[-1].lower())
 
     def result_to_dataframe(self, record_path=None, meta=None, mapping=None,
                             index=None):
