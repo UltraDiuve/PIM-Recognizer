@@ -73,6 +73,10 @@ class TestPathGetter(object):
     def test_fit(self, gt_dataframe):
         PathGetter(env='prd').fit(gt_dataframe)
 
+    def test_not_fitted(self, gt_dataframe):
+        with pytest.raises(NotFittedError):
+            PathGetter().transform(gt_dataframe)
+
     def test_transform(self, gt_dataframe, ts_dataframe):
         ground_truth_path = os.path.join('..', 'ground_truth')
         train_set_path = os.path.join('..', 'dumps', 'prd')
@@ -81,18 +85,20 @@ class TestPathGetter(object):
                                  ground_truth_path=ground_truth_path,
                                  train_set_path=train_set_path)
         data_dataframe = pd.concat([gt_dataframe, ts_dataframe], axis=0)
+        transformer.fit(data_dataframe)
         transformed = transformer.transform(data_dataframe)
         gt_uid = data_dataframe.loc[data_dataframe['col'] == 'GT'].index[0]
         ts_uid = data_dataframe.loc[data_dataframe['col'] == 'TS'].index[0]
         assert (transformed.loc[gt_uid, 'path'] ==
-                os.path.join(ground_truth_path, gt_uid))
+                os.path.join(ground_truth_path, gt_uid, 'FTF.pdf'))
         assert (transformed.loc[ts_uid, 'path'] ==
-                os.path.join(train_set_path, ts_uid))
+                os.path.join(train_set_path, ts_uid, 'FTF.pdf'))
 
     def test_transform_already_path(self, gt_dataframe):
         data = gt_dataframe.copy()
         data['path'] = 'a path'
         transformer = PathGetter(env='prd')
+        transformer.fit(data)
         with pytest.raises(RuntimeError):
             transformer.transform(data)
 
@@ -101,6 +107,29 @@ class TestPathGetter(object):
         gt_uids = list(gt_dataframe.index)
         transformer = PathGetter(env='prd', ground_truth_uids=gt_uids)
         transformer.fit_transform(df)
+
+    def test_factories(self, gt_dataframe, ts_dataframe):
+        df = pd.concat([gt_dataframe, ts_dataframe], axis=0)
+        gt_uids = list(gt_dataframe.index)
+        ts_uids = list(ts_dataframe.index)
+
+        def path_factory(x):
+            return('path')
+
+        def filename_factory(x):
+            return('.'.join([x, 'pdf']))
+        transformer = PathGetter(env='prd',
+                                 ground_truth_uids=gt_uids,
+                                 ground_truth_path='gtpath',
+                                 train_set_path='tspath',
+                                 path_factory=path_factory,
+                                 filename_factory=filename_factory,
+                                 ).fit(df)
+        transformed = transformer.transform(df)
+        target_gt = os.path.join('gtpath', 'path', gt_uids[0] + '.pdf')
+        target_ts = os.path.join('tspath', 'path', ts_uids[0] + '.pdf')
+        assert transformed.loc[gt_uids[0], 'path'] == target_gt
+        assert transformed.loc[ts_uids[0], 'path'] == target_ts
 
 
 class TestContentGetter(object):

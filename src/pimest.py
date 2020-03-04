@@ -125,27 +125,29 @@ class PathGetter(object):
                  env='prd',
                  ground_truth_uids=None,
                  train_set_path=None,
-                 ground_truth_path=None):
+                 ground_truth_path=None,
+                 path_factory=lambda x: x,
+                 filename_factory=lambda x: 'FTF.pdf'):
         self.cfg = Config(env)
         self.ground_truth_uids = ground_truth_uids
-        if train_set_path:
-            self.train_set_path = train_set_path
-        else:
-            print(self.cfg.trainsetpath)
-            self.train_set_path = os.path.join(*self.cfg.trainsetpath)
-        if ground_truth_path:
-            self.ground_truth_path = ground_truth_path
-        else:
-            self.ground_truth_path = os.path.join(*self.cfg.groundtruthpath)
+        self.train_set_path = train_set_path
+        self.ground_truth_path = ground_truth_path
+        self.path_factory = path_factory
+        self.filename_factory = filename_factory
 
     def fit(self, X, y=None):
         """No fit is required for this class.
         """
+        if not self.train_set_path:
+            self.train_set_path = os.path.join(*self.cfg.trainsetpath)
+        if not self.ground_truth_path:
+            self.ground_truth_path = os.path.join(*self.cfg.groundtruthpath)
         self.fitted_ = True
         return(self)
 
     def transform(self, X):
         """Returns the paths for the uids"""
+        check_is_fitted(self)
         if 'path' in X.columns:
             raise RuntimeError('The Dataframe already has a column named '
                                '\'path\'')
@@ -153,9 +155,15 @@ class PathGetter(object):
         df['path'] = None
         for uid in X.index:
             if uid in self.ground_truth_uids:
-                path = os.path.join(self.ground_truth_path, uid)
+                path = os.path.join(self.ground_truth_path,
+                                    self.path_factory(uid),
+                                    self.filename_factory(uid),
+                                    )
             else:
-                path = os.path.join(self.train_set_path, uid)
+                path = os.path.join(self.train_set_path,
+                                    self.path_factory(uid),
+                                    self.filename_factory(uid),
+                                    )
             df.loc[uid, 'path'] = path
         return(df)
 
@@ -172,7 +180,7 @@ class ContentGetter(object):
         self.missing_file = missing_file
         self.target_exists = target_exists
 
-    def fit(self, X=None):
+    def fit(self, X=None, y=None):
         if self.missing_file not in {'raise', 'ignore', 'to_nan'}:
             raise ValueError(f'missing_file parameter should be set to '
                              f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
@@ -224,5 +232,5 @@ class ContentGetter(object):
         path = Path(path)
         return(path.is_file())
 
-    def fit_transform(self, X):
+    def fit_transform(self, X, y=None):
         return(self.fit(X).transform(X))
