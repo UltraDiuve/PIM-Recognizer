@@ -3,7 +3,6 @@
 This module aims to enable to fetch data from PIM system, into local folders.
 """
 
-from pathlib import Path
 from io import StringIO
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -47,13 +46,13 @@ class PDFDecoder(object):
             return('')
 
     @staticmethod
-    def path_to_blocks(path):
+    def path_to_blocks(path, split_func=lambda x: x.split('\n\n')):
         """Decodes file at local path in the form of a list of blocks
 
         Blocks are part of the original string separated by at least 2
         carriage returns (i.e. with at least a single blank line between them)
         """
-        return(PDFDecoder.path_to_text(path).split('\n\n'))
+        return(split_func(PDFDecoder.path_to_text(path)))
 
     @staticmethod
     def paths_to_blocks(path_series):
