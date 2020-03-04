@@ -142,6 +142,7 @@ class PathGetter(object):
     def fit(self, X, y=None):
         """No fit is required for this class.
         """
+        self.fitted_ = True
         return(self)
 
     def transform(self, X):
@@ -158,6 +159,9 @@ class PathGetter(object):
                 path = os.path.join(self.train_set_path, uid)
             df.loc[uid, 'path'] = path
         return(df)
+
+    def fit_transform(self, X, y=None):
+        return(self.fit(X).transform(X))
 
 
 class ContentGetter(object):

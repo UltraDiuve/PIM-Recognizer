@@ -96,6 +96,12 @@ class TestPathGetter(object):
         with pytest.raises(RuntimeError):
             transformer.transform(data)
 
+    def test_fit_transform(self, gt_dataframe, ts_dataframe):
+        df = pd.concat([gt_dataframe, ts_dataframe], axis=0)
+        gt_uids = list(gt_dataframe.index)
+        transformer = PathGetter(env='prd', ground_truth_uids=gt_uids)
+        transformer.fit_transform(df)
+
 
 class TestContentGetter(object):
 
@@ -135,7 +141,8 @@ class TestContentGetter(object):
         data = (ContentGetter(missing_file='ignore',
                               target_exists='overwrite')
                 .fit_transform(df_incorrect_path_with_content))
-        assert data['content'].equals(df_incorrect_path_with_content['content'])  # TODO ! marche pas...
+        assert (data['content']
+                .equals(df_incorrect_path_with_content['content']))
 
     def test_transform_no_file_to_nan(self, df_incorrect_path_with_content):
         data = df_incorrect_path_with_content.copy()
