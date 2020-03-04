@@ -8,9 +8,13 @@ import os
 from io import BytesIO
 
 import numpy as np
+import pandas as pd
+from pathlib import Path
 
 from sklearn.feature_extraction.text import CountVectorizer
 from scipy.sparse.linalg import norm as sparse_norm
+from sklearn.utils.validation import check_is_fitted
+
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
 from .conf import Config
@@ -145,7 +149,7 @@ class PathGetter(object):
         if 'path' in X.columns:
             raise RuntimeError('The Dataframe already has a column named '
                                '\'path\'')
-        df = X
+        df = X.copy()
         df['path'] = None
         for uid in X.index:
             if uid in self.ground_truth_uids:
@@ -161,11 +165,61 @@ class ContentGetter(object):
 
     This class fetches the data from documents on disk as BytesIO objects.
     It requires a dataframe with a path column"""
-    def __init__(self, errors='raise'):
-        self.errors = errors
+    def __init__(self, missing_file='raise', target_exists='raise'):
+        self.missing_file = missing_file
+        self.target_exists = target_exists
 
     def fit(self, X=None):
-        if self.errors not in {'raise', 'ignore'}:
-            raise ValueError('errors parameter should be set to \'raise\' or '
-                             f'\'ignore\'. Got \'{self.errors}\' instead.')
+        if self.missing_file not in {'raise', 'ignore', 'to_nan'}:
+            raise ValueError(f'missing_file parameter should be set to '
+                             f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
+                             f'\'{self.missing_file}\' instead.')
+        if self.target_exists not in {'raise', 'ignore', 'overwrite'}:
+            raise ValueError(f'target_exists parameter should be set to '
+                             f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
+                             f'\'{self.target_exists}\' instead.')
+        self.fitted_ = True
         return(self)
+
+    def transform(self, X):
+        check_is_fitted(self)
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError(f'Transform method expects a pandas Dataframe '
+                            f'object. Got an object of type \'{type(X)}\' '
+                            f'instead')
+        X = X.copy()
+        if 'content' in X.columns:
+            if self.target_exists == 'raise':
+                raise RuntimeError('Column \'content\' already exists in input'
+                                   'DataFrame.')
+            if self.target_exists == 'ignore':
+                return(X)
+        mask = pd.DataFrame(index=X.index)
+        mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)
+        if self.missing_file == 'raise' and not mask['file_exists'].all():
+            example_uid = mask.loc[~mask['file_exists']].index[0]
+            example_path = X.loc[example_uid, 'path']
+            raise RuntimeError(f'No file found for uid \'{example_uid}\' at '
+                               f'path \'{example_path}\'')
+        mask['target'] = X['path'].apply(ContentGetter.read_to_bytes)
+        if self.missing_file == 'to_nan':
+            idx_to_update = mask.index
+        else:
+            idx_to_update = mask['file_exists']
+        X.loc[idx_to_update, 'content'] = mask.loc[idx_to_update, 'target']
+        return(X)
+
+    @staticmethod
+    def read_to_bytes(path):
+        try:
+            return(Path(path).read_bytes())
+        except FileNotFoundError:
+            return(None)
+
+    @staticmethod
+    def file_exists(path):
+        path = Path(path)
+        return(path.is_file())
+
+    def fit_transform(self, X):
+        return(self.fit(X).transform(X))
