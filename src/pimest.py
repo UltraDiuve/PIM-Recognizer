@@ -91,7 +91,6 @@ class PIMIngredientExtractor(IngredientExtractor):
         print('----------------------------------------------------------')
         print(f'Downloading content of technical datasheet file...')
         self.resp = self.requester.session.get(file_url,
-                                               proxies=self.requester.proxies,
                                                stream=True)
         resp = self.resp
         print('Done!')
