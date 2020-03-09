@@ -45,6 +45,13 @@ def tmp_file(tmp_path):
 
 
 @pytest.fixture
+def df_path(gt_dataframe):
+    df = gt_dataframe.copy()
+    df['path'] = Path(__file__).parent / 'test_data' / '001_formatted_pdf.pdf'
+    return(df)
+
+
+@pytest.fixture
 def df_incorrect_path(gt_dataframe):
     df = gt_dataframe.copy()
     df['path'] = Path('.', 'nosuchpath', 'nosuchfile.txt')
@@ -142,29 +149,47 @@ class TestContentGetter(object):
                       target_exists='incorrect input',
                       )
 
-    def test_fit(self):
-        ContentGetter(missing_file='ignore').fit()
-        ContentGetter(missing_file='raise').fit()
-        ContentGetter(missing_file='to_nan').fit()
+    def test_fit(self, df_path):
+        ContentGetter(missing_file='ignore').fit(df_path)
+        ContentGetter(missing_file='raise').fit(df_path)
+        ContentGetter(missing_file='to_nan').fit(df_path)
+        ContentGetter(target_exists='ignore').fit(df_path)
+        ContentGetter(target_exists='raise').fit(df_path)
+        ContentGetter(target_exists='overwrite').fit(df_path)
         with pytest.raises(ValueError):
-            ContentGetter(missing_file='incorrect input').fit()
+            ContentGetter(missing_file='incorrect input').fit(df_path)
         with pytest.raises(ValueError):
-            ContentGetter(target_exists='incorrect input').fit()
+            ContentGetter(target_exists='incorrect input').fit(df_path)
 
     def test_transform_not_a_df(self):
         # Testing behavior when argument is not a pandas dataframe
         with pytest.raises(TypeError):
             ContentGetter().fit_transform('a string')
 
+    def test_fit_not_a_df(self):
+        # Testing behavior when argument is not a pandas dataframe
+        with pytest.raises(TypeError):
+            ContentGetter().fit('a string')
+
+    def test_fit_no_path(self, gt_dataframe):
+        # Testing behavior when input has no 'path' column
+        with pytest.raises(KeyError):
+            ContentGetter().fit(gt_dataframe)
+
     def test_transform_no_path(self, gt_dataframe):
         # Testing behavior when input has no 'path' column
         with pytest.raises(KeyError):
             ContentGetter().fit_transform(gt_dataframe)
 
-    def test_transform_no_file_raise(self, df_incorrect_path):
+    def test_fit_no_file_raise(self, df_incorrect_path):
         with pytest.raises(RuntimeError):
             (ContentGetter(missing_file='raise')
-             .fit_transform(df_incorrect_path))
+             .fit(df_incorrect_path))
+
+    def test_transform_no_file_raise(self, df_incorrect_path, df_path):
+        transformer = ContentGetter(missing_file='raise').fit(df_path)
+        with pytest.raises(RuntimeError):
+            transformer.transform(df_incorrect_path)
 
     def test_transform_no_file_ignore(self, df_incorrect_path_with_content):
         data = (ContentGetter(missing_file='ignore',
@@ -172,6 +197,24 @@ class TestContentGetter(object):
                 .fit_transform(df_incorrect_path_with_content))
         assert (data['content']
                 .equals(df_incorrect_path_with_content['content']))
+
+    def test_transform_target_exists(self,
+                                     df_incorrect_path_with_content,
+                                     df_path):
+        transformer = ContentGetter(missing_file='ignore',
+                                    target_exists='raise')
+        with pytest.raises(RuntimeError):
+            transformer.fit(df_incorrect_path_with_content)
+        transformer.fit(df_path)
+        with pytest.raises(RuntimeError):
+            transformer.transform(df_incorrect_path_with_content)
+
+    def test_transform_target_ignore(self, 
+                                     df_incorrect_path_with_content):
+        transformer = ContentGetter(missing_file='ignore', 
+                                    target_exists='ignore')
+        data = transformer.fit_transform(df_incorrect_path_with_content)
+        assert data.equals(df_incorrect_path_with_content)
 
     def test_transform_no_file_to_nan(self, df_incorrect_path_with_content):
         data = df_incorrect_path_with_content.copy()

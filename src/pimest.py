@@ -174,13 +174,17 @@ class PathGetter(object):
 class ContentGetter(object):
     """Class that fetches the content of documents on disk
 
-    This class fetches the data from documents on disk as BytesIO objects.
+    This class fetches the data from documents on disk as bytes.
     It requires a dataframe with a path column"""
     def __init__(self, missing_file='raise', target_exists='raise'):
         self.missing_file = missing_file
         self.target_exists = target_exists
 
-    def fit(self, X=None, y=None):
+    def fit(self, X, y=None):
+        self.raise_if_not_a_df(X)
+        self.raise_if_no_path(X)
+        self.raise_if_content(X)
+        self.raise_if_no_file(X)
         if self.missing_file not in {'raise', 'ignore', 'to_nan'}:
             raise ValueError(f'missing_file parameter should be set to '
                              f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
@@ -192,26 +196,42 @@ class ContentGetter(object):
         self.fitted_ = True
         return(self)
 
-    def transform(self, X):
-        check_is_fitted(self)
+    def raise_if_no_path(self, X):
+        if 'path' not in X.columns:
+            raise KeyError('Input DataFrame has no \'path\' column.')
+
+    def raise_if_not_a_df(self, X):
         if not isinstance(X, pd.DataFrame):
             raise TypeError(f'Transform method expects a pandas Dataframe '
                             f'object. Got an object of type \'{type(X)}\' '
                             f'instead')
+
+    def raise_if_content(self, X):
+        if 'content' in X.columns and self.target_exists == 'raise':
+            raise RuntimeError('Column \'content\' already exists in input'
+                               'DataFrame.')
+
+    def raise_if_no_file(self, X):
+        if self.missing_file == 'raise':
+            mask = pd.DataFrame(index=X.index)
+            mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)            
+            if not mask['file_exists'].all():
+                example_uid = mask.loc[~mask['file_exists']].index[0]
+                example_path = X.loc[example_uid, 'path']
+                raise RuntimeError(f'No file found for uid \'{example_uid}\' '
+                                   f'at path \'{example_path}\'')
+
+    def transform(self, X):
+        check_is_fitted(self)
+        self.raise_if_not_a_df(X)
+        self.raise_if_no_path(X)
+        self.raise_if_content(X)
         X = X.copy()
-        if 'content' in X.columns:
-            if self.target_exists == 'raise':
-                raise RuntimeError('Column \'content\' already exists in input'
-                                   'DataFrame.')
-            if self.target_exists == 'ignore':
-                return(X)
+        if 'content' in X.columns and self.target_exists == 'ignore':
+            return(X)
+        self.raise_if_no_file(X)
         mask = pd.DataFrame(index=X.index)
         mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)
-        if self.missing_file == 'raise' and not mask['file_exists'].all():
-            example_uid = mask.loc[~mask['file_exists']].index[0]
-            example_path = X.loc[example_uid, 'path']
-            raise RuntimeError(f'No file found for uid \'{example_uid}\' at '
-                               f'path \'{example_path}\'')
         mask['target'] = X['path'].apply(ContentGetter.read_to_bytes)
         if self.missing_file == 'to_nan':
             idx_to_update = mask.index
@@ -234,3 +254,15 @@ class ContentGetter(object):
 
     def fit_transform(self, X, y=None):
         return(self.fit(X).transform(X))
+
+
+class PDFContentParser(object):
+    """Class that parses pdf content to text
+
+    This class converts the content of
+    """
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        pass
