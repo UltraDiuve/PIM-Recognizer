@@ -11,7 +11,8 @@ from sklearn.exceptions import NotFittedError
 
 from src.pimest import PathGetter
 from src.pimest import ContentGetter
-
+from src.pimest import IngredientExtractor
+from src.pimest import PIMIngredientExtractor
 
 @pytest.fixture
 def gt_dataframe():
@@ -64,6 +65,59 @@ def df_incorrect_path_with_content(df_incorrect_path):
     df['content'] = 'some data: \x00\x01'
     return(df)
 
+
+@pytest.fixture
+def df_ingredients():
+    ingred_list = ['sucre, eau, légumes, farine de blé',
+                   'malodextrine, colorant: E210, jus d\'orange',
+                   '100% haricots blancs']
+    idx = pd.Index(['001', '002', '003'], name='uid')
+    df = pd.DataFrame(ingred_list, index=idx, columns=['Ingredients'])
+    return(df)
+
+
+@pytest.fixture
+def df_candidates():
+    blocks_list = ['Elaboré en union européenne, avec de la farine française',
+                   'Sucre, haricots',
+                   'Non soumis à TVA ni taxes diverses']
+    idx = pd.Index(['001', '002', '003'], name='block_id')
+    df = pd.DataFrame(blocks_list, index=idx, columns=['blocks'])
+    return(df)
+
+
+@pytest.fixture
+def emphasized():
+    beg, end = '\033[92m', '\033[0m'
+    blocks_list = [f'Elaboré en union européenne, avec {beg}de{end} la '
+                   f'{beg}farine{end} française',
+                   f'{beg}Sucre{end}, {beg}haricots{end}',
+                   'Non soumis à TVA ni taxes diverses']
+    return(blocks_list)
+
+
+class TestIngredientExtractor(object):
+    def test_fit(self, df_ingredients):
+        IngredientExtractor().fit(df_ingredients)
+
+    def test_predict(self, df_ingredients, df_candidates):
+        estimator = IngredientExtractor().fit(df_ingredients['Ingredients'])
+        idx = estimator.predict(df_candidates['blocks'])
+        assert idx == 1
+
+    def test_show_emphasize(self, df_ingredients, df_candidates, emphasized):
+        estimator = IngredientExtractor().fit(df_ingredients['Ingredients'])
+        estimator.show_emphasize(df_candidates['blocks'])
+        for idx, text in enumerate(df_candidates['blocks']):
+            assert estimator.emphasize_words(text) == emphasized[idx]
+
+
+class TestPIMIngredientExtractor(object):
+    def test_passing():
+        extractor = PIMIngredientExtractor()
+
+    def test_unexpected_keyword():
+        pass
 
 class TestPathGetter(object):
 
@@ -209,9 +263,9 @@ class TestContentGetter(object):
         with pytest.raises(RuntimeError):
             transformer.transform(df_incorrect_path_with_content)
 
-    def test_transform_target_ignore(self, 
+    def test_transform_target_ignore(self,
                                      df_incorrect_path_with_content):
-        transformer = ContentGetter(missing_file='ignore', 
+        transformer = ContentGetter(missing_file='ignore',
                                     target_exists='ignore')
         data = transformer.fit_transform(df_incorrect_path_with_content)
         assert data.equals(df_incorrect_path_with_content)

@@ -55,6 +55,69 @@ class IngredientExtractor(object):
         self.similarity_ = pseudo_cosine_sim
         return(np.argmax(pseudo_cosine_sim))
 
+    def show_emphasize(self, X):
+        """Method that prints strings with words from vocabulary emphasized
+        """
+        for text in self.emphasize_texts(X):
+            print(text)
+
+    def emphasize_texts(self, X):
+        """Method that returns strings with words from vocabulary emphasized
+
+        This method shows how some candidates texts are projected on the
+        vocabulary that has been provided or gotten from fitting.
+        It is useful to see how different blocks compare.
+        X argument is an iterable of block candidates.
+        """
+        check_is_fitted(self)
+        preprocessor = self._count_vect.build_preprocessor()
+        tokenizer = self._count_vect.build_tokenizer()
+        vocabulary = self._count_vect.vocabulary_
+        emphasized_texts = []
+        for block in X:
+            text = self.emphasize_words(block,
+                                        preprocessor=preprocessor,
+                                        tokenizer=tokenizer,
+                                        vocabulary=vocabulary,
+                                        )
+            emphasized_texts.append(text)
+        return(emphasized_texts)
+
+    def emphasize_words(self,
+                        text,
+                        preprocessor=None,
+                        tokenizer=None,
+                        vocabulary=None,
+                        ansi_color='\033[92m',  # green by default
+                        ):
+        """Method that returns a string with words emhasized
+
+        This methods takes a string and returns a similar string with the words
+        emphasized (with color markers)
+        """
+        check_is_fitted(self)
+        ansi_end_block = '\033[0m'
+        if not preprocessor:
+            preprocessor = self._count_vect.build_preprocessor()
+        if not tokenizer:
+            tokenizer = self._count_vect.build_tokenizer()
+        if not vocabulary:
+            vocabulary = self._count_vect.vocabulary_
+        preprocessed_text = preprocessor(text)
+        tokenized_text = tokenizer(preprocessed_text)
+        idx = 0
+        emphasized_text = ''
+        for token in tokenized_text:
+            if token in vocabulary:
+                while preprocessed_text[idx: idx + len(token)] != token:
+                    emphasized_text += text[idx]
+                    idx += 1
+                emphasized_text += (ansi_color + text[idx: idx + len(token)] +
+                                    ansi_end_block)
+                idx += len(token)
+        emphasized_text += text[idx:]
+        return(emphasized_text)
+
     def score(self, X, y):
         """Scorer method of ingredient extractor estimator
 
@@ -214,7 +277,7 @@ class ContentGetter(object):
     def raise_if_no_file(self, X):
         if self.missing_file == 'raise':
             mask = pd.DataFrame(index=X.index)
-            mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)            
+            mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)
             if not mask['file_exists'].all():
                 example_uid = mask.loc[~mask['file_exists']].index[0]
                 example_path = X.loc[example_uid, 'path']
