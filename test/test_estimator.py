@@ -113,11 +113,27 @@ class TestIngredientExtractor(object):
 
 
 class TestPIMIngredientExtractor(object):
-    def test_passing():
+    def test_passing(self, df_ingredients):
         extractor = PIMIngredientExtractor()
+        extractor.fit(df_ingredients['Ingredients'])
+        extractor.compare_uid_data('87b97662-c583-43fd-a1ed-d0b4f0eec54b')
+        extractor.print_blocks()
 
-    def test_unexpected_keyword():
-        pass
+    def test_invalid_uid(self, df_ingredients):
+        extractor = PIMIngredientExtractor()
+        extractor.fit(df_ingredients['Ingredients'])
+        with pytest.raises(IndexError):
+            extractor.compare_uid_data('not an uid')
+
+    def test_unexpected_keyword(self):
+        with pytest.raises(TypeError):
+            PIMIngredientExtractor(incorrect_arg=True)
+
+    def test_not_fitted(self):
+        with pytest.raises(NotFittedError):
+            (PIMIngredientExtractor()
+             .compare_uid_data('87b97662-c583-43fd-a1ed-d0b4f0eec54b'))
+
 
 class TestPathGetter(object):
 

@@ -135,11 +135,15 @@ class PIMIngredientExtractor(IngredientExtractor):
         super().__init__()
 
     def compare_uid_data(self, uid):
+        check_is_fitted(self)
         print(f'Fetching data from PIM for uid {uid}...')
         self.requester.fetch_list_from_PIM([uid])
-        ingredient_list = (self.requester.result[0]
-                           .json()['entries'][0]['properties']
-                           ['pprodc:ingredientsList'])
+        try:
+            ingredient_list = (self.requester.result[0]
+                               .json()['entries'][0]['properties']
+                               ['pprodc:ingredientsList'])
+        except IndexError:
+            raise IndexError(f'Fetching data with uid {uid} ')
         print('----------------------------------------------------------')
         print(f'Ingredient list from PIM is :\n\n{ingredient_list}')
         print('\n----------------------------------------------------------')
@@ -168,7 +172,7 @@ class PIMIngredientExtractor(IngredientExtractor):
         print(blocks[idx])
         print('\n----------------------------------------------------------')
 
-    def print_blocks(self, resp):
+    def print_blocks(self):
         blocks = (PDFDecoder.content_to_text(BytesIO(self.resp.content))
                   .split('\n\n'))
         for i, block in enumerate(blocks):
@@ -322,10 +326,8 @@ class ContentGetter(object):
 class PDFContentParser(object):
     """Class that parses pdf content to text
 
-    This class converts the content of
+    This class converts a file content (in the form of bytes) into text, using
+    pimpdf functionalities (based on pdfminer.six)
     """
     def __init__(self):
-        pass
-
-    def fit(self, X, y=None):
-        pass
+        self = ColumnTransformer()
