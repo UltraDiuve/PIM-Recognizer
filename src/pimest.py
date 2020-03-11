@@ -20,24 +20,53 @@ from .pimpdf import PDFDecoder
 from .conf import Config
 
 
-def raise_if_not_a_df(X):
-    if not isinstance(X, pd.DataFrame):
-        raise TypeError(f'This transformer expects a pandas Dataframe '
-                        f'object. Got an object of type \'{type(X)}\' '
-                        f'instead')
+class CustomTransformer(object):
+    """Abstract class for custom transformers
+    """
+    def __init__(self, source_col, target_col, target_exists):
+        self.source_col = source_col
+        self.target_col = target_col
+        self.target_exists = target_exists
 
+    def raise_if_not_a_df(self, X):
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError(f'This transformer expects a pandas Dataframe '
+                            f'object. Got an object of type \'{type(X)}\' '
+                            f'instead')
 
-def check_target_exists(target_exists):
-    if target_exists not in {'raise', 'ignore', 'overwrite'}:
-        raise ValueError(f'target_exists parameter should be set to '
-                         f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
-                         f'\'{target_exists}\' instead.')
+    def check_target_exists(self):
+        if self.target_exists not in {'raise', 'ignore', 'overwrite'}:
+            raise ValueError(f'target_exists parameter should be set to '
+                             f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
+                             f'\'{self.target_exists}\' instead.')
 
+    def raise_if_target(self, X):
+        if self.target_col in X.columns and self.target_exists == 'raise':
+            raise RuntimeError(f'Column \'{self.target_col}\' already exists '
+                               f'in input DataFrame.')
 
-def raise_if_target(X, target, target_exists):
-    if target in X.columns and target_exists == 'raise':
-        raise RuntimeError(f'Column \'{target}\' already exists in input'
-                           f'DataFrame.')
+    def raise_if_no_source(self, X):
+        if self.source_col and self.source_col not in X.columns:
+            raise KeyError(f'Input DataFrame has no \'{self.source_col}\' '
+                           f'column.')
+
+    def fit(self, X, y=None):
+        self.check_target_exists()
+        self.raise_if_not_a_df(X)
+        self.raise_if_target(X)
+        self.raise_if_no_source(X)
+
+    def transform(self, X):
+        check_is_fitted(self)
+        self.check_target_exists()
+        self.raise_if_not_a_df(X)
+        self.raise_if_target(X)
+        self.raise_if_no_source(X)
+        if self.target_col in X.columns and self.target_exists == 'ignore':
+            return(X)
+
+    def fit_transform(self, X, y=None):
+        return(self.fit(X).transform(X))
 
 
 class IngredientExtractor(object):
@@ -199,7 +228,7 @@ class PIMIngredientExtractor(IngredientExtractor):
             print(i, ' | ', block, '\n')
 
 
-class PathGetter(object):
+class PathGetter(CustomTransformer):
     """Class that gets path for documents on disk
 
     This class aims to compute the path to documents, in order to
@@ -214,17 +243,24 @@ class PathGetter(object):
                  train_set_path=None,
                  ground_truth_path=None,
                  path_factory=lambda x: x,
-                 filename_factory=lambda x: 'FTF.pdf'):
+                 filename_factory=lambda x: 'FTF.pdf',
+                 source_col=None,
+                 target_col='path',
+                 target_exists='raise'
+                 ):
         self.cfg = Config(env)
         self.ground_truth_uids = ground_truth_uids
         self.train_set_path = train_set_path
         self.ground_truth_path = ground_truth_path
         self.path_factory = path_factory
         self.filename_factory = filename_factory
+        super().__init__(source_col=source_col, target_col=target_col,
+                         target_exists=target_exists)
 
     def fit(self, X, y=None):
         """No fit is required for this class.
         """
+        super().fit(X)
         if not self.train_set_path:
             self.train_set_path = os.path.join(*self.cfg.trainsetpath)
         if not self.ground_truth_path:
@@ -234,12 +270,9 @@ class PathGetter(object):
 
     def transform(self, X):
         """Returns the paths for the uids"""
-        check_is_fitted(self)
-        if 'path' in X.columns:
-            raise RuntimeError('The Dataframe already has a column named '
-                               '\'path\'')
+        super().transform(X)
         df = X.copy()
-        df['path'] = None
+        df[self.target_col] = None
         for uid in X.index:
             if uid in self.ground_truth_uids:
                 path = os.path.join(self.ground_truth_path,
@@ -251,40 +284,38 @@ class PathGetter(object):
                                     self.path_factory(uid),
                                     self.filename_factory(uid),
                                     )
-            df.loc[uid, 'path'] = path
+            df.loc[uid, self.target_col] = path
         return(df)
 
-    def fit_transform(self, X, y=None):
-        return(self.fit(X).transform(X))
 
-
-class ContentGetter(object):
+class ContentGetter(CustomTransformer):
     """Class that fetches the content of documents on disk
 
     This class fetches the data from documents on disk as bytes.
     It requires a dataframe with a path column"""
-    def __init__(self, missing_file='raise', target_exists='raise'):
+    def __init__(self,
+                 missing_file='raise',
+                 target_exists='raise',
+                 source_col='path',
+                 target_col='content',
+                 ):
         self.missing_file = missing_file
-        self.target_exists = target_exists
+        super().__init__(source_col=source_col,
+                         target_col=target_col,
+                         target_exists=target_exists,
+                         )
 
     def fit(self, X, y=None):
-        raise_if_not_a_df(X)
-        self.raise_if_no_path(X)
-        raise_if_target(X, 'content', self.target_exists)
-        self.raise_if_no_file(X)
+        super().fit(X)
         if self.missing_file not in {'raise', 'ignore', 'to_nan'}:
             raise ValueError(f'missing_file parameter should be set to '
                              f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
                              f'\'{self.missing_file}\' instead.')
-        check_target_exists(self.target_exists)
+        self._raise_if_no_file(X)
         self.fitted_ = True
         return(self)
 
-    def raise_if_no_path(self, X):
-        if 'path' not in X.columns:
-            raise KeyError('Input DataFrame has no \'path\' column.')
-
-    def raise_if_no_file(self, X):
+    def _raise_if_no_file(self, X):
         if self.missing_file == 'raise':
             mask = pd.DataFrame(index=X.index)
             mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)
@@ -295,14 +326,9 @@ class ContentGetter(object):
                                    f'at path \'{example_path}\'')
 
     def transform(self, X):
-        check_is_fitted(self)
-        raise_if_not_a_df(X)
-        self.raise_if_no_path(X)
-        raise_if_target(X, 'content', self.target_exists)
+        super().transform(X)
+        self._raise_if_no_file(X)
         X = X.copy()
-        if 'content' in X.columns and self.target_exists == 'ignore':
-            return(X)
-        self.raise_if_no_file(X)
         mask = pd.DataFrame(index=X.index)
         mask['file_exists'] = X['path'].apply(ContentGetter.file_exists)
         mask['target'] = X['path'].apply(ContentGetter.read_to_bytes)
@@ -325,37 +351,33 @@ class ContentGetter(object):
         path = Path(path)
         return(path.is_file())
 
-    def fit_transform(self, X, y=None):
-        return(self.fit(X).transform(X))
 
-
-class PDFContentParser(object):
+class PDFContentParser(CustomTransformer):
     """Class that parses pdf content to text
 
     This class converts a file content (in the form of bytes) into text, using
     pimpdf functionalities (based on pdfminer.six)
     """
-    def __init__(self, target_exists='raise'):
-        self.target_exists = target_exists
-
-    def raise_if_no_content(self, X):
-        if 'content' not in X.columns:
-            raise KeyError('This transformer requires a \'content\' column.'
-                           ' None was found in the current DataFrame')
+    def __init__(self,
+                 missing_file='raise',
+                 target_exists='raise',
+                 source_col='content',
+                 target_col='text',
+                 ):
+        self.missing_file = missing_file
+        super().__init__(source_col=source_col,
+                         target_col=target_col,
+                         target_exists=target_exists,
+                         )
 
     def fit(self, X, y=None):
-        raise_if_not_a_df(X)
-        check_target_exists(self.target_exists)
-        raise_if_target(X, 'text', self.target_exists)
-        self.raise_if_no_content(X)
+        super().fit(X)
         self.fitted_ = True
         return(self)
 
     def transform(self, X):
-        check_is_fitted(self)
+        super().transform(X)
         X = X.copy()
-        X['text'] = PDFDecoder.threaded_contents_to_text(X['content'])
+        X[self.target_col] = (PDFDecoder
+                              .threaded_contents_to_text(X[self.source_col]))
         return(X)
-
-    def fit_transform(self, X, y=None):
-        return(self.fit(X).transform(X))

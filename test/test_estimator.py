@@ -188,7 +188,11 @@ class TestPathGetter(object):
         data = gt_dataframe.copy()
         data['path'] = 'a path'
         transformer = PathGetter(env='prd')
+        with pytest.raises(RuntimeError):
+            transformer.fit(data)
+        data = gt_dataframe.copy()
         transformer.fit(data)
+        data['path'] = 'a path'
         with pytest.raises(RuntimeError):
             transformer.transform(data)
 
