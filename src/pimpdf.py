@@ -71,20 +71,35 @@ class PDFDecoder(object):
     @staticmethod
     def text_to_blocks_series(text, index=None,
                               split_func=lambda x: x.split('\n\n'),
+                              return_type='along_index'
                               ):
         """Splits text passed as an argument (using splitter func) to a Series
 
-        The index arg is passed as provided to pd.Series constructor, or if
-        it is a scalar it is broadcasted as a constant.
+        The return_type can be:
+            - 'along_index': the return is a pandas Series of length the number
+                             of blocks (with the index provided)
+            - 'as_list'    : the return is a pandas Series of length 1, with
+                             the provided scalar as index, and the value of the
+                             Series being the blocks as a list of strings
+        If return_type is 'along_index' (the default), the index arg is passed
+        as provided to pd.Series constructor, or if it is a scalar it is
+        broadcasted as a constant on all values.
         """
         blocks_list = PDFDecoder.text_to_blocks(text,
                                                 split_func=split_func,
                                                 )
-        try:
-            return(pd.Series(blocks_list, index=index))
-        except TypeError:
-            index = [index] * len(blocks_list)
-            return(pd.Series(blocks_list, index=index))
+        if return_type not in {'along_index', 'as_list'}:
+            raise ValueError(f'Unexpected value for return_type parameter. '
+                             f'Got {return_type} but only \'along_index\' or '
+                             f'\'as_list\' are expected.')
+        if return_type == 'as_list':
+            return(pd.Series([blocks_list], index=[index]))
+        elif return_type == 'along_index':
+            try:
+                return(pd.Series(blocks_list, index=index))
+            except TypeError:
+                index = [index] * len(blocks_list)
+                return(pd.Series(blocks_list, index=index))
 
     @staticmethod
     def path_to_blocks(path, split_func=lambda x: x.split('\n\n'),
@@ -175,6 +190,7 @@ class PDFDecoder(object):
     @staticmethod
     def threaded_texts_to_blocks(text_series, processes=None,
                                  split_func=lambda x: x.split('\n\n'),
+                                 return_type='along_index'
                                  ):
         """Threaded version of text_to_blocks_series method
 
@@ -183,9 +199,12 @@ class PDFDecoder(object):
         documents..
         processes argument is the number of processes to launch. If omitted,
         it defaults to the number of cpu cores on the machine.
+        As for text_to_blocks_series function, return_type can be 'along_axis'
+        or 'list_like'.
         """
         processer = partial(PDFDecoder.text_to_blocks_series,
-                            split_func=split_func)
+                            split_func=split_func,
+                            return_type=return_type)
         processes = processes if processes else cpu_count()
         print(f'Launching {processes} processes.')
         ds_list = []

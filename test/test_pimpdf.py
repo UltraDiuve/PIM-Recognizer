@@ -68,7 +68,7 @@ class TestPDFDecoder(object):
 
     def test_path_to_text(self, test_data_001):
         target = Path(test_data_001.txt).read_text()
-        target = target + '\x0c'
+        target += '\x0c'
         assert PDFDecoder.path_to_text(test_data_001.pdf) == target
 
     def test_path_to_text_2(self, test_data_002):
@@ -173,9 +173,6 @@ class TestPDFDecoder(object):
     def test_content_to_text_to_blocks(self, test_data_001, test_data_002,
                                        make_target_series, splitter_func,
                                        ):
-        # 1 je construit la Series avec les contents
-        # 2 j'applique content to text
-        # 3 j'applique text to blocks
         target_ds = pd.concat([make_target_series(test_data_001),
                                make_target_series(test_data_002)],
                               axis=0)
@@ -190,3 +187,36 @@ class TestPDFDecoder(object):
                      .threaded_texts_to_blocks(text_ds,
                                                split_func=splitter_func))
         assert blocks_ds.equals(target_ds)
+
+    def test_invalid_return_type(self):
+        text_series = pd.Series(['first text\n\n2lines',
+                                 'second text\n\nline\n\nlineagain'])
+        with pytest.raises(ValueError):
+            PDFDecoder.threaded_texts_to_blocks(text_series,
+                                                return_type='incorrect_input',
+                                                )
+        with pytest.raises(ValueError):
+            PDFDecoder.text_to_blocks_series(text_series.iloc[0],
+                                             return_type='incorrect_input',
+                                             )
+
+    def test_texts_to_blocks_as_list(self):
+        text_series = pd.Series(['first text\n\n2lines',
+                                 'second text\n\nline\n\nlineagain'],
+                                index=pd.Index(['001', '002']),
+                                )
+        blocks_ds = (PDFDecoder
+                     .threaded_texts_to_blocks(text_series,
+                                               return_type='as_list',
+                                               )
+                     )
+        target = pd.Series([['first text', '2lines'],
+                            ['second text', 'line', 'lineagain']],
+                           index=pd.Index(['001', '002']))
+        assert blocks_ds.equals(target)
+        blocks_ds = PDFDecoder.text_to_blocks_series('first text\n\n2lines',
+                                                     index='001',
+                                                     return_type='as_list')
+        print(blocks_ds)
+        print(target.loc['001'])
+        assert blocks_ds.loc['001'] == target.loc['001']
