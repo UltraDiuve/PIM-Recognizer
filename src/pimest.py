@@ -20,6 +20,26 @@ from .pimpdf import PDFDecoder
 from .conf import Config
 
 
+def raise_if_not_a_df(X):
+    if not isinstance(X, pd.DataFrame):
+        raise TypeError(f'This transformer expects a pandas Dataframe '
+                        f'object. Got an object of type \'{type(X)}\' '
+                        f'instead')
+
+
+def check_target_exists(target_exists):
+    if target_exists not in {'raise', 'ignore', 'overwrite'}:
+        raise ValueError(f'target_exists parameter should be set to '
+                         f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
+                         f'\'{target_exists}\' instead.')
+
+
+def raise_if_target(X, target, target_exists):
+    if target in X.columns and target_exists == 'raise':
+        raise RuntimeError(f'Column \'{target}\' already exists in input'
+                           f'DataFrame.')
+
+
 class IngredientExtractor(object):
     """Estimator that identifies the most 'ingredient like' block from a list
     """
@@ -248,35 +268,21 @@ class ContentGetter(object):
         self.target_exists = target_exists
 
     def fit(self, X, y=None):
-        self.raise_if_not_a_df(X)
+        raise_if_not_a_df(X)
         self.raise_if_no_path(X)
-        self.raise_if_content(X)
+        raise_if_target(X, 'content', self.target_exists)
         self.raise_if_no_file(X)
         if self.missing_file not in {'raise', 'ignore', 'to_nan'}:
             raise ValueError(f'missing_file parameter should be set to '
                              f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
                              f'\'{self.missing_file}\' instead.')
-        if self.target_exists not in {'raise', 'ignore', 'overwrite'}:
-            raise ValueError(f'target_exists parameter should be set to '
-                             f'\'raise\' or \'ignore\' or \'to_nan\'. Got '
-                             f'\'{self.target_exists}\' instead.')
+        check_target_exists(self.target_exists)
         self.fitted_ = True
         return(self)
 
     def raise_if_no_path(self, X):
         if 'path' not in X.columns:
             raise KeyError('Input DataFrame has no \'path\' column.')
-
-    def raise_if_not_a_df(self, X):
-        if not isinstance(X, pd.DataFrame):
-            raise TypeError(f'Transform method expects a pandas Dataframe '
-                            f'object. Got an object of type \'{type(X)}\' '
-                            f'instead')
-
-    def raise_if_content(self, X):
-        if 'content' in X.columns and self.target_exists == 'raise':
-            raise RuntimeError('Column \'content\' already exists in input'
-                               'DataFrame.')
 
     def raise_if_no_file(self, X):
         if self.missing_file == 'raise':
@@ -290,9 +296,9 @@ class ContentGetter(object):
 
     def transform(self, X):
         check_is_fitted(self)
-        self.raise_if_not_a_df(X)
+        raise_if_not_a_df(X)
         self.raise_if_no_path(X)
-        self.raise_if_content(X)
+        raise_if_target(X, 'content', self.target_exists)
         X = X.copy()
         if 'content' in X.columns and self.target_exists == 'ignore':
             return(X)
@@ -329,5 +335,27 @@ class PDFContentParser(object):
     This class converts a file content (in the form of bytes) into text, using
     pimpdf functionalities (based on pdfminer.six)
     """
-    def __init__(self):
-        self = ColumnTransformer()
+    def __init__(self, target_exists='raise'):
+        self.target_exists = target_exists
+
+    def raise_if_no_content(self, X):
+        if 'content' not in X.columns:
+            raise KeyError('This transformer requires a \'content\' column.'
+                           ' None was found in the current DataFrame')
+
+    def fit(self, X, y=None):
+        raise_if_not_a_df(X)
+        check_target_exists(self.target_exists)
+        raise_if_target(X, 'text', self.target_exists)
+        self.raise_if_no_content(X)
+        self.fitted_ = True
+        return(self)
+
+    def transform(self, X):
+        check_is_fitted(self)
+        X = X.copy()
+        X['text'] = PDFDecoder.threaded_contents_to_text(X['content'])
+        return(X)
+
+    def fit_transform(self, X, y=None):
+        return(self.fit(X).transform(X))

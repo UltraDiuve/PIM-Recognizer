@@ -13,6 +13,8 @@ from src.pimest import PathGetter
 from src.pimest import ContentGetter
 from src.pimest import IngredientExtractor
 from src.pimest import PIMIngredientExtractor
+from src.pimest import PDFContentParser
+
 
 @pytest.fixture
 def gt_dataframe():
@@ -62,7 +64,7 @@ def df_incorrect_path(gt_dataframe):
 @pytest.fixture
 def df_incorrect_path_with_content(df_incorrect_path):
     df = df_incorrect_path.copy()
-    df['content'] = 'some data: \x00\x01'
+    df['content'] = b'some data.\x00\x04'
     return(df)
 
 
@@ -94,6 +96,17 @@ def emphasized():
                    f'{beg}Sucre{end}, {beg}haricots{end}',
                    'Non soumis à TVA ni taxes diverses']
     return(blocks_list)
+
+
+@pytest.fixture
+def df_content():
+    path = Path(__file__).parent / 'test_data' / '001_formatted_pdf.pdf'
+    with open(path, mode='rb') as file:
+        content = file.read()
+    contents = [content]
+    idx = pd.Index(['001'], name='uid')
+    df = pd.DataFrame(contents, index=idx, columns=['content'])
+    return(df)
 
 
 class TestIngredientExtractor(object):
@@ -305,3 +318,24 @@ class TestContentGetter(object):
         data = ContentGetter(missing_file='raise',
                              target_exists='raise').fit_transform(data)
         assert (data['content'] == file_content).all()
+
+
+class TestPDFContentParser(object):
+    def test_init(self):
+        PDFContentParser(target_exists='raise')
+
+    def test_incorrect_param(self, df_incorrect_path_with_content):
+        with pytest.raises(ValueError):
+            (PDFContentParser(target_exists='incorrect input')
+             .fit(df_incorrect_path_with_content))
+
+    def test_missing_input_col(self, df_path):
+        with pytest.raises(KeyError):
+            PDFContentParser().fit(df_path)
+
+    def test_fit_transform(self, df_content, test_data_001):
+        transformer = PDFContentParser()
+        data = transformer.fit_transform(df_content)
+        target = Path(test_data_001.txt).read_text()
+        target += '\x0c'
+        assert (data['text'] == target).all()
