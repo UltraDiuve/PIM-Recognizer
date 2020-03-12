@@ -152,9 +152,6 @@ class TestPIMIngredientExtractor(object):
 class TestPathGetter(object):
 
     def test_init(self):
-        # Checking incorrect environment
-        with pytest.raises(ValueError):
-            PathGetter(env='toto')
         PathGetter(env='dev')
         PathGetter(env='int')
         PathGetter(env='rec')
@@ -163,6 +160,9 @@ class TestPathGetter(object):
 
     def test_fit(self, gt_dataframe):
         PathGetter(env='prd').fit(gt_dataframe)
+        # Checking incorrect environment
+        with pytest.raises(ValueError):
+            PathGetter(env='toto').fit(gt_dataframe)
 
     def test_not_fitted(self, gt_dataframe):
         with pytest.raises(NotFittedError):
@@ -225,6 +225,14 @@ class TestPathGetter(object):
         target_ts = os.path.join('tspath', 'path', ts_uids[0] + '.pdf')
         assert transformed.loc[gt_uids[0], 'path'] == target_gt
         assert transformed.loc[ts_uids[0], 'path'] == target_ts
+
+    def test_get_params(self):
+        transformer = PathGetter()
+        arg_count = transformer.__init__.__code__.co_argcount
+        assert len(transformer.get_params()) == arg_count - 1
+
+    def test_set_params(self):
+        PathGetter().set_params(source_col='toto')
 
 
 class TestContentGetter(object):
@@ -324,6 +332,14 @@ class TestContentGetter(object):
                              target_exists='raise').fit_transform(data)
         assert (data['content'] == file_content).all()
 
+    def test_get_params(self):
+        transformer = ContentGetter()
+        arg_count = transformer.__init__.__code__.co_argcount
+        assert len(transformer.get_params()) == arg_count - 1
+
+    def test_set_params(self):
+        ContentGetter().set_params(source_col='toto')
+
 
 class TestPDFContentParser(object):
     def test_init(self):
@@ -344,6 +360,14 @@ class TestPDFContentParser(object):
         target = Path(test_data_001.txt).read_text()
         target += '\x0c'
         assert (data['text'] == target).all()
+
+    def test_get_params(self):
+        transformer = PDFContentParser()
+        arg_count = transformer.__init__.__code__.co_argcount
+        assert len(transformer.get_params()) == arg_count - 1
+
+    def test_set_params(self):
+        PDFContentParser().set_params(source_col='toto')
 
 
 class TestBlockSplitter(object):
@@ -366,3 +390,11 @@ class TestBlockSplitter(object):
         transformer = BlockSplitter(splitter_func=lambda x: x.split('<sep>'))
         target = ['a line', 'another', 'coucou']
         assert transformer.fit_transform(X)['blocks'].iloc[0] == target
+
+    def test_get_params(self):
+        transformer = BlockSplitter()
+        arg_count = transformer.__init__.__code__.co_argcount
+        assert len(transformer.get_params()) == arg_count - 1
+
+    def test_set_params(self):
+        BlockSplitter().set_params(source_col='toto')

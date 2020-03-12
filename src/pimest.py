@@ -68,6 +68,18 @@ class CustomTransformer(object):
     def fit_transform(self, X, y=None):
         return(self.fit(X).transform(X))
 
+    def get_params(self, deep=True):
+        parms = dict()
+        parms['source_col'] = self.source_col
+        parms['target_col'] = self.target_col
+        parms['target_exists'] = self.target_exists
+        return(parms)
+
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+        return(self)
+
 
 class IngredientExtractor(object):
     """Estimator that identifies the most 'ingredient like' block from a list
@@ -248,7 +260,7 @@ class PathGetter(CustomTransformer):
                  target_col='path',
                  target_exists='raise'
                  ):
-        self.cfg = Config(env)
+        self.env = env
         self.ground_truth_uids = ground_truth_uids
         self.train_set_path = train_set_path
         self.ground_truth_path = ground_truth_path
@@ -261,6 +273,7 @@ class PathGetter(CustomTransformer):
         """No fit is required for this class.
         """
         super().fit(X)
+        self.cfg = Config(self.env)
         if not self.train_set_path:
             self.train_set_path = os.path.join(*self.cfg.trainsetpath)
         if not self.ground_truth_path:
@@ -286,6 +299,16 @@ class PathGetter(CustomTransformer):
                                     )
             df.loc[uid, self.target_col] = path
         return(df)
+
+    def get_params(self, deep=True):
+        parms = super().get_params()
+        parms['env'] = self.env
+        parms['ground_truth_uids'] = self.ground_truth_uids
+        parms['train_set_path'] = self.train_set_path
+        parms['ground_truth_path'] = self.ground_truth_path
+        parms['path_factory'] = self.path_factory
+        parms['filename_factory'] = self.filename_factory
+        return(parms)
 
 
 class ContentGetter(CustomTransformer):
@@ -351,6 +374,11 @@ class ContentGetter(CustomTransformer):
         path = Path(path)
         return(path.is_file())
 
+    def get_params(self, deep=True):
+        parms = super().get_params()
+        parms['missing_file'] = self.missing_file
+        return(parms)
+
 
 class PDFContentParser(CustomTransformer):
     """Class that parses pdf content to text
@@ -359,12 +387,10 @@ class PDFContentParser(CustomTransformer):
     pimpdf functionalities (based on pdfminer.six)
     """
     def __init__(self,
-                 missing_file='raise',
                  target_exists='raise',
                  source_col='content',
                  target_col='text',
                  ):
-        self.missing_file = missing_file
         super().__init__(source_col=source_col,
                          target_col=target_col,
                          target_exists=target_exists,
@@ -420,3 +446,8 @@ class BlockSplitter(CustomTransformer):
                                             ))
         X[self.target_col] = blocks
         return(X)
+
+    def get_params(self, deep=True):
+        parms = super().get_params()
+        parms['splitter_func'] = self.splitter_func
+        return(parms)
