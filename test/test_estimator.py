@@ -14,6 +14,7 @@ from src.pimest import ContentGetter
 from src.pimest import IngredientExtractor
 from src.pimest import PIMIngredientExtractor
 from src.pimest import PDFContentParser
+from src.pimest import BlockSplitter
 
 
 @pytest.fixture
@@ -343,3 +344,25 @@ class TestPDFContentParser(object):
         target = Path(test_data_001.txt).read_text()
         target += '\x0c'
         assert (data['text'] == target).all()
+
+
+class TestBlockSplitter(object):
+    def test_incorrect_param(self, gt_dataframe):
+        X = gt_dataframe.copy()
+        X['text'] = 'a text'
+        transformer = BlockSplitter(splitter_func=3)
+        with pytest.raises(TypeError):
+            transformer.fit(X)
+        transformer = BlockSplitter()
+
+    def test_override_column_name(self, gt_dataframe):
+        X = gt_dataframe.copy()
+        transformer = BlockSplitter(source_col='col')
+        assert (transformer.fit_transform(X)['blocks'].iloc[0] == ['GT'])
+
+    def test_passing(self, gt_dataframe):
+        X = gt_dataframe.copy()
+        X['text'] = 'a line<sep>another<sep>coucou'
+        transformer = BlockSplitter(splitter_func=lambda x: x.split('<sep>'))
+        target = ['a line', 'another', 'coucou']
+        assert transformer.fit_transform(X)['blocks'].iloc[0] == target

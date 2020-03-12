@@ -381,3 +381,42 @@ class PDFContentParser(CustomTransformer):
         X[self.target_col] = (PDFDecoder
                               .threaded_contents_to_text(X[self.source_col]))
         return(X)
+
+
+class BlockSplitter(CustomTransformer):
+    """Class that splits texts into blocks
+
+    This class converts a text string into blocks (a list of string), using
+    the splitter function provided
+    """
+    def __init__(self,
+                 target_exists='raise',
+                 source_col='text',
+                 target_col='blocks',
+                 splitter_func=(lambda x: x.split('\n\n'))
+                 ):
+        self.splitter_func = splitter_func
+        super().__init__(target_exists=target_exists,
+                         source_col=source_col,
+                         target_col=target_col,
+                         )
+
+    def fit(self, X, y=None):
+        super().fit(X)
+        self._check_splitter_callable()
+        self.fitted_ = True
+        return(self)
+
+    def _check_splitter_callable(self):
+        self.splitter_func('')
+
+    def transform(self, X):
+        super().transform(X)
+        X = X.copy()
+        blocks = (PDFDecoder
+                  .threaded_texts_to_blocks(X[self.source_col],
+                                            split_func=self.splitter_func,
+                                            return_type='as_list',
+                                            ))
+        X[self.target_col] = blocks
+        return(X)
