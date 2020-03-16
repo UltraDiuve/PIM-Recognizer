@@ -3,6 +3,7 @@ Unit test for pimapi module
 """
 
 import pytest
+import socket
 
 from src.pimapi import Requester
 from requests.exceptions import ConnectionError
@@ -16,6 +17,8 @@ class TestRequester(object):
             Requester('toto')
         Requester(env)
 
+    @pytest.mark.skipif(socket.gethostname() == 'devdm',
+                        reason='connection always work when on devdm')
     def test_proxies(self):
         incorrect_proxies = {'http': 'http://incorrectproxy',
                              'https': 'https://incorrectproxy'}
