@@ -12,8 +12,9 @@ import pandas as pd
 from pathlib import Path
 
 from sklearn.feature_extraction.text import CountVectorizer
-from scipy.sparse.linalg import norm as sparse_norm
+from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
+from scipy.sparse.linalg import norm as sparse_norm
 
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
@@ -451,3 +452,60 @@ class BlockSplitter(CustomTransformer):
         parms = super().get_params()
         parms['splitter_func'] = self.splitter_func
         return(parms)
+
+
+class SimilaritySelector(CustomTransformer):
+    """Class that select the most similar block from a block list
+
+    This class provides functionnalities to fit an estimator on a topic
+    specific vocabulary, and to retrieve the best candidate amongst these
+    blocks.
+    It can append a new column to an input pandas DataFrame with the best
+    candidate.
+    """
+    def __init__(self,
+                 source_col='blocks',
+                 target_col='predicted',
+                 target_exists='raise',
+                 fit_col='Ingrédients',
+                 count_vect_kwargs=dict(),
+                 ):
+        super().__init__(source_col=source_col,
+                         target_col=target_col,
+                         target_exists=target_exists,
+                         )
+        self.fit_col = fit_col
+        self.count_vect_kwargs = count_vect_kwargs
+
+    def fit(self, X, y=None):
+        super().fit(X)
+        self.count_vect = CountVectorizer(self.count_vect_kwargs)
+        self.count_vect.fit(X[self.fit_col].fillna(''))
+        self.source_count_vect = CountVectorizer()
+        self.fitted_ = True
+        return(self)
+
+    def predict(self, block_list):
+        check_is_fitted(self)
+        try:
+            check_is_fitted(self.source_count_vect)
+        except NotFittedError:
+            self.source_count_vect.fit(block_list)
+        X_norms = sparse_norm(self.source_count_vect.transform(block_list),
+                              axis=1)
+        X_against_ingred_voc = self.count_vect.transform(block_list)
+        X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
+        pseudo_cosine_sim = np.divide(X_dot_ingred,
+                                      X_norms,
+                                      out=np.zeros(X_norms.shape),
+                                      where=X_norms != 0)
+        self.similarity_ = pseudo_cosine_sim
+        return(block_list[np.argmax(pseudo_cosine_sim)])
+
+    def transform(self, X):
+        super().transform(X)
+        X = X.copy()
+        block_texts = (text for block in X[self.source_col] for text in block)
+        self.source_count_vect.fit(block_texts)
+        X[self.target_col] = X[self.source_col].apply(self.predict)
+        return(X)

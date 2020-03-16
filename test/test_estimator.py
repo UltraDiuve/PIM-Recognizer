@@ -5,6 +5,7 @@ Unit test for pimest module
 import pytest
 import os
 import pandas as pd
+import numpy as np
 from pathlib import Path
 
 from sklearn.exceptions import NotFittedError
@@ -15,6 +16,7 @@ from src.pimest import IngredientExtractor
 from src.pimest import PIMIngredientExtractor
 from src.pimest import PDFContentParser
 from src.pimest import BlockSplitter
+from src.pimest import SimilaritySelector
 
 
 @pytest.fixture
@@ -107,6 +109,21 @@ def df_content():
     contents = [content]
     idx = pd.Index(['001'], name='uid')
     df = pd.DataFrame(contents, index=idx, columns=['content'])
+    return(df)
+
+
+@pytest.fixture
+def simil_df():
+    ingred = ['eau, sucre',
+              'malodextrine, farine de blé',
+              '100% haricots blancs']
+    blocks = [['Transformé en France', '100% sucre'],
+              ['Les bons bonbons', 'agréement contact', 'E110, farine'],
+              ['haricots', 'sans additif ni conservateur', 'Conforme']]
+    index = pd.Index(['001', '002', '003'], name='uid')
+    data = {'Ingrédients': ingred,
+            'blocks': blocks}
+    df = pd.DataFrame(data, index=index)
     return(df)
 
 
@@ -398,3 +415,44 @@ class TestBlockSplitter(object):
 
     def test_set_params(self):
         BlockSplitter().set_params(source_col='toto')
+
+
+class TestSimilaritySelector(object):
+    def test_base(self, simil_df):
+        transformer = SimilaritySelector()
+        transformer.fit(simil_df)
+
+    def test_predict(self, simil_df):
+        transformer = SimilaritySelector().fit(simil_df)
+        test_blocks = ['fabriqué en Italie',
+                       'mélange de nougat',
+                       'sucre, eau et betteraves']
+        assert transformer.predict(test_blocks) == 'sucre, eau et betteraves'
+
+    def test_predict_not_fitted(self):
+        with pytest.raises(NotFittedError):
+            SimilaritySelector().predict(['1', '2'])
+
+    def test_transform(self, simil_df):
+        out_df = SimilaritySelector().fit_transform(simil_df)
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              index=simil_df.index,
+                              name='predicted')
+        assert out_df['predicted'].equals(target_ds)
+
+    def test_empty_blocks(self, simil_df):
+        X = simil_df.copy()
+        X['blocks'].iloc[1] = ['']
+        SimilaritySelector().fit_transform(X)
+
+    def test_empty_ingred(self, simil_df):
+        X = simil_df.copy()
+        X['Ingrédients'].iloc[1] = np.nan
+        SimilaritySelector().fit_transform(X)
+
+    def test_predict_no_transform(self, simil_df):
+        transformer = SimilaritySelector().fit(simil_df)
+        transformer.predict(['haricot', 'exploité en Inde'])
