@@ -50,7 +50,6 @@ class Requester(object):
         else:
             # If a proxy configuration has been passed as an argument, we
             # only validate the connexion with that configuration.
-            print(self.session.proxies, ' here!')
             self.check_connection()
         self.rlock = threading.RLock()
         self.result = []
