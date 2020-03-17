@@ -34,3 +34,4 @@ class TestRequester(object):
         requester.check_connection()
         with pytest.raises(ConnectionError):
             requester.check_credentials()
+    
