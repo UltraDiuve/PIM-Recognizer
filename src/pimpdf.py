@@ -22,11 +22,25 @@ class PDFDecoder(object):
     """
 
     @staticmethod
-    def content_to_text(content):
+    def content_to_text(content,
+                        none_content='raise'):
         """Decodes the binary passed as argument
 
         content arg must be a Bytesio object.
+        none_content arg must be raise (if it is not expected to have an empty
+        input, the default) or to_empty (which will cause to return an empty
+        string)
         """
+        if none_content not in {'raise', 'to_empty'}:
+            raise ValueError(f'Unexpected value for none_content parameter. '
+                             f'Got {none_content} but only \'raise\' or '
+                             f'\'to_empty\' are expected.')
+        if not content.read():
+            if none_content == 'raise':
+                raise RuntimeError(f'PDFminer got an empty bytesIO object to '
+                                   f'parse')
+            if none_content == 'to_empty':
+                return('')
         output_string = StringIO()
         parser = PDFParser(content)
         doc = PDFDocument(parser)
@@ -167,7 +181,9 @@ class PDFDecoder(object):
         return(pd.concat(ds_list, axis=0))
 
     @staticmethod
-    def threaded_contents_to_text(content_series, processes=None,
+    def threaded_contents_to_text(content_series,
+                                  processes=None,
+                                  none_content='raise',
                                   ):
         """Threaded version of content_to_text method
 
@@ -177,7 +193,9 @@ class PDFDecoder(object):
         processes argument is the number of processes to launch. If omitted,
         it defaults to the number of cpu cores on the machine.
         """
-        processer = PDFDecoder.content_to_text
+        processer = partial(PDFDecoder.content_to_text,
+                            none_content=none_content,
+                            )
         processes = processes if processes else cpu_count()
         print(f'Launching {processes} processes.')
         in_ds = content_series.apply(BytesIO)
