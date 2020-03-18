@@ -5,6 +5,7 @@ Unit test for pimpdf module
 import pytest
 from pathlib import Path
 from collections import namedtuple
+from io import BytesIO
 import pandas as pd
 import re
 
@@ -301,8 +302,22 @@ class TestPDFDecoder(object):
                 content_list.append(content.read())
         content_ds = pd.Series(content_list, index=[test_data_001.uid,
                                                     test_data_002.uid])
-        # Unexpected non_content argument
+        # Unexpected none_content argument
         with pytest.raises(ValueError):
             (PDFDecoder.
              threaded_contents_to_text(content_ds,
                                        none_content='incorrect_input'))
+
+    def test_invalid_none_content_arg(self):
+        with pytest.raises(ValueError):
+            PDFDecoder.content_to_text(b'', none_content='incorrect_input')
+
+    def test_none_content(self):
+        content = BytesIO(b'')
+        with pytest.raises(RuntimeError):
+            PDFDecoder.content_to_text(content, none_content='raise')
+        assert PDFDecoder.content_to_text(content, none_content='to_empty') == ''
+
+    def test_incorrect_content_type(self):
+        with pytest.raises(AttributeError):
+            PDFDecoder.content_to_text(b'', none_content='to_empty')
