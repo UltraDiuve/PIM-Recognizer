@@ -192,7 +192,7 @@ class PDFDecoder(object):
         # This just closes each pool after execution or exception.
         try:
             pool = Pool(nodes=processes)
-            pool.restart()
+            pool.restart(force=True)
             ds_list = pool.map(processer,
                                path_series,
                                path_series.index)
@@ -240,7 +240,7 @@ class PDFDecoder(object):
         # This just closes each pool after execution or exception.
         try:
             pool = Pool(nodes=processes)
-            pool.restart()
+            pool.restart(force=True)
             tuples = (list(in_ds.index), pool.map(processer, in_ds))
         except Exception:
             pool.close()
@@ -287,7 +287,7 @@ class PDFDecoder(object):
         # This just closes each pool after execution or exception.
         try:
             pool = Pool(nodes=processes)
-            pool.restart()
+            pool.restart(force=True)
             ds_list = pool.map(processer, text_series, text_series.index)
         except Exception:
             pool.close()

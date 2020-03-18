@@ -170,6 +170,12 @@ class TestPDFDecoder(object):
                                                      missing_file='ignore')
         assert output.equals(target_ds)
 
+        with pytest.raises(FileNotFoundError):
+            PDFDecoder.threaded_paths_to_blocks(input,
+                                                split_func=splitter_func,
+                                                missing_file='raise',
+                                                )
+
     def test_content_to_text_to_blocks(self, test_data_001, test_data_002,
                                        make_target_series, splitter_func,
                                        ):
