@@ -175,9 +175,33 @@ class PDFDecoder(object):
                             split_func=split_func, missing_file=missing_file)
         processes = processes if processes else cpu_count()
         print(f'Launching {processes} processes.')
-        with Pool(nodes=processes) as pool:
+
+        # Pool with context manager do not seem to work due to issue 38501 of
+        # standard python library. It hangs when running tests through pytest
+        # see: https://bugs.python.org/issue38501
+        # Below content should be tested again whenever this issue is closed
+        #
+        # with Pool(nodes=processes) as pool:
+        #     ds_list = pool.map(processer,
+        #                        path_series, path_series.index)
+        #
+        # End of block
+
+        # This temporary solution should be removed when tests mentioned above
+        # are successful.
+        # This just closes each pool after execution or exception.
+        try:
+            pool = Pool(nodes=processes)
+            pool.restart()
             ds_list = pool.map(processer,
-                               path_series, path_series.index)
+                               path_series,
+                               path_series.index)
+        except Exception:
+            pool.close()
+            raise
+        pool.close()
+        # End of block
+
         return(pd.concat(ds_list, axis=0))
 
     @staticmethod
@@ -199,9 +223,31 @@ class PDFDecoder(object):
         processes = processes if processes else cpu_count()
         print(f'Launching {processes} processes.')
         in_ds = content_series.apply(BytesIO)
-        with Pool(nodes=processes) as pool:
-            tuples = (list(in_ds.index),
-                      pool.map(processer, in_ds))
+
+        # Pool with context manager do not seem to work due to issue 38501 of
+        # standard python library. It hangs when running tests through pytest
+        # see: https://bugs.python.org/issue38501
+        # Below content should be tested again whenever this issue is closed
+        #
+        # with Pool(nodes=processes) as pool:
+        #     tuples = (list(in_ds.index),
+        #               pool.map(processer, in_ds))
+        #
+        # End of block
+
+        # This temporary solution should be removed when tests mentioned above
+        # are successful.
+        # This just closes each pool after execution or exception.
+        try:
+            pool = Pool(nodes=processes)
+            pool.restart()
+            tuples = (list(in_ds.index), pool.map(processer, in_ds))
+        except Exception:
+            pool.close()
+            raise
+        pool.close()
+        # End of block
+
         ds = pd.Series(tuples[1], index=tuples[0])
         return(ds)
 
@@ -225,8 +271,29 @@ class PDFDecoder(object):
                             return_type=return_type)
         processes = processes if processes else cpu_count()
         print(f'Launching {processes} processes.')
-        ds_list = []
-        with Pool(nodes=processes) as pool:
+
+        # Pool with context manager do not seem to work due to issue 38501 of
+        # standard python library. It hangs when running tests through pytest
+        # see: https://bugs.python.org/issue38501
+        # Below content should be tested again whenever this issue is closed
+        #
+        # with Pool(nodes=processes) as pool:
+        #     ds_list = pool.map(processer, text_series, text_series.index)
+        #
+        # End of block
+
+        # This temporary solution should be removed when tests mentioned above
+        # are successful.
+        # This just closes each pool after execution or exception.
+        try:
+            pool = Pool(nodes=processes)
+            pool.restart()
             ds_list = pool.map(processer, text_series, text_series.index)
+        except Exception:
+            pool.close()
+            raise
+        pool.close()
+        # End of block
+
         ds = pd.concat(ds_list, axis=0)
         return(ds)

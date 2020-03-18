@@ -221,12 +221,12 @@ class TestPDFDecoder(object):
         print(target.loc['001'])
         assert blocks_ds.loc['001'] == target.loc['001']
 
-    def test_empty_content(self,
-                           test_data_001,
-                           test_data_002,
-                           make_target_series,
-                           splitter_func,
-                           ):
+    def test_empty_content_raise(self,
+                                 test_data_001,
+                                 test_data_002,
+                                 make_target_series,
+                                 splitter_func,
+                                 ):
         content_list = []
         for test_data in [test_data_001, test_data_002]:
             with open(test_data.pdf, mode='rb') as content:
@@ -238,6 +238,20 @@ class TestPDFDecoder(object):
         with pytest.raises(RuntimeError):
             PDFDecoder.threaded_contents_to_text(content_ds,
                                                  none_content='raise')
+
+    def test_empty_content_none(self,
+                                test_data_001,
+                                test_data_002,
+                                make_target_series,
+                                splitter_func,
+                                ):
+        content_list = []
+        for test_data in [test_data_001, test_data_002]:
+            with open(test_data.pdf, mode='rb') as content:
+                content_list.append(content.read())
+        content_list[0] = None
+        content_ds = pd.Series(content_list, index=[test_data_001.uid,
+                                                    test_data_002.uid])
         # Passing case where content input is None
         texts_ds = (PDFDecoder
                     .threaded_contents_to_text(content_ds,
@@ -246,7 +260,18 @@ class TestPDFDecoder(object):
         assert (texts_ds.iloc[1] ==
                 (Path(test_data_002.txt).read_text(encoding='utf-8-sig')
                  + '\x0c'))
+
+    def test_empty_content_empty(self,
+                                 test_data_001,
+                                 test_data_002,
+                                 make_target_series,
+                                 splitter_func,
+                                 ):
         # Passing case where content input is empty string
+        content_list = []
+        for test_data in [test_data_001, test_data_002]:
+            with open(test_data.pdf, mode='rb') as content:
+                content_list.append(content.read())
         content_list[0] = b''
         content_ds = pd.Series(content_list, index=[test_data_001.uid,
                                                     test_data_002.uid])
@@ -257,6 +282,19 @@ class TestPDFDecoder(object):
         assert (texts_ds.iloc[1] ==
                 (Path(test_data_002.txt).read_text(encoding='utf-8-sig')
                  + '\x0c'))
+
+    def test_invalid_arg(self,
+                         test_data_001,
+                         test_data_002,
+                         make_target_series,
+                         splitter_func,
+                         ):
+        content_list = []
+        for test_data in [test_data_001, test_data_002]:
+            with open(test_data.pdf, mode='rb') as content:
+                content_list.append(content.read())
+        content_ds = pd.Series(content_list, index=[test_data_001.uid,
+                                                    test_data_002.uid])
         # Unexpected non_content argument
         with pytest.raises(ValueError):
             (PDFDecoder.
