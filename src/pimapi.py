@@ -552,9 +552,9 @@ class Requester(object):
                         df.df[key] = np.nan
             df = df.df
         else:
-            df = pd.io.json.json_normalize(result_json,
-                                           record_path=record_path,
-                                           meta=meta)
+            df = pd.json_normalize(result_json,
+                                   record_path=record_path,
+                                   meta=meta)
         if index:
             df.set_index(index, inplace=True)
         return(df)
