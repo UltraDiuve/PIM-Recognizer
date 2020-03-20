@@ -216,6 +216,7 @@ class PDFDecoder(object):
         documents.
         processes argument is the number of processes to launch. If omitted,
         it defaults to the number of cpu cores on the machine.
+        none_content arg can be 'raise' (default) or to_empty
         """
         processer = partial(PDFDecoder.content_to_text,
                             none_content=none_content,

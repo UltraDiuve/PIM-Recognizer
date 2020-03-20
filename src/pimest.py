@@ -391,7 +391,9 @@ class PDFContentParser(CustomTransformer):
                  target_exists='raise',
                  source_col='content',
                  target_col='text',
+                 none_content='raise'
                  ):
+        self.none_content = none_content
         super().__init__(source_col=source_col,
                          target_col=target_col,
                          target_exists=target_exists,
@@ -405,8 +407,10 @@ class PDFContentParser(CustomTransformer):
     def transform(self, X):
         super().transform(X)
         X = X.copy()
-        X[self.target_col] = (PDFDecoder
-                              .threaded_contents_to_text(X[self.source_col]))
+        tran = (PDFDecoder
+                .threaded_contents_to_text(X[self.source_col],
+                                           none_content=self.none_content))
+        X[self.target_col] = tran
         return(X)
 
 
