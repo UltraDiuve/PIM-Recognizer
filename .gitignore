@@ -144,3 +144,8 @@ dmypy.json
 
 # Visual studio code stuff
 .vscode/*
+
+# LaTeX report build artifacts (keeping only .tex and .pdf)
+report/*
+!report/*.tex
+!report/*.pdf
