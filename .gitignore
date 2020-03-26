@@ -149,3 +149,4 @@ dmypy.json
 report/*
 !report/*.tex
 !report/*.pdf
+!report/*.bib

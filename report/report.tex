@@ -6,36 +6,83 @@
 
 \usepackage{lmodern}
 
+\usepackage{setspace}
+\spacing{1.5}
+
+\makeatletter
+\@addtoreset{chapter}{part}
+\makeatother  
+
+\usepackage{url}
+
 \title{Extraction de données relatives aux produits alimentaires à partir de documents non structurés}
 \author{Pierre \textsc{massé}}
-\date{June 2020}
+\date{Juin 2020}
 
 \begin{document}
 
 \maketitle
 
+\large
 \begin{abstract}
-Héhé !
+    {\em
+    La gestion de l'information produit est devenu un enjeu de société majeur ces dernières années.
+    Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière\cite{incotext}\cite{incoexpl}.
+    }
 \end{abstract}
+\normalsize
 
 \tableofcontents
 
 \part{Contexte métier}
-    \chapter{Le métier du Groupe Pomona}
+    \chapter{Description du Groupe}
+        \section{Le métier du Groupe Pomona}
+        \section{Les deux niveaux de décentralisation}
+        \section{Les branches}
+            \subsection{Les branches RHD}
+            \subsection{Les branches spécialistes}
+            \subsection{L'étranger}
     \chapter{La gestion de l'information produit}
         \section{L'information produit}
         \section{Le processus associé}
-    \chapter{Le PIM (Product Information Management)}
+        \section{Le PIM (Product Information Management)}
 \part{Les données disponibles}
     \chapter{Le périmètre produit}
     \chapter{Les données utilisables}
         \section{Données structurées}
         \section{Données non structurées}
+        \section{Pièces jointes}
+            \subsection{Fiches techniques fournisseur}
+            \subsection{\'{E}tiquettes produit}
+            \subsection{Fiches logistiques fournisseur}
+            \subsection{Fiches techniques et argumentaires Pomona}
+        \section{Un mot sur la qualité des données}
+        \section{Les données \og manuellement étiquetées \fg}
 \part{Les objectifs de ce projet}
-        \section{Les cas d'usage}
-        \section{Le type de données à récupérer}
+    \chapter{Les cas d'usage}
+        \section{Objectifs : Qualité et productivité}
+        \section{La préalimentation d'information}
+        \section{Le contrôle à la saisie fournisseur}
+        \section{L'aide aux vérifications Pomona}
+        \section{Les contrôles en masse asynchrones}
+    \chapter{Le type de données à récupérer}
+        \section{La composition produit}
+        \section{Les données nutritionnelles}
+        \section{Les données logistiques}
 
-
-
+\appendix
+\part{Figures et tableaux}
+    \listoftables
+    \listoffigures
+\part{Bibliographie}
+    \bibliographystyle{plain}
+    \bibliography{./biblio}
+\part{Exemple de documents fournisseur}
+    \chapter{Fiches techniques}
+    \chapter{\'{E}tiquettes produit}
+\part{Le code utilisé}
+    \chapter{Extraction de données du PIM}
+    \chapter{Conversion des pièces jointes en textes}
+    \chapter{Identification des listes d'ingrédients}
 
 \end{document}
