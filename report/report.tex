@@ -9,9 +9,9 @@
 \usepackage{setspace}
 \spacing{1.5}
 
-\makeatletter
-\@addtoreset{chapter}{part}
-\makeatother  
+% \makeatletter
+% \@addtoreset{chapter}{part}
+% \makeatother  
 
 \usepackage{url}
 
@@ -26,8 +26,16 @@
 \large
 \begin{abstract}
     {\em
+    
     La gestion de l'information produit est devenu un enjeu de société majeur ces dernières années.
-    Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière\cite{incotext}\cite{incoexpl}.
+    Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de la mise en place de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière\cite{incotext}\cite{incoexpl}.
+    \`{A} ce titre, le Groupe Pomona a lancé ces dernières années un projet majeur de refonte des processus et des outils de gestion de l'information produit.
+
+    La première filiale a fait l'objet d'un déploiement réussi, mais qui a toutefois mis en évidence le fait que des gains à la fois en qualité et en productivité restent accessibles.
+
+    La mise en place d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du Groupe.
+
+    Le présent rapport détaille la mise en place d'un outil permettant d'extraire les listes d'ingrédients des fiches techniques transmises par les fabricants des produits.
     }
 \end{abstract}
 \normalsize
@@ -40,14 +48,29 @@
         \section{Les deux niveaux de décentralisation}
         \section{Les branches}
             \subsection{Les branches RHD}
+            
+            Préciser ici le non recouvrement des produits entre les branches
+
             \subsection{Les branches spécialistes}
+
+            Dire que là, entre elles pas trop, mais avec les branches RHD, si.
+
             \subsection{L'étranger}
+            \subsection{Recouvrements des gammes de produits}
+
+            Mettre ici un schéma représentant les gammes de produits
+
     \chapter{La gestion de l'information produit}
         \section{L'information produit}
         \section{Le processus associé}
         \section{Le PIM (Product Information Management)}
-\part{Les données disponibles}
+
+\part{Les données}
     \chapter{Le périmètre produit}
+        \section{Accessibilité de la donnée en fonction des branches}
+        \section{Les branches déployées}
+        \section{Les types de produit}
+        \section{}
     \chapter{Les données utilisables}
         \section{Données structurées}
         \section{Données non structurées}
@@ -56,8 +79,22 @@
             \subsection{\'{E}tiquettes produit}
             \subsection{Fiches logistiques fournisseur}
             \subsection{Fiches techniques et argumentaires Pomona}
-        \section{Un mot sur la qualité des données}
+        \section{Analyse qualitative des données}
+        
+        Montrer qu'un sondage basique fait que la qualité actuelle est perfectible
+
+        Mettre également la distribution numérique des produits par fournisseur et insister sur la difficulté posée par de multiples formats
+
         \section{Les données \og manuellement étiquetées \fg}
+
+        Montrer comment elles ont été produites
+
+        Expliciter les règles de gestion qui ont été listées pendant l'étiquetage manuel
+
+        Evaluer la cohérence entre étiquettes manuelles et contenu du PIM
+
+\part{Construction d'un modèle}
+
 \part{Les objectifs de ce projet}
     \chapter{Les cas d'usage}
         \section{Objectifs : Qualité et productivité}
@@ -69,6 +106,24 @@
         \section{La composition produit}
         \section{Les données nutritionnelles}
         \section{Les données logistiques}
+
+\part{Travaux subséquents}
+    \chapter{Opérationnalisation de cette maquette}    
+        \section{Client et sponsor métier}
+        \section{Définition des règles de gestion}
+        \section{Mise en place d'une organisation projet}
+        \section{Industrialisation du code}
+        Prochaines étapes : opérationnalisation via API \\
+        Documentation
+    \chapter{Extension des fonctionnalités offertes}
+        \section{Prise en compte de nouveaux types de pièces jointes}
+        \section{Utilisation d'outil d'OCR pour les pdf non structurés}
+        \section{Mise en place d'outil de spatialisation des textes}
+        \section{Construction d'outils d'extraction de données connexes à la composition}
+        \section{\'{E}largissement aux données nutritionnelles}
+        \section{Extraction \og opportuniste \fg d'informations \\ complémentaires}
+        \section{\'{E}valuation de la performances sur d'autres familles de produits}
+
 
 \appendix
 \part{Figures et tableaux}
