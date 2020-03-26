@@ -413,6 +413,11 @@ class PDFContentParser(CustomTransformer):
         X[self.target_col] = tran
         return(X)
 
+    def get_params(self, deep=True):
+        parms = super().get_params()
+        parms['none_content'] = self.none_content
+        return(parms)
+
 
 class BlockSplitter(CustomTransformer):
     """Class that splits texts into blocks
