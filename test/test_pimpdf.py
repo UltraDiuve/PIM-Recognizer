@@ -316,7 +316,8 @@ class TestPDFDecoder(object):
         content = BytesIO(b'')
         with pytest.raises(RuntimeError):
             PDFDecoder.content_to_text(content, none_content='raise')
-        assert PDFDecoder.content_to_text(content, none_content='to_empty') == ''
+        assert (PDFDecoder.content_to_text(content, none_content='to_empty')
+                == '')
 
     def test_incorrect_content_type(self):
         with pytest.raises(AttributeError):
