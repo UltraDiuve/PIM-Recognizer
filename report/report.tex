@@ -17,7 +17,17 @@
 
 \usepackage{graphicx}
 
+\usepackage{array,multirow,makecell,tabularx}
+\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+% \newcolumntype{Y}{>{\centering\arraybackslash}X}
+% \setcellgapes{1pt}
+% \makegapedcells
+% \newcolumntype{R}[1]{>{\raggedleft\arraybackslash }b{#1}}
+% \newcolumntype{L}[1]{>{\raggedright\arraybackslash }b{#1}}
+% \newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
+
 \newcommand{\emphbox}[1]{
+    \vspace{5mm}
     \noindent\fbox{
         \begin{minipage}[c]{\linewidth}
             {\em #1}
@@ -52,159 +62,7 @@
 
 \tableofcontents
 
-\part{Contexte métier}
-
-    \chapter{Description du Groupe}
-
-    \large
-    L'objet de l'ensemble de cette première partie est de donner sur le Groupe Pomona des éclairages nécessaires à la compréhension du cas d'usage développé.
-    Bien d'autres aspects sur la société, pourraient être mentionnés (ex : des indicateurs sur l'activité, l'histoire du Groupe\dots) mais ils seront omis car non indispensables à la compréhension du sujet.
-    Plus de détails sur le Groupe sont accessibles sur le site web de la société\cite{site_pomona}.
-    \normalsize    
-
-        \section{Le métier du Groupe Pomona}
-
-        Le Groupe Pomona est une société de distribution livrée de produits alimentaires à destination des professionnels des métiers de bouche.
-        L'activité du Groupe consiste uniquement à acheter et revendre de la marchandise, à l'exclusion de toute activité de fabrication ou de transformation\footnote{de très rares cas de transformation existent (ex : mûrissage de fruits, filetage de poisson) mais extrêmement exceptionnels}. Le Groupe Pomona est une société de \emph{distribution}. Elle ne possède d'ailleurs pas d'actif industriels (autre que des entrepôts logistiques) ni d'agréement 
-        
-        
-        Cette activité d'achat/vente se fait dans la majorité des cas sous le régime du \emph{négoce}, à savoir que le Groupe acquiert la propriété des marchandises qu'il commercialise avant de la céder à ses clients.
-        L'autre régime est celui dit de la \emph{prestation (logistique)}.
-        Dans ce cas, par le jeux d'écritures comptables, la valorisation du stock disparaît des comptes du Groupe.
-        Néanmoins, indépendamment de cet aspect purement comptable, l'ensemble :
-        \begin{description}
-            \item[des flux de documents :] commandes d'achat, factures fournisseur, commandes de vente, factures clients
-            \item[des flux financiers :] paiements fournisseur, paiements client
-            \item[des flux physiques :] réception et stockage, préparation et expédition
-        \end{description}
-        restent largement inchangés.
-        
-        Pour résumer, l'activité de l'ensemble des entités du Groupe pourraient se résumer via le schéma présenté en figure \ref{fig:flux metier}
-
-        \begin{figure}[htbp]
-            \begin{center}
-            \includegraphics[width=\linewidth]{img/Les flux métier de Pomona.png}
-            \end{center}
-            \caption{Les flux métier avec les partenaires commerciaux}
-            \label{fig:flux metier}
-        \end{figure}
-
-        \emphbox{Le métier du Groupe est d'être un \emph{grossiste}, qui achète et revend des produits alimentaires\footnotemark \ \emph{sans produire ou transformer quoi que ce soit}.}
-        \footnotetext{dans la grande majorité des cas, cf. paragraphes suivants}
-
-        \section{La décentralisation}
-        
-        Le Groupe Pomona est un Groupe fortement décentralisé, avec des organisations largement indépendantes les unes des autres. 
-
-            \subsection{Les Directions fonctionnelles}
-
-            Pour des raisons évidentes de recherche de synergies ou de conformité réglementaires, certaines activités restent toutefois mutualisées à la maille du Groupe.
-            Il s'agit des organisations suivantes :
-            \begin{description}
-                \item[La Direction Administrative et Financière (DAF) :] regroupe les équipes comptables Groupe, l'audit interne et la consolidation financière
-                \item[La Direction Qualité :] est en charge de définir et contrôler l'application des standard de qualité
-                \item[La Direction des Systèmes d'Information (DSI) :] développe et maintient en condition opérationnelles les systèmes d'information du Groupe
-                \item[La Direction Technique et Logistique (DTL) :] est en charge des projets immobiliers (entrepôts), des négociations avec les transporteurs et joue un rôle de conseil interne sur les sujets logistiques
-                \item[La Direction des Ressources Humaines :] se charge de l'ensemble des aspects en lien avec le recrutement, la paye et les sujets sociaux
-                \item[La Direction Commerciale Groupe (DCG) :] définit une stratégie et des bonnes pratiques commerciales et marketing
-            \end{description}
-
-            \subsection{Les clients du Groupe}
-            \label{clients}
-
-            Afin de comprendre l'organisation du Groupe, il est nécessaire de connaître la typologie de ses clients.
-            Comme mentionné précédemment, le Groupe s'adresse exclusivement aux professionnels des métiers de bouche.
-            Aucune marchandise n'est vendue à des particuliers.
-            Les principales typologies de clients sont les suivantes : 
-            \begin{description}
-                \item[Les Sociétés de Restauration :] elles exploitent les restaurants d'entreprise et certaines cantines d'établissement d'enseignement supérieur
-                \item[Les Marchés Publics :] regroupent les clients qui dépendent des collectivités (écoles, hôpitaux, prisons, \dots)
-                \item[La restauration commerciale :] est l'ensemble des restaurants à vocation commerciale, qu'ils soient chaînés (hippopotamus, O'Tacos, \dots) ou indépendants (\og le restaurant du coin \fg)
-                \item[Les spécialistes :] il s'agit des détaillants spécialisés qui s'adressent aux particuliers. Boulangers, pâtissiers, bouchers, traiteurs, vente à emporter, \dots
-                \item[Les Grandes et Moyennes surfaces (la GMS) :] sont les enseignes de la grande distribution. En général, l'accès à ces clients est compliqué par les règles mises en place par leurs centrales d'achat. Il représentent en général qu'un canal de vente d'opportunité.
-            \end{description}
-
-            Les trois premières de ces catégories représentent ce que l'on appelle la \emph{Restauration Hors Domicile (RHD)} (ou parfois également la Restauration Hors Foyer, RHF).
-
-            \subsection{Premier niveau de décentralisation : les branches}
-            
-            Le Groupe Pomona est divisé en branches, qui sont des organisations indépendantes et qui ont toute latitude pour gérer leurs stratégie et politique commerciales, la gestion de leurs achats, leur stratégie marketing, \dots
-            Afin d'éviter de se concurrencer entre elles, leurs domaines d'activité respectifs ont été partitionnés par familles de produit commercialisés, segments client cibles et géographie. 
-
-                \subsubsection{Les branches RHD}
-                
-                Les branches RHD s'adressent comme leur nom l'indique aux client de la Restauration Hors Domicile (cf. section \ref{clients} page \pageref{clients}) en France.
-                Elles se répartissent ce marché en travaillant des gammes de produits distinctes.
-                Il s'agit des branches historiques du Groupe, qui représentent l'essentiel de son chiffre d'affaire.
-                La répartition par produit est la suivante :
-                \begin{description}
-                    \item[PassionFroid :] spécialiste des \emph{produits surgelés, de la viande fraîche et des produits laitiers}
-                    \item[\'{E}piSaveurs :] spécialiste des produits qui se conservent à température ambiante : \emph{produits d'épicerie, conserves, boissons et consommables de cuisine non-alimentaires}
-                    \item[TerreAzur :] spécialites des \emph{Fruits et Légumes frais, et Produits De la Mer frais} 
-                \end{description}
-                La non-concurrence entre les branches est assurée par le fait qu'elles ne commercialisent pas les mêmes produits.
-                Bien que nommées RHD, elles peuvent également vendre leurs produits à la grande distribution, mais généralement ces marchés sont verrouillés par les centrales d'achat des grandes enseignes.
-
-                \subsubsection{Les branches spécialistes}
-
-                Les branches spécialistes s'adressent aux clients dits spécialistes (cf. section \ref{clients} page \pageref{clients}) en France.
-                Elles sont en mesure de commercialiser tout type de produit pour répondre aux besoins de leurs clients.
-                En particulier, elles peuvent tout à fait commercialiser certains produits qui sont également vendus par les branches RHD.
-                Elles se répartissent la clientèle spécialiste de la manière suivante :
-                \begin{description}
-                    \item[Délice et Création :] s'addresse aux \emph{Boulangers et Pâtissiers}
-                    \item[Saveurs d'Antoine :] s'adresse aux \emph{Bouchers, Charcutiers et Traiteurs}
-                    \item[Relais d'Or :] s'addresse à la \emph{restauration indépendante nomade}
-                \end{description}
-                Comme pour les branches RHD, ces branches peuvent lorsqu'elles en ont l'opportunité vendre leurs produits à la GMS.
-
-                \subsubsection{L'étranger}
-
-                Bien que le Groupe Pomona soit une société dont l'essentiel de l'activité est faite sur le marché français, deux réseaux sont en cours de constitution sur des pays limitrophe.
-                Ces branches sont susceptibles de travailler tout type de produit, à destination de tout type de client.
-                Elles sont positionnées sur les marchés suivants : 
-                \begin{description}
-                    \item[Pomona Suisse :] présente sur le marché Suisse
-                    \item[Pomona Iberia :] présente sur le marché Espagnol 
-                \end{description}
-
-                On peut synthétiser la répartition de l'activité par branche de la manière présentée à la figure \ref{fig:repartition_activite}.
-                \begin{figure}[htpb]
-                    \begin{center}
-                    \includegraphics[width=\linewidth]{img/La répartition de l'activité des branches.png}
-                    \end{center}
-                    \caption{La répartition de l'activité des branches}
-                    \label{fig:repartition_activite}
-                \end{figure}
-
-            \subsection{Le second niveau de décentralisation : les succursales}
-
-            Chacune des branches est elle-même à son tour décentralisée en un réseau d'entrepôts régionaux : les succursales (parfois également appelées simplement \og régions\fg).
-            Ces succursales sont gérées comme des PME indépendantes, avec un directeur et un compte de résultat qui leur est propre.
-            Si certaines négociation avec des fournisseurs ou des clients nationaux sont parfois menée par les branches, les succursales sont autonomes dans :
-            \begin{itemize}
-                \item{la définition de leur assortiment, même si des contraintes s'appliquent}
-                \item{la stratégie de développement commercial}
-                \item{la négociation des prix d'achat}
-                \item{la négociation des prix de vente}
-                \item{la politique de rémunération de leurs employés}
-            \end{itemize}
-            
-            \'{A} ce titre, elles ont leurs propres équipes d'achat, leurs équipes commerciales (télévente et vente route), leurs équipes administratives et évidemment leurs équipes logistiques (essentiellement en entrepôt et les chauffeurs livreurs en charge des livraisons client).
-            Un exemple de maillage régional est présenté en figure \ref{fig:reseau_es}, sachant que ce maillage régional est différent pour chacune des branches.
-            \begin{figure}[htpb]
-                \begin{center}
-                \includegraphics[width=\linewidth]{img/réseau es.png}
-                \end{center}
-                \caption{Le maillage régional de la branche \'{E}piSaveurs}
-                \label{fig:reseau_es}
-            \end{figure}
-
-
-    \chapter{La gestion de l'information produit}
-        \section{L'information produit}
-        \section{Le processus associé}
-        \section{Le PIM (Product Information Management)}
+\input{business}
 
 \part{Les données}
     \chapter{Le périmètre produit}
@@ -213,10 +71,15 @@
         \section{Les types de produit}
     \chapter{Les données utilisables}
         \section{Données structurées}
+        
         \section{Données non structurées}
+        
+        Les listes d'ingrédients juste une liste ordonnées d'ingrédients triés par ordre décroissant de quantité mise en oeuvre.
+
+        Parfois détaillé par phase, mais en général déconseillé.
         \section{Pièces jointes}
 
-            Dans chacune des sections, mentionner la volumétrie de données accessibles (avec les facettes migration, statuts, \& compagnie)
+            Dans chacune des sections, mentionner la volumétrie de données accessibles (avec les facettes migration, statuts, \& compagnie) et tout
 
             \subsection{Fiches techniques fournisseur}
             \subsection{\'{E}tiquettes produit}
@@ -261,15 +124,11 @@
         blablabla
         \newline
         \newline
-        \emphbox{Au vu des différentes contraintes listées plus haut, on s'attachera à extraire \emph{les listes d'ingrédients} depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}
+        \emphbox{Au vu des différentes contraintes listées plus haut, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}
 
 \part{Construction du modèle}
     \chapter{Les principes généraux}
         \section{Contenu du texte d'une liste d'ingrédients}
-
-        Les listes d'ingrédients juste une liste ordonnées d'ingrédients triés par ordre décroissant de quantité mise en oeuvre.
-
-        Parfois détaillé par phase, mais en général déconseillé.
 
         En général, chaque ingrédient sera présent une seule fois dans la liste.
 
@@ -323,11 +182,14 @@
 
     \chapter{Mesure de la performance}
     
-        \section{Calcul de la précision}
+        \section{Précision}
             \subsection{Approche naïve}
 
             \subsection{Avec du \og text-postprocessing \fg}
-        \section{Calcul d'une \emph{loss}}
+        
+        \section{Similarité cosinus}
+
+        \section{Fonction de \emph{loss} spécifique}
 
         Expliciter les diverses distances, et pourquoi certaines sont plus pertinentes que d'autres.
 
@@ -381,10 +243,9 @@
 
 
 \appendix
-\part{Figures et tableaux}
+\part{Figures, tableaux et bibliographie}
     \listoftables
     \listoffigures
-\part{Bibliographie}
     \bibliographystyle{plain}
     \bibliography{./biblio}
 \part{Exemple de documents fournisseur}
