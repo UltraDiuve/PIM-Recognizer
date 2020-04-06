@@ -9,6 +9,7 @@
     \normalsize    
 
         \section{Le métier du Groupe Pomona}
+        \label{business}
 
         Le Groupe Pomona est une société de distribution livrée de produits alimentaires à destination des professionnels des métiers de bouche.
         L'activité du Groupe consiste uniquement à acheter et revendre de la marchandise, à l'exclusion de toute activité de fabrication ou de transformation\footnote{de très rares cas de transformation existent (ex : mûrissage de fruits, filetage de poisson) mais sont extrêmement exceptionnels}. Le Groupe Pomona est une société de \emph{distribution}. Elle ne possède d'ailleurs pas d'actif industriels (autre que des entrepôts logistiques) ni d'agréement pour transformer les marchandises.        
@@ -72,8 +73,9 @@
             Les trois premières de ces catégories représentent ce que l'on appelle la \emph{Restauration Hors Domicile (RHD)} (ou parfois également la Restauration Hors Foyer, RHF).
 
             \subsection{Premier niveau de décentralisation : les branches}
-            
+            \label{les_branches}
             Le Groupe Pomona est divisé en branches, qui sont des organisations indépendantes et qui ont toute latitude pour gérer leurs stratégie et politique commerciales, la gestion de leurs achats, leur stratégie marketing, \dots
+            En particulier, les systèmes d'information ne sont pas identiques entre les différentes branches.
             Afin d'éviter de se concurrencer entre elles, leurs domaines d'activité respectifs ont été partitionnés par familles de produit commercialisés, segments client cibles et géographie. 
 
                 \subsubsection{Les branches RHD}
@@ -154,7 +156,10 @@
                 \item{la politique de rémunération de leurs employés}
             \end{itemize}
             
-            \'{A} ce titre, elles ont leurs propres équipes d'achat, leurs équipes commerciales (télévente et vente route), leurs équipes administratives et évidemment leurs équipes logistiques (essentiellement en entrepôt et les chauffeurs livreurs en charge des livraisons client).
+            \`{A} ce titre, elles ont leurs propres équipes d'achat, leurs équipes commerciales (télévente et vente route), leurs équipes administratives et évidemment leurs équipes logistiques (essentiellement en entrepôt et les chauffeurs livreurs en charge des livraisons client).
+
+            Certaines activités restent de la responsabilité des équipes centrales des branches, comme : la négociation avec les clients ou les fournisseurs nationaux, la constitution de l'assortiment commun (les produits que toutes les succursales doivent détenir), la gestion des référentiels de données de base métier, \dots
+            
             Un exemple de maillage régional est présenté en figure \ref{fig:reseau_es}, sachant que ce maillage régional est différent pour chacune des branches.
             \begin{figure}[htpb]
                 \begin{center}
@@ -175,7 +180,8 @@
         \section{L'information produit}
         
             \subsection{Utilisations de l'information produit}
-        
+            \label{utilisation_info_produit}
+
                 \subsubsection{Conformité réglementaire}
                 La gestion de l'information produit est essentiellement une contrainte réglementaire à statisfaire.
                 Comme mentionné au préambule, la réglementation autour de l'information des consommateur s'est sans cesse complétée au cours des dernières années.
@@ -206,7 +212,7 @@
                 Un autre type d'information capital pour la gestion des flux d'achat et de vente sont les informations logistiques, qui définissent par exemple le nombre d'unités consommateur dans le colis, le nombre de colis sur une palette, \dots
                 Une gestion rigoureuse de ces information est indispensable pour que les flux d'achat ou de vente soient correctement exécutés (que les quantités commandées soient les bonnes, que les montants facturés soient corrects, \dots).
 
-            \subsection{Des Produits bruts aux produits transformés}
+            \subsection{Des produits bruts aux produits transformés}
 
             Le niveau d'exigence en termes d'information produit est variable en fonction du niveau de transformation de ce produit.
             Par exemple, sur des fruits et légumes frais, à peu de choses près seul le pays d'origine doit être affiché au client.
@@ -218,6 +224,7 @@
             \end{itemize}
 
             \subsection{Les grands types d'information}
+            \label{info_produit}
 
             On se focalisera dans ce paragraphe sur les informations relatives aux \emph{produits alimentaires}.
 
@@ -244,7 +251,7 @@
                     \item Poissons et produits à base de poissons
                     \item Soja et produits à base de soja
                     \item Lait et produits à base de lait (y compris le lactose)
-                    \item Fruits à coque, à savoir: amandes, noisettes, noix (Juglans regia), noix de cajou, noix de pécan, noix du Brésil, pistaches, noix de Macadamia ou du Queensland, et produits à base de ces fruits
+                    \item Fruits à coque, à savoir: amandes, noisettes, noix, noix de cajou, noix de pécan, noix du Brésil, pistaches, noix de Macadamia ou du Queensland, et produits à base de ces fruits
                     \item Céleri et produits à base de céleri
                     \item Moutarde et produits à base de moutarde
                     \item Graines de sésame et produits à base de graines de sésame
@@ -252,6 +259,11 @@
                     \item Lupin et produits à base de lupin
                     \item Mollusques et produits à base de mollusques
                 \end{enumerate}
+                Il peut y avoir deux niveaux de présence d'un allergène dans un produit (au-delà de la simple absence) :
+                \begin{description}
+                    \item[intentionnellement mis en oeuvre :] dans le cas où un ingrédient allergène fait volontairement partie de la recette. Ex : présence de moutarde dans un plat cuisiné.
+                    \item[contamination croisée :] par exemple lorsque le produit fini est issu d'une chaîne de transformation qui traite un ingrédient allergène, mais que cet ingrédient ne fait pas partie de la recette. Ce cas de figure est en général mis en évidence par des mentions telles que \emph{"Peut contenir des traces de soja"} ou bien \emph{"Transformé dans un atelier processant également des fruits à coques et du sésame"}.
+                \end{description}
 
                 \subsubsection{Les informations nutrionnelles}
 
@@ -259,13 +271,17 @@
                 Elles détaillent la quantité des principaux nutriments contenus dans les produits.
                 Certains d'entre eux sont rendus obligatoires par le règlement INCO\cite{incotext}\cite{incoexpl} cf. l'exemple de tableau \ref{tab:donnees_nut}, et d'autres sont optionnels, comme par exemple la quantité de fer, de calcium, \dots
 
-                \begin{table}
+                \begin{table}[htbp]
                     \begin{center}
                     \begin{tabularx}{\linewidth}{|X|X|X|X|}
                         \hline
                         \textbf{Informations nutritionnelles} & \textbf{Pour 100g} & \textbf{Pour un biscuit} & \textbf{\% des AJR pour un biscuit} \\
                         \hline
-                        \'{E}nergie &1674 kJ\newline398 kcal&209 kJ\newline50 kcal& 3 \% \\
+                        \'{E}nergie &1674 kJ
+                        
+                        398 kcal & 209 kJ
+                        
+                        50 kcal & 3 \% \\
                         \hline
                         Protéines & 3.0 g & 1.0 g & 3 \% \\ 
                         \hline
@@ -287,19 +303,216 @@
                     \end{center}
                     \caption{Exemple de tableau de données nutritionnelles}
                     \label{tab:donnees_nut}
-                    Du texte
                 \end{table}
+                La réglementation rend obligatoire de mentionner les informations nutitionnelles de cette table pour 100g, ou 100mL de produit (pour les boissons).
+
+                Les informations nutritionnelles peuvent également se présenter sous forme d'allégations, qui ont des définitions précises dans la réglementation. Ces allégations peuvent être : \emph{sans sel, faible en sucres, riche en fibres, \dots}
 
                 \subsubsection{Les origines}
 
+                Du fait de la complexification des opérations de transformation et de la complexification des flux d'échanges de marchandises, l'origine des produits alimentaires est une notion qui n'est pas définie avec précision dans l'absolu.
+                Il n'y a donc pas non plus de réglementation précise sur le sujet, si ce n'est que l'information produit doit toujours être présentée de manière loyale au consommateur.
+                On peut se donner une règle simple pour définir l'origine d'un produit alimentaire: plus il est brut, plus va compter l'origine de ses ingrédients ; plus il est transformé, plus va compter le lieu de dernière transformation.
+
+                Par exemple, sur des morceaux piécés de viande fraîche, on aura des origines multiples en fonction du pays de naissance, d'élevage ou d'abattage de la bête.
+                Et à l'inverse, sur un steak haché cette information n'aura aucun sens dans la mesure où il est produit d'un assemblage de \og minerais \fg pouvant provenir de multiples pays.
+                L'industriel pourra choisir de communiquer sur le fait que la viande a été transformée en steak dans telle usine par exemple.
+
                 \subsubsection{Les données logistiques} 
+
+                On appelle données logistiques essentiellement le plan de palettisation et de conditionnement du produit.
+                Il s'agit de la définition de la \og hiérarchie logistique \fg du produit.
+                Cette hiérarchie se base d'abord sur la définition d'une \og unité de base \fg qui est la plus petite unité légalement détaillable (i.e. qui porte l'ensemble des informations réglementaire pour sa commercialisation).
+                Ces notions ont été standardisées par l'organisme international de standardisation GS1\cite{GDSNimplementationGuide}.
+                Deux exemples pour illustrer : 
+                \begin{itemize}
+                    \item pour un boîte de sachets de thé, l'unité de base est la boite car les sachets de thé ne portent pas les informations nécessaires à leur commercialisation
+                    \item pour un paquet de barres chocolatées (comme celles qu'on peut trouver au détail en boulangerie), l'unité de base est la barre car elle porte l'ensemble des mentions réglementaires sur son emballage
+                \end{itemize}
+                La hiérarchie logistique est à la fois :
+                \begin{itemize}
+                    \item la définition des niveaux successifs d'emballage des produits  : combien d'unités de base dans un paquet, combien de paquets dans un carton, combien de cartons sur une palette, \dots
+                    \item la définition du contenu de l'unité de base (ex : le nombre de sachets de thé, le nombre de doses dans une boîte d'aides culinaires, \dots)
+                \end{itemize} 
+
+
+                Les données logistiques concernent également les durées de vie du produit (type de durée de vie : Date Limite de Consommation ou Date de Durabilité Minimale ; ainsi que la durée en jours entre la fin de production du produit et son expiration).
+                
+                Parfois, certaines contraintes d'approvisionnement peuvent être mentionnées : 
+                \begin{itemize}
+                    \item unités commandables (ex : on ne peut commander que des cartons complets)
+                    \item multiples de commande (ex : on ne peut commander les cartons que 10 par 10 pour des raisons de montage des palettes)
+                    \item minimum de commande (ex : il faut commander au minimum 30 cartons)
+                \end{itemize}
+                mais elles sont dépendantes d'un accord entre l'industriel et son client distributeur et ne sont donc pas à proprement parler des informations produit.
 
                 \subsubsection{Les données administratives et financières}
 
-            Les allégations
+                Les données dites administratives et financières regroupent le reste des informations de gestion pour lesquelles il existe des contraintes réglementaires.
+                Il s'agit :
+                \begin{itemize}
+                    \item du taux de TVA du produit
+                    \item de sa nomenclature douanière et du pays d'origine au sens de la déclaration d'échange de biens\cite{notions_DEB}
+                    \item de toute autre taxe applicable au produit
+                \end{itemize}
 
-        \section{Le processus associé}
+        \section{Le processus}
         
+            \subsection{Le fournisseur est propriétaire des informations produit}
 
+            Comme présenté à la section \ref{business}, le Groupe Pomona n'a pas d'activité de fabrication ou de transformation de marchandises.
+            \`{A} ce titre, l'ensemble des données produits ne peuvent être déterminées que par les fournisseurs de ces produits.
+            L'ensemble des entités du Groupe s'appuient donc sur les données transmises par les industriels ou producteurs de marchandises.
 
-        \section{Le PIM (Product Information Management)}
+            Il peut arriver que certains produits soient achetés par Pomona à d'autres négociants non-producteurs.
+            Dans ce cas, de la même manière que le Groupe Pomona a la responsabilité de collecter puis transmettre les informations produit à ses clients, ces fournisseurs négociants doivent eux-même aller chercher l'information produit et la transmettre à Pomona.
+
+            \emphbox{Dans tous les cas, c'est le \emph{fournisseur} qui est responsable de produire et de transmettre l'information produit aux entités du Groupe Pomona.}
+
+            \subsection{La notion de produit et d'article}
+
+            Un mot sur la modélisation des données adoptée est nécessaire pour comprendre les grandes lignes du processus.
+            Comme il a été vu à la section \ref{les_branches} page \pageref{les_branches}, certains produits sont susceptibles d'être commercialisés par plusieurs branches du Groupe.
+            
+            De plus, du fait que les systèmes d'information ne sont pas identiques entre les branches, certaines contraintes imposent parfois des différences de modélisation, des duplications volontaires de codes pour répondre à ces contraintes.
+            Une illustration de ce point pour clarifier : la facturation client pour une canette de soda peut se faire au litre (permet de comparer les prix entre les différents conditionnement et les différentes marques) ou à la cannette (permet de se faire une idée du coût portion d'un produit).
+            Or, la possibilité de pouvoir facturer un même article dans plusieurs unités différentes n'est pas une fonctionnalité offerte par tous les systèmes d'information.
+            En particulier, \'{E}piSaveurs peut gérer dans ce cas un unique article et le facturer dans l'unité de son choix en fonction des demandes des clients.
+            Mais Délice et Création (qui possède un système d'information différent) doit dupliquer cet article car une seule unité de facturation est possible pour un article donné.
+
+            Enfin, au-delà des contraintes liées au SI, certaines pratiques imposent de laisser aux branche une indépendance forte dans la gestion de leurs référentiels articles.
+            Il faut savoir que commercialiser sous un même code article des produits qui sont similaires permet d'obtenir des gains de productivité à plusieurs niveaux :
+            \begin{itemize}
+                \item on économise des emplacements en entrepôt (un emplacement ne peut contenir qu'un article)
+                \item on gagne du temps administratif dans la gestion des prix : le foisonnement d'articles impose de gérer plus de prix client
+                \item \dots
+            \end{itemize}
+            La contrepartie à adopter cette pratique est qu'il n'est alors plus possible de différencier ces produits similaires, par exemple pour leur appliquer des prix de vente distincts, ou bien offrir la possibilité à un vendeur de garantir au client la livraison d'un produit plutôt que l'autre.
+            Néanmoins, en fonction de la clientèle adressée, certains produits pourront être considérés comme similaires, alors que pour d'autres ils ne seront pas interchangeables.
+            Cet exemple est détaillé dans la figure \ref{fig:produit_article} page \pageref{fig:produit_article}.
+
+            On différencie donc les deux notions suivantes : 
+            \begin{description}
+                \item[les produits :] ils représentent une marchandise physique produite par un fournisseur. Ce sont les produits qui portent les \emph{informations produit} décrites à la section \ref{info_produit} page \pageref{info_produit}. Un produit ne peut appartenir qu'à un seul fournisseur. Le référentiel produit est unique pour l'ensemble du Groupe.
+                \item[les articles :] ce sont les objets qui sont gérés par les branches dans leurs systèmes de gestion respectifs. Leurs attributs sont très liés au système d'information qui les porte. Chaque branche gère de manière autonome son référentiel article, incluant les liens qui sont faits entre produits et articles.
+            \end{description}
+            Cette modélisation permet de répondre à l'ensemble des contraintes présentées dans ce paragraphe.
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=\linewidth]{img/Produit article.png}
+                \end{center}
+                Dans cet exemple fictif, le type de conditionnement du lait n'a aucun impact sur les clients de la branche Délice et Création. Elle commercialise donc sous un même code article deux produits distincts.
+
+                Pour des raisons de contrainte de conservation, la branche PassionFroid a quant à elle choisit de ne commercialiser qu'un seul produit - en brique. Elle pourrait choisir d'ouvrir un nouveau code article pour le lait en bouteille (non représenté sur le schéma ci-dessus).
+                \caption{La distinction entre produit et article}
+                \label{fig:produit_article}
+            \end{figure}          
+
+            \subsection{Les contrôles}
+
+            Il a été vu que le Groupe Pomona - dans sa qualité de distributeur - n'est pas en mesure de déterminer seul les informations produit sur les marchandises qu'il commercialise.
+            Néanmoins, comme cela a été vu dans la section \ref{utilisation_info_produit} page \pageref{utilisation_info_produit}, il est nécessaire que les différentes entités du Groupe soient en possession d'une information produit fiable.
+            Or, avoir des données de qualité nécessite des efforts de la part des métiers, en particulier lorsque le processus n'est pas entièrement porté en interne dans la société.
+            \`{A} ce titre, plusieurs étapes de contrôle ont été définies dans le processus de gestion du référentiel de données produit et article :
+            \begin{description}
+                \item[lorsque le fournisseur a saisi les données produit :] la personne à l'origine de la demande de référencement (en général, un acheteur) doit contrôler la cohérence des données produit
+                \item[lorsque le demandeur a demandé la création d'un article :]  le gestionnaire de référentiel valide à nouveau la cohérence des informations produit
+                \item[après la création article, de manière asynchrone :] le service qualité contrôle par échantillonnage les données d'une partie des produits et articles qui ont été modifiés pendant une période.
+            \end{description}
+            Le retour d'expérience montre que ces contrôles, loin d'être redondants, sont nécessaires pour avoir une qualité de données acceptable.
+            Ces processus de contrôle sont décrit à la figure \ref{fig:processus_article} page \pageref{fig:processus_article}.
+
+            \begin{figure}[htpb]
+                \begin{center}
+                \includegraphics[width=\linewidth]{img/Processus de création article.png}
+                \end{center}
+                \caption{Le processus de création article}
+                \label{fig:processus_article}
+            \end{figure}    
+
+            Les contrôles effectués à chacune des étapes sont les suivants : 
+            \begin{description}
+                \item[contrôle de la complétude des données :] vérification que les données transmises comportent l'ensemble des données attendues
+                \item[contrôle de cohérence entre les données :] vérification que les informations transmises sont cohérentes entre elles (ex : un allergène présent dans la liste d'ingrédients du produit a bien été signalé comme allergène par ailleurs)
+                \item[contrôle de la cohérence avec les pièces jointes :] en plus de données structurées, les fournisseurs transmettent également des fichiers portant des informations produit (ex : l'étiquette produit ou le visuel de l'emballage). Ces pièces jointes sont décrites à la section \ref{pieces_jointes} page \pageref{pieces_jointes}. La personne en charge du contrôle vérifie que les données transmises sont cohérentes avec ces documents.
+            \end{description}
+
+        \section{Les outils informatiques associés}
+
+        Comme vu dans la description des branches du Groupe (voir section \ref{les_branches}, page \pageref{les_branches}), les outils informatiques ne sont pas tous les mêmes sur l'ensemble des branches.
+        Ainsi, les outils utilisés pour la gestion de l'information produit ne sont pas les mêmes.
+
+            \subsection{Les branches faiblement outillées}
+            
+            Les branches étrangères (Pomona Suisse, Pomona Iberia), spécialistes (Délice et Création, Saveurs d'Antoine) et la branche TerreAzur sont aujourd'hui faiblement outillées.
+            Cela signifie que l'information produit est en général stockée uniquement sous la forme de fichiers (essentiellement les pièces jointes, décrites à la section \ref{pieces_jointes} page \pageref{pieces_jointes}).
+            L'ensemble des échanges avec les fournisseurs se font par mail, et les articles sont créés directement dans les systèmes de gestion par les gestionnaires de référentiel.
+            Les liens entre les articles et les informations produit ne sont pas matérialisés dans les systèmes informatiques.
+
+            \subsection{Le GIP}
+
+            Le GIP (Gestion de l'Information Produit) est utilisé sur la branche PassionFroid.
+            C'est un système de gestion de l'information produit qui est maintenant obsolescent et en cours de remplacement.
+            Il a toutefois le mérite de permettre le stockage dans une application des données et des pièces jointes relatives aux produits, avec la possibilité d'accéder aux informations produit à partir des identifiants des articles.
+            C'est ce système qui a permis de pouvoir alimenter les sites de e-commerce PassionFroid et \'{E}piSaveurs avec les informations produit.
+            Il s'agit d'une application qui n'est pas ouverte aux utilisateurs externes au Groupe, et les échanges avec les fournisseurs passent donc par des échanges de mails.
+
+            \subsection{Le PIM}
+
+            Le PIM (Product Information Management) est un système de gestion de l'information produit qui a été mis en production en mai 2019, pour la branche \'{E}piSaveurs.
+
+                \subsubsection{Description générale de l'outil}
+
+                C'est un système qui porte l'ensemble du processus de gestion de l'information produit, tel que décrit à la figure \ref{fig:processus_article} page \pageref{fig:processus_article}.
+                Il est accessible aux fournisseurs du Groupe, qui viennent directement mettre à disposition les données et les pièces jointes.
+                Cet outil porte entre autres les fonctionnalités de contrôle des informations, comme illustré à la figure \ref{fig:ecran_PIM} page \pageref{fig:ecran_PIM}.
+
+                \begin{figure}[htpb]
+                    \begin{center}
+                    \includegraphics[width=\linewidth]{img/Ecran PIM.png}
+                    \end{center}
+                    Cette capture d'écran montre l'outil de contrôle des données produit. Sur la partie gauche, le contenu des pièces jointes est affiché (visuel de l'emballage en haut, fiche technique en bas), sur la droite les données qui ont été transmises par le fournisseur.
+                    \caption{Une capture d'écran du PIM}
+                    \label{fig:ecran_PIM}
+                \end{figure} 
+
+                \subsubsection{La GDSN}
+
+                La GDSN (Global Data Synchronization Network) est un réseau d'échange de données produit entre industriels, distributeurs, restaurateurs, \dots
+                Ce réseau est exploité par des opérateurs privés, mais le format et la chorégraphie des échanges a été standardisé par l'organisme de standardisation GS1.
+                Son schéma de principe est décrit dans la figure \ref{fig:GDSN} page \pageref{fig:GDSN}.
+                Sans rentrer dans le détail, au sein du Groupe Pomona l'utilisation qui en est faite est de récupérer les informations depuis ce réseau d'échange, afin de préalimenter les données produit pour les fournisseurs.
+                Cette foncitonnalité permet de faire gagner du temps aux fournisseurs pour leur éviter une partie de ressaisie, mais également de limiter les erreurs.
+                Toutefois, cette fonctionnalité ne permet pas à elle seule de garantir une parfaite qualité de données.
+                Il s'agit uniquement d'un \og tuyau \fg, si les données en entrée ne sont pas correctes, elles ne seront pas correctes en sortie.
+                Pour aller plus loin dans la compréhension de ce réseau, il est possible de consulter les ressources mises en ligne par GS1\cite{GDSN_GS1_FR}\cite{GDSN_GS1_GLOBAL}.
+
+                \begin{figure}[htpb]
+                    \begin{center}
+                    \includegraphics[width=\linewidth]{img/gdsn-schema.png}
+                    \end{center}
+                    \caption{Schéma de principe de la GDSN}
+                    \label{fig:GDSN}
+                \end{figure}                 
+                
+                \subsubsection{L'identification des objets dans le PIM}
+
+                Un dernier point à connaître à propos du PIM, est la manière d'identifier l'ensemble des objets en son sein.
+                Chaque objet géré (ainsi que toute version archivée) porte un identifiant unique, nommé \emph{uid} qui est totalement univoque.
+                Pour la suite, on se basera sur ces uid pour faire référence à des produits stockés dans le PIM.
+
+                \begin{figure}[htpb]
+                    \begin{center}
+                    \includegraphics[width=\linewidth]{img/uid.png}
+                    \end{center}
+                    L'uid du produit affiché est mis en évidence dans l'url
+                    \caption{L'uid d'un produit}
+                    \label{fig:uid}
+                \end{figure}                 
+
+                \subsubsection{Les API}
+
+                Un des aspects intéressants du PIM pour l'exploitation en masse des données produit, est qu'il expose des API permettant d'aller requéter l'ensemble de son contenu.
+                Cela concerne à la fois les données dites structurées, mais également les pièces jointes.
+                Cela rend les données produit de la branche \'{E}piSaveurs bien plus simplement accessibles que celles des autres branches.
