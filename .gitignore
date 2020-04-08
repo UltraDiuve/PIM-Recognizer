@@ -152,3 +152,9 @@ report/*
 !report/*.bib
 !report/img/
 report/img/src/*
+!report/notebooks/
+report/notebooks/*
+!report/notebooks/*.ipynb
+
+
+
