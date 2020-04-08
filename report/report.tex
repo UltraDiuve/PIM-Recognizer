@@ -26,6 +26,8 @@
 % \newcolumntype{L}[1]{>{\raggedright\arraybackslash }b{#1}}
 % \newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
 
+\usepackage{pdfpages}
+
 \newcommand{\emphbox}[1]{
     \vspace{5mm}
     \noindent\fbox{
@@ -213,7 +215,9 @@
     \chapter{Fiches techniques}
     \chapter{\'{E}tiquettes produit}
 \part{Le code utilisé}
-    \chapter{Extraction de données du PIM}
+    \chapter{Analyses quantitatives des données}
+        \label{code:analyse_quantitative}
+        \includepdf[pages=-]{notebooks/Analyse quantitative.pdf}
     \chapter{Conversion des pièces jointes en textes}
     \chapter{Identification des listes d'ingrédients}
 
