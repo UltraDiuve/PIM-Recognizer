@@ -229,6 +229,7 @@
             On se focalisera dans ce paragraphe sur les informations relatives aux \emph{produits alimentaires}.
 
                 \subsubsection{La composition}
+                \label{composition}
 
                 La première grande famille de données réglementaires sont les données de composition.
                 Elles détaillent quels sont les ingrédients qui sont mis en oeuvre dans la fabrication des produits.
@@ -265,7 +266,7 @@
                     \item[contamination croisée :] par exemple lorsque le produit fini est issu d'une chaîne de transformation qui traite un ingrédient allergène, mais que cet ingrédient ne fait pas partie de la recette. Ce cas de figure est en général mis en évidence par des mentions telles que \emph{"Peut contenir des traces de soja"} ou bien \emph{"Transformé dans un atelier processant également des fruits à coques et du sésame"}.
                 \end{description}
 
-                \subsubsection{Les informations nutrionnelles}
+                \subsubsection{Les informations nutritionnelles}
 
                 Une autre grande famille d'information produit sont les informations nutritionnelles. 
                 Elles détaillent la quantité des principaux nutriments contenus dans les produits.
@@ -356,6 +357,28 @@
                     \item de toute autre taxe applicable au produit
                 \end{itemize}
 
+                \subsubsection{Les labels} 
+                \label{labels}
+
+                Afin de garantir des qualités spécifiques à certains produit, des organismes de certification ont mis en place des labels pouvant s'appliquer aux produits.
+                En général, ils se basent sur des cahiers des charges et peuvent être assortis d'audits de certification ou de contrôle.
+                Ils peuvent garantir des méthodes de production ou transformation, des lieux de production, des caractéristiques de leurs ingrédients, des pratiques commerciales équitables, \dots
+                Les types de labels les plus connus sont :
+                \begin{itemize}
+                    \item les produits Biologiques
+                    \item les origines protégées (Appellation d'Origine Protégée, Indication Géographique Protégée, \emph{viandes} de France, Bleu Blanc Cor, Régions UltraPériphériques d'Europe\dots)
+                    \item les pratiques commerciales équitables (Max Havelaar, \dots)
+                    \item les modes de production respectueux de l'environnement (Aquaculture Stewardship Council, Marine Stewardship Council, Roundtable on Sustainable Palm Oil, Nordic Swan, \dots)
+                    \item la qualité \og générale \fg des produits (Label Rouge, \dots)
+                \end{itemize}
+
+                \subsubsection{Les données marketing}
+
+                Certaines données marketing font également partie de l'information produit.
+                La plus évidente est la marque commerciale du produit, qui parfois définit totalement le produit.
+                Par exemple, on sait ce qu'est un Snickers, de la Mousline, du Nutella, \dots
+                Les produits peuvent également porter d'autres allégations marketing, non réglementaires ou labelisantes : \'{E}lu produit de l'année, Vu à la télé, Issu de notre savoir-faire centenaire, \dots                
+
         \section{Le processus}
         
             \subsection{Le fournisseur est propriétaire des informations produit}
@@ -439,6 +462,7 @@
             \end{description}
 
         \section{Les outils informatiques associés}
+        \label{outils_infos}
 
         Comme vu dans la description des branches du Groupe (voir section \ref{les_branches}, page \pageref{les_branches}), les outils informatiques ne sont pas tous les mêmes sur l'ensemble des branches.
         Ainsi, les outils utilisés pour la gestion de l'information produit ne sont pas les mêmes.
@@ -451,14 +475,17 @@
             Les liens entre les articles et les informations produit ne sont pas matérialisés dans les systèmes informatiques.
 
             \subsection{Le GIP}
+            \label{GIP}
 
             Le GIP (Gestion de l'Information Produit) est utilisé sur la branche PassionFroid.
             C'est un système de gestion de l'information produit qui est maintenant obsolescent et en cours de remplacement.
             Il a toutefois le mérite de permettre le stockage dans une application des données et des pièces jointes relatives aux produits, avec la possibilité d'accéder aux informations produit à partir des identifiants des articles.
             C'est ce système qui a permis de pouvoir alimenter les sites de e-commerce PassionFroid et \'{E}piSaveurs avec les informations produit.
+            Il est toutefois ancien, et ne propose pas de fonctionnalité d'export en masse fiable.
             Il s'agit d'une application qui n'est pas ouverte aux utilisateurs externes au Groupe, et les échanges avec les fournisseurs passent donc par des échanges de mails.
 
             \subsection{Le PIM}
+            \label{PIM}
 
             Le PIM (Product Information Management) est un système de gestion de l'information produit qui a été mis en production en mai 2019, pour la branche \'{E}piSaveurs.
 
