@@ -25,7 +25,7 @@
         \end{description}
         restent largement inchangés.
         
-        Pour résumer, l'activité de l'ensemble des entités du Groupe pourraient se résumer via le schéma présenté en figure \ref{fig:flux metier}
+        Pour résumer, l'activité de l'ensemble des entités du Groupe pourraient se résumer via le schéma présenté à la \reffig{fig:flux metier}
 
         \begin{figure}[htbp]
             \begin{center}
@@ -80,7 +80,7 @@
 
                 \subsubsection{Les branches RHD}
                 
-                Les branches RHD s'adressent comme leur nom l'indique aux client de la Restauration Hors Domicile (cf. section \ref{clients} page \pageref{clients}) en France.
+                Les branches RHD s'adressent comme leur nom l'indique aux client de la Restauration Hors Domicile (cf. section \mref{clients}) en France.
                 Elles se répartissent ce marché en travaillant des gammes de produits distinctes.
                 Il s'agit des branches historiques du Groupe, qui représentent l'essentiel de son chiffre d'affaire.
                 La répartition par produit est la suivante :
@@ -96,7 +96,7 @@
 
                 \subsubsection{Les branches spécialistes}
 
-                Les branches spécialistes s'adressent aux clients dits spécialistes (cf. section \ref{clients} page \pageref{clients}) en France.
+                Les branches spécialistes s'adressent aux clients dits spécialistes (cf. section \mref{clients}) en France.
                 Elles sont en mesure de commercialiser tout type de produit pour répondre aux besoins de leurs clients.
                 En particulier, elles peuvent tout à fait commercialiser certains produits qui sont également vendus par les branches RHD.
                 Elles se répartissent la clientèle spécialiste de la manière suivante :
@@ -117,7 +117,7 @@
                     \item[Pomona Iberia :] présente sur le marché Espagnol 
                 \end{description}
 
-                On peut synthétiser la répartition de l'activité par branche de la manière présentée à la figure \ref{fig:repartition_activite}.
+                On peut synthétiser la répartition de l'activité par branche de la manière présentée à la \reffig{fig:repartition_activite}.
 
                 \subsubsection{Les produits non-alimentaires}
                 \label{produits_nonal}
@@ -162,7 +162,7 @@
 
             Certaines activités restent de la responsabilité des équipes centrales des branches, comme : la négociation avec les clients ou les fournisseurs nationaux, la constitution de l'assortiment commun (les produits que toutes les succursales doivent détenir), la gestion des référentiels de données de base métier, \dots
             
-            Un exemple de maillage régional est présenté en figure \ref{fig:reseau_es}, sachant que ce maillage régional est différent pour chacune des branches.
+            Un exemple de maillage régional est présenté en \reffig{fig:reseau_es}, sachant que ce maillage régional est différent pour chacune des branches.
             \begin{figure}[htpb]
                 \begin{center}
                 \includegraphics[width=\linewidth]{img/réseau es.png}
@@ -272,7 +272,7 @@
 
                 Une autre grande famille d'information produit sont les informations nutritionnelles. 
                 Elles détaillent la quantité des principaux nutriments contenus dans les produits.
-                Certains d'entre eux sont rendus obligatoires par le règlement INCO\cite{incotext}\cite{incoexpl} cf. l'exemple de tableau \ref{tab:donnees_nut}, et d'autres sont optionnels, comme par exemple la quantité de fer, de calcium, \dots
+                Certains d'entre eux sont rendus obligatoires par le règlement INCO~\cite{incotext}\cite{incoexpl} cf. l'exemple de tableau à la \reftable{tab:donnees_nut}, et d'autres sont optionnels, comme par exemple la quantité de fer, de calcium, \dots
 
                 \begin{table}[htbp]
                     \begin{center}
@@ -385,7 +385,7 @@
         
             \subsection{Le fournisseur est propriétaire des informations produit}
 
-            Comme présenté à la section \ref{business}, le Groupe Pomona n'a pas d'activité de fabrication ou de transformation de marchandises.
+            Comme présenté à la section \mref{business}, le Groupe Pomona n'a pas d'activité de fabrication ou de transformation de marchandises.
             \`{A} ce titre, l'ensemble des données produits ne peuvent être déterminées que par les fournisseurs de ces produits.
             L'ensemble des entités du Groupe s'appuient donc sur les données transmises par les industriels ou producteurs de marchandises.
 
@@ -397,7 +397,7 @@
             \subsection{La notion de produit et d'article}
 
             Un mot sur la modélisation des données adoptée est nécessaire pour comprendre les grandes lignes du processus.
-            Comme il a été vu à la section \ref{les_branches} page \pageref{les_branches}, certains produits sont susceptibles d'être commercialisés par plusieurs branches du Groupe.
+            Comme il a été vu à la section \mref{les_branches}, certains produits sont susceptibles d'être commercialisés par plusieurs branches du Groupe.
             
             De plus, du fait que les systèmes d'information ne sont pas identiques entre les branches, certaines contraintes imposent parfois des différences de modélisation, des duplications volontaires de codes pour répondre à ces contraintes.
             Une illustration de ce point pour clarifier : la facturation client pour une canette de soda peut se faire au litre (permet de comparer les prix entre les différents conditionnement et les différentes marques) ou à la cannette (permet de se faire une idée du coût portion d'un produit).
@@ -414,11 +414,11 @@
             \end{itemize}
             La contrepartie à adopter cette pratique est qu'il n'est alors plus possible de différencier ces produits similaires, par exemple pour leur appliquer des prix de vente distincts, ou bien offrir la possibilité à un vendeur de garantir au client la livraison d'un produit plutôt que l'autre.
             Néanmoins, en fonction de la clientèle adressée, certains produits pourront être considérés comme similaires, alors que pour d'autres ils ne seront pas interchangeables.
-            Cet exemple est détaillé dans la figure \ref{fig:produit_article} page \pageref{fig:produit_article}.
+            Cet exemple est détaillé dans la \reffig{fig:produit_article}.
 
             On différencie donc les deux notions suivantes : 
             \begin{description}
-                \item[les produits :] ils représentent une marchandise physique produite par un fournisseur. Ce sont les produits qui portent les \emph{informations produit} décrites à la section \ref{info_produit} page \pageref{info_produit}. Un produit ne peut appartenir qu'à un seul fournisseur. Le référentiel produit est unique pour l'ensemble du Groupe.
+                \item[les produits :] ils représentent une marchandise physique produite par un fournisseur. Ce sont les produits qui portent les \emph{informations produit} décrites à la section \mref{info_produit}. Un produit ne peut appartenir qu'à un seul fournisseur. Le référentiel produit est unique pour l'ensemble du Groupe.
                 \item[les articles :] ce sont les objets qui sont gérés par les branches dans leurs systèmes de gestion respectifs. Leurs attributs sont très liés au système d'information qui les porte. Chaque branche gère de manière autonome son référentiel article, incluant les liens qui sont faits entre produits et articles.
             \end{description}
             Cette modélisation permet de répondre à l'ensemble des contraintes présentées dans ce paragraphe.
@@ -437,7 +437,7 @@
             \subsection{Les contrôles}
 
             Il a été vu que le Groupe Pomona - dans sa qualité de distributeur - n'est pas en mesure de déterminer seul les informations produit sur les marchandises qu'il commercialise.
-            Néanmoins, comme cela a été vu dans la section \ref{utilisation_info_produit} page \pageref{utilisation_info_produit}, il est nécessaire que les différentes entités du Groupe soient en possession d'une information produit fiable.
+            Néanmoins, comme cela a été vu dans la section \mref{utilisation_info_produit}, il est nécessaire que les différentes entités du Groupe soient en possession d'une information produit fiable.
             Or, avoir des données de qualité nécessite des efforts de la part des métiers, en particulier lorsque le processus n'est pas entièrement porté en interne dans la société.
             \`{A} ce titre, plusieurs étapes de contrôle ont été définies dans le processus de gestion du référentiel de données produit et article :
             \begin{description}
@@ -446,7 +446,7 @@
                 \item[après la création article, de manière asynchrone :] le service qualité contrôle par échantillonnage les données d'une partie des produits et articles qui ont été modifiés pendant une période.
             \end{description}
             Le retour d'expérience montre que ces contrôles, loin d'être redondants, sont nécessaires pour avoir une qualité de données acceptable.
-            Ces processus de contrôle sont décrit à la figure \ref{fig:processus_article} page \pageref{fig:processus_article}.
+            Ces processus de contrôle sont décrits à la \reffig{fig:processus_article}.
 
             \begin{figure}[htpb]
                 \begin{center}
@@ -460,19 +460,19 @@
             \begin{description}
                 \item[contrôle de la complétude des données :] vérification que les données transmises comportent l'ensemble des données attendues
                 \item[contrôle de cohérence entre les données :] vérification que les informations transmises sont cohérentes entre elles (ex : un allergène présent dans la liste d'ingrédients du produit a bien été signalé comme allergène par ailleurs)
-                \item[contrôle de la cohérence avec les pièces jointes :] en plus de données structurées, les fournisseurs transmettent également des fichiers portant des informations produit (ex : l'étiquette produit ou le visuel de l'emballage). Ces pièces jointes sont décrites à la section \ref{pieces_jointes} page \pageref{pieces_jointes}. La personne en charge du contrôle vérifie que les données transmises sont cohérentes avec ces documents.
+                \item[contrôle de la cohérence avec les pièces jointes :] en plus de données structurées, les fournisseurs transmettent également des fichiers portant des informations produit (ex : l'étiquette produit ou le visuel de l'emballage). Ces pièces jointes sont décrites à la section \mref{pieces_jointes}. La personne en charge du contrôle vérifie que les données transmises sont cohérentes avec ces documents.
             \end{description}
 
         \section{Les outils informatiques associés}
         \label{outils_infos}
 
-        Comme vu dans la description des branches du Groupe (voir section \ref{les_branches}, page \pageref{les_branches}), les outils informatiques ne sont pas tous les mêmes sur l'ensemble des branches.
+        Comme vu dans la description des branches du Groupe (voir section \mref{les_branches}), les outils informatiques ne sont pas tous les mêmes sur l'ensemble des branches.
         Ainsi, les outils utilisés pour la gestion de l'information produit ne sont pas les mêmes.
 
             \subsection{Les branches faiblement outillées}
             
             Les branches étrangères (Pomona Suisse, Pomona Iberia), spécialistes (Délice et Création, Saveurs d'Antoine) et la branche TerreAzur sont aujourd'hui faiblement outillées.
-            Cela signifie que l'information produit est en général stockée uniquement sous la forme de fichiers (essentiellement les pièces jointes, décrites à la section \ref{pieces_jointes} page \pageref{pieces_jointes}).
+            Cela signifie que l'information produit est en général stockée uniquement sous la forme de fichiers (essentiellement les pièces jointes, décrites à la section \mref{pieces_jointes}).
             L'ensemble des échanges avec les fournisseurs se font par mail, et les articles sont créés directement dans les systèmes de gestion par les gestionnaires de référentiel.
             Les liens entre les articles et les informations produit ne sont pas matérialisés dans les systèmes informatiques.
 
@@ -493,9 +493,9 @@
 
                 \subsubsection{Description générale de l'outil}
 
-                C'est un système qui porte l'ensemble du processus de gestion de l'information produit, tel que décrit à la figure \ref{fig:processus_article} page \pageref{fig:processus_article}.
+                C'est un système qui porte l'ensemble du processus de gestion de l'information produit, tel que décrit à la \reffig{fig:processus_article}.
                 Il est accessible aux fournisseurs du Groupe, qui viennent directement mettre à disposition les données et les pièces jointes.
-                Cet outil porte entre autres les fonctionnalités de contrôle des informations, comme illustré à la figure \ref{fig:ecran_PIM} page \pageref{fig:ecran_PIM}.
+                Cet outil porte entre autres les fonctionnalités de contrôle des informations, comme illustré à la \reffig{fig:ecran_PIM}.
 
                 \begin{figure}[htpb]
                     \begin{center}
@@ -510,12 +510,12 @@
 
                 La GDSN (Global Data Synchronization Network) est un réseau d'échange de données produit entre industriels, distributeurs, restaurateurs, \dots
                 Ce réseau est exploité par des opérateurs privés, mais le format et la chorégraphie des échanges a été standardisé par l'organisme de standardisation GS1.
-                Son schéma de principe est décrit dans la figure \ref{fig:GDSN} page \pageref{fig:GDSN}.
+                Son schéma de principe est décrit à la \reffig{fig:GDSN}.
                 Sans rentrer dans le détail, au sein du Groupe Pomona l'utilisation qui en est faite est de récupérer les informations depuis ce réseau d'échange, afin de préalimenter les données produit pour les fournisseurs.
                 Cette foncitonnalité permet de faire gagner du temps aux fournisseurs pour leur éviter une partie de ressaisie, mais également de limiter les erreurs.
                 Toutefois, cette fonctionnalité ne permet pas à elle seule de garantir une parfaite qualité de données.
                 Il s'agit uniquement d'un \og tuyau \fg, si les données en entrée ne sont pas correctes, elles ne seront pas correctes en sortie.
-                Pour aller plus loin dans la compréhension de ce réseau, il est possible de consulter les ressources mises en ligne par GS1\cite{GDSN_GS1_FR}\cite{GDSN_GS1_GLOBAL}.
+                Pour aller plus loin dans la compréhension de ce réseau, il est possible de consulter les ressources mises en ligne par GS1~\cite{GDSN_GS1_FR}\cite{GDSN_GS1_GLOBAL}.
 
                 \begin{figure}[htpb]
                     \begin{center}
@@ -530,6 +530,7 @@
                 Un dernier point à connaître à propos du PIM, est la manière d'identifier l'ensemble des objets en son sein.
                 Chaque objet géré (ainsi que toute version archivée) porte un identifiant unique, nommé \emph{uid} qui est totalement univoque.
                 Pour la suite, on se basera sur ces uid pour faire référence à des produits stockés dans le PIM.
+                Une illustration est présentée à la \reffig{fig:uid}.
 
                 \begin{figure}[htpb]
                     \begin{center}

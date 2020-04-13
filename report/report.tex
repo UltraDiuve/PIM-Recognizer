@@ -9,9 +9,7 @@
 \usepackage{setspace}
 \spacing{1.5}
 
-% \makeatletter
-% \@addtoreset{chapter}{part}
-% \makeatother  
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 
 \usepackage{url}
 
@@ -19,14 +17,40 @@
 
 \usepackage{array,multirow,makecell,tabularx}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
-% \newcolumntype{Y}{>{\centering\arraybackslash}X}
-% \setcellgapes{1pt}
-% \makegapedcells
-% \newcolumntype{R}[1]{>{\raggedleft\arraybackslash }b{#1}}
-% \newcolumntype{L}[1]{>{\raggedright\arraybackslash }b{#1}}
-% \newcolumntype{C}[1]{>{\centering\arraybackslash }b{#1}}
 
 \usepackage{pdfpages}
+
+\usepackage{hyperref}
+
+\usepackage{titlesec} 
+\titleclass{\part}{top} % changing part so that it does not take a full page.
+\titleformat{\part}
+    [display] % shape
+    {\centering\normalfont\Huge\bfseries} % format
+    {\MakeUppercase{\partname}\vspace{1pc}} % label
+    {0pt} % set between label and title body
+    {\titlerule[2pt]\vspace{1pc}\Huge\MakeUppercase} % before body
+\titlespacing*{\part}
+    {0pt} % left 
+    {0pt} % before sep
+    {10pt} % after sep
+
+\titleclass{\chapter}{straight} % make chapter like a section (no newpage)
+\titleformat{\chapter}
+    [display] % shape
+    {\centering\normalfont\huge\bfseries} % format
+    {\chaptertitlename ~\thechapter} % label
+    {0pt} % sep between label and title body
+    {\huge\MakeUppercase} % before body
+\titlespacing*{\chapter}
+    {0pt} % left
+    {20pt} % before sep
+    {20pt} % after sep
+
+\usepackage{chngcntr}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+    
 
 \newcommand{\emphbox}[1]{
     \vspace{5mm}
@@ -36,6 +60,12 @@
         \end{minipage}
     }
 }
+
+\newcommand{\reffig}[1]{F\textsc{igure}~\ref{#1} page~\pageref{#1}}
+
+\newcommand{\reftable}[1]{T\textsc{able}~\ref{#1} page~\pageref{#1}}
+
+\newcommand{\mref}[1]{\ref{#1} page~\pageref{#1}}
 
 \title{Extraction de données relatives aux produits alimentaires à partir de documents non structurés}
 \author{Pierre \textsc{massé}}
@@ -50,7 +80,7 @@
     {\em
     
     La gestion de l'information produit est devenu un enjeu de société majeur ces dernières années.
-    Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de la mise en place de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière\cite{incotext}\cite{incoexpl}.
+    Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de la mise en place de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière~\cite{incotext}\cite{incoexpl}.
     \`{A} ce titre, le Groupe Pomona a lancé ces dernières années un projet majeur de refonte des processus et des outils de gestion de l'information produit.
 
     La première filiale du Groupe a fait l'objet d'un déploiement réussi, mais cela a toutefois mis en évidence le fait que des gains à la fois en qualité et en productivité restent accessibles.
@@ -217,7 +247,7 @@
 \part{Le code utilisé}
     \chapter{Analyses quantitatives des données}
         \label{code:analyse_quantitative}
-        \includepdf[pages=-]{notebooks/Analyse quantitative.pdf}
+        \includepdf[pages=-, pagecommand={}]{notebooks/Analyse quantitative.pdf}
     \chapter{Conversion des pièces jointes en textes}
     \chapter{Identification des listes d'ingrédients}
 

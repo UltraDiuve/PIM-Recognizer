@@ -3,13 +3,13 @@
     \label{perimetre_produit}
         \section{Accessibilité de la donnée en fonction des branches}
 
-        Comme vu à la section \ref{outils_infos} page \pageref{outils_infos}, les systèmes d'information associés à la gestion de l'information produit offrent des niveaux d'accès hétérogènes à la donnée produit.
+        Comme vu à la section \mref{outils_infos}, les systèmes d'information associés à la gestion de l'information produit offrent des niveaux d'accès hétérogènes à la donnée produit.
         Le récapitulatif par branche est le suivant : 
         \begin{description}
             \item[\'{E}piSaveurs :] on peut simplement accéder à l'ensemble des données produit, structurées, non structurées (i.e. textes longs) et pièces jointes
             \item[PassionFroid :] on a uniquement la possibilité d'exporter manuellement les données structurées articles depuis le système de gestion SAP.
             Elles permettent de produire quelques analyses quantitatives.
-            Il est difficile de faire des exports en masse de l'outil de gestion de l'information produit GIP (cf. section \ref{GIP} page \pageref{GIP}).
+            Il est difficile de faire des exports en masse de l'outil de gestion de l'information produit GIP (cf. section \mref{GIP}).
             \item[TerreAzur :] idem PassionFroid, si ce n'est qu'en plus le système GIP n'est pas utilisé au sein de cette branche.
             \item[Délice et Création :] le système d'information ne permet pas d'exporter les données et donc de produire des indicateurs détaillés. On peut toutefois avoir des informations quantitatives de la part des opérationnels.
             \item[Saveurs d'Antoine :] idem Délice et Création
@@ -22,7 +22,26 @@
         \section{Analyses quantitatives}
             \subsection{Comparatifs entre les branches}
 
-                Les graphes de cette section ont été produits via le code présenté en annexe, au chapitre \ref{code:analyse_quantitative} page \pageref{code:analyse_quantitative}.
+                Les graphes de cette section ont été produits via le code présenté en annexe, au chapitre \mref{code:analyse_quantitative}.
+                Les données pour les branches spécialistes (Délice et Création et Saveurs d'Antoine) sont issues d'informations fournies par le métier, hors système.
+
+
+                En termes de volumétrie article (cf. \reffig{fig:volumetrie_article}, c'est TerreAzur qui possède le référentiel le plus étendu (environ 62 000 articles de marchandises actifs).
+                Cela s'explique par le fait que cette branche commercialise essentiellement des produits bruts, non-préemballés (ex : des cagettes de fruits ou de légumes).
+                Or, ces produits ne sont pas clairement identifiés, par exemple par un GTIN.
+                Au démarrage de cette branche, afin de limiter la charge sur les gestionnaires de référentiels, le parti a été pris de créer en avance de phase l'ensemble des articles susceptibles d'être commercialisés.
+                Cela s'est traduit par la création d'un grand nombre d'articles, du fait de l'application \og brutale \fg de la combinatoire des différents critères pouvant définir un produit.
+                Un exemple (fictif) serait, sur les pommes : 
+                \begin{itemize}
+                    \item 8 variétés possibles (Gala, Golden, \dots)
+                    \item 4 calibres possibles
+                    \item 6 conditionnements possibles (plateau 6kg, plateau 4,5kg, \dots)
+                    \item 2 catégories (I, II)
+                    \item 8 origines (France, Espagne, \dots)
+                \end{itemize}
+                ce qui donne un total de 3072 articles uniquement sur cette gamme de produits.
+
+                Viennent ensuite PassionFroid, et \'{E}piSaveurs, qui sont les autres \og grosses \fg branches historiques du Groupe.
 
                 \begin{figure}[htbp]
                     \begin{center}
@@ -32,7 +51,9 @@
                     \label{fig:volumetrie_article}
                 \end{figure}       
 
-                
+                Une analyse du recouvrement des référentiels montre que dans l'esemble, les branches ne travaillent pas les mêmes articles (cf. \reffig{fig:venn_article}).
+                PassionFroid commercialise certains produits des branches \'{E}piSaveurs et TerreAzur, mais cela s'explique par une petite entité luxembourgeoise qui travaille des produits de tout type de stockage.
+                Une réserve toutefois par rapport à cette analyse de recouvrement produit : elle sous-estime vraisemblablement lesdits recouvrements, dans la mesure où 
 
                 \begin{figure}[htbp]
                     \begin{center}
@@ -52,7 +73,7 @@
 
     \chapter{Les données utilisables}
         \large
-        Comme vu au chapitre \ref{perimetre_produit} page \pageref{perimetre_produit}, les données produit ne sont simplement accessibles que pour la branche \'{E}piSaveurs.
+        Comme vu au chapitre \mref{perimetre_produit}, les données produit ne sont simplement accessibles que pour la branche \'{E}piSaveurs.
         On se focalisera donc sur cette branche pour la suite de cette étude.
         \normalsize
 
@@ -66,7 +87,7 @@
             \item[le fournisseur :] référence croisée vers le code du fournisseur
             \item[le type de produit :] épicerie, boisson alcoolisée, hygiène, chimie, boisson non-alcoolisée
             \item[le type d'unité de base :] paquet, boîte, sachet, rouleau, bouteille, pot, \dots
-            \item[le GTIN du produit :] identifiant numérique unique, utilisé entre autres pour l'étiquetage sous forme de code à barres\cite{GS1_GTIN}
+            \item[le GTIN du produit :] identifiant numérique unique, utilisé entre autres pour l'étiquetage sous forme de code à barres~\cite{GS1_GTIN}
             \item[les poids :] brut, net, net égoutté (pour les conserves)
             \item[le volume :] pour les produits liquides
             \item[les durées de vie :] le type (Date Limite de Consommation ou Date de Durabilité Minimale) et la durée (totale à fin de production, garantie à livraison)
@@ -76,14 +97,14 @@
             \item[les caractéristiques spéciales :] sans OGM, non traité par ionisation
             \item[la présence d'allergènes :] le niveau de présence de chacun des 14 allergènes réglementés (cf. section \ref{composition} page \pageref{composition})
             \item[les matières grasses utilisées :] palme, beurre, coco, tournesol, palmiste, \dots
-            \item[les additifs présents :] les codes Exxx et les fonctions des additifs mis en oeuvre \cite{additifs_regl_eu}\cite{additifs_wiki}
+            \item[les additifs présents :] les codes Exxx et les fonctions des additifs mis en oeuvre~\cite{additifs_regl_eu}\cite{additifs_wiki}
             \item[les données nutritionnelles obligatoires :] pour 100g ou 100mL, valeur énergétique (en kJ et kcal), matières grasses, dont acides gras saturés, Glucides, dont sucres simples, Fibres, Protéines, simplement
             \item[les données nutritionnelles facultatives :] vitamines, minéraux, omégas, \dots
             \item[les allégations nutritionnelles :] riche en, faible en, sans,\dots associé à un nutriment défini dans les 2 points précédents
             \item[le nutriscore :] note allant de A à E, définie dans la loi Santé de janvier 2016
             \item[le taux de TVA :] un des quatre taux définis dans la réglementation française
-            \item[le code nomenclature douanière :] code identifiant les marchandises défini par les douanes pour la Déclaration d'\'{E}change de Biens\cite{notions_DEB}
-            \item[le pays d'origine pour la DEB :] le pays d'origine à déclarer dans la Déclaration d'\'{E}change de Biens\cite{notions_DEB}
+            \item[le code nomenclature douanière :] code identifiant les marchandises défini par les douanes pour la Déclaration d'\'{E}change de Biens~\cite{notions_DEB}
+            \item[le pays d'origine pour la DEB :] le pays d'origine à déclarer dans la Déclaration d'\'{E}change de Biens~\cite{notions_DEB}
             \item[] 
         \end{description}
         
