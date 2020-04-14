@@ -231,23 +231,31 @@
         \section{Mise en place d'outil de spatialisation des textes}
         \section{Construction d'outils d'extraction de données connexes à la composition}
         \section{\'{E}largissement aux données nutritionnelles}
-        \section{Extraction \og opportuniste \fg d'informations \\ complémentaires}
+        \section{Extraction d'informations complémentaires}
         \section{\'{E}valuation de la performances sur d'autres familles de produits}
 
 
 \appendix
-\part{Figures, tableaux et bibliographie}
-    \listoftables
-    \listoffigures
-    \bibliographystyle{plain}
-    \bibliography{./biblio}
-\part{Exemple de documents fournisseur}
-    \chapter{Fiches techniques}
-    \chapter{\'{E}tiquettes produit}
-\part{Le code utilisé}
-    \chapter{Analyses quantitatives des données}
-        \label{code:analyse_quantitative}
-        \includepdf[pages=-, pagecommand={}]{notebooks/Analyse quantitative.pdf}
+\part{Annexes}
+    \chapter{Figures, tableaux et bibliographie}
+        \listoftables
+        \listoffigures
+        \bibliographystyle{plain}
+        \bibliography{./biblio} 
+    \chapter{Exemple de documents fournisseur}
+        \section{Fiches techniques}
+        \section{\'{E}tiquettes produit}
+        \section{Fiches logistiques}
+    \chapter{Le code utilisé}
+        % \label{code:analyse_quantitative}
+        \includepdf[pages=-,
+                    pagecommand={},
+                    addtotoc={1,
+                              section,
+                              3,
+                              Analyse quantitative,
+                              code:analyse_quantitative}]
+                    {notebooks/Analyse quantitative.pdf}
     \chapter{Conversion des pièces jointes en textes}
     \chapter{Identification des listes d'ingrédients}
 
