@@ -18,6 +18,7 @@
         \end{description}
 
         Pour les analyses quantitatives, on pourra se baser sur des extractions uniquement pour les branches RHD (\'{E}piSaveurs, PassionFroid, TerreAzur).
+        L'ensemble des analyses portant sur les branches RHD sont produites sur la base d'extractions de leur système de gestion SAP.
 
         \section{Analyses quantitatives}
             \subsection{Comparatifs entre les branches}
@@ -43,17 +44,26 @@
 
                 Viennent ensuite PassionFroid, et \'{E}piSaveurs, qui sont les autres \og grosses \fg branches historiques du Groupe.
 
-                \begin{figure}[htbp]
-                    \begin{center}
-                    \includegraphics[width=\linewidth]{img/Articles par branche.png}
-                    \end{center}
-                    \caption{Volumétrie article par branche}
-                    \label{fig:volumetrie_article}
-                \end{figure}       
 
+                \begin{figure}[htbp]\CenterFloatBoxes
+                    \begin{floatrow}
+                    \ffigbox{%
+                        \includegraphics[width=200pt]{img/Articles par branche.png}%
+                    }{%
+                      \caption{Volumétrie article par branche}%
+                      \label{fig:volumetrie_article}%
+                    }
+                    \capbtabbox[][][c]{%
+                        \input{tbls/Articles par branche.tex}%
+                    }{%
+                      \caption{Volumétrie article par branche}%
+                    }
+                    \end{floatrow}
+                \end{figure}
+                    
                 Une analyse du recouvrement des référentiels montre que dans l'esemble, les branches ne travaillent pas les mêmes articles (cf. \reffig{fig:venn_article}).
                 PassionFroid commercialise certains produits des branches \'{E}piSaveurs et TerreAzur, mais cela s'explique par une petite entité luxembourgeoise qui travaille des produits de tout type de stockage.
-                Une réserve toutefois par rapport à cette analyse de recouvrement produit : elle sous-estime vraisemblablement lesdits recouvrements, dans la mesure où 
+                Une réserve toutefois par rapport à cette analyse de recouvrement produit : elle sous-estime vraisemblablement lesdits recouvrements, dans la mesure où la présence de doublons n'est pas prise en compte.
 
                 \begin{figure}[htbp]
                     \begin{center}
@@ -63,13 +73,23 @@
                     \label{fig:venn_article}
                 \end{figure}       
 
+            \subsection{Les grands types de produits}
 
-            \subsection{Les types de produits}
+            Comme montré à la \reffig{fig:repart_art_categ}, on voit bien que les données ta race.
 
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=\linewidth]{img/Repartition articles categories.png}
+                \end{center}
+                \caption{Répartition des articles en fonction des variable catégorielles}
+                \label{fig:repart_art_categ}
+            \end{figure}
+
+            Repartition articles catégories
             Focus sur les branches Jupiter.
             Par type d'article / groupe de marchandises / groupe d'article, en retirant les articles inactifs. Toujours avec la vision article et produit (FIA).
 
-            Ajout aussi du niveau 1 de la hiérarchie produit. Voir la possibilité de faire une représentation en 2D (type art / hiérarchie)
+            Ajout aussi du niveau 1 de la hiérarchie produit. Voir la possibilité de faire une représentation en 2D (type art / hiérarchie). Avec genre une heatmap qui montre que certaines de ces variables catégorielles sont en fait très très liées.
 
     \chapter{Les données utilisables}
         \large

@@ -11,6 +11,18 @@ ground_truth/*
 !ground_truth/manually_labelled_ground_truth.csv
 !ground_truth/Règles d'annotation.xlsx
 
+# LaTeX report build artifacts (keeping only .tex and .pdf)
+report/*
+!report/*.tex
+!report/*.pdf
+!report/*.bib
+!report/img/
+report/img/src/*
+!report/notebooks/
+report/notebooks/*
+!report/notebooks/*.ipynb
+!report/divers/ 
+!report/tlbs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -144,17 +156,3 @@ dmypy.json
 
 # Visual studio code stuff
 .vscode/*
-
-# LaTeX report build artifacts (keeping only .tex and .pdf)
-report/*
-!report/*.tex
-!report/*.pdf
-!report/*.bib
-!report/img/
-report/img/src/*
-!report/notebooks/
-report/notebooks/*
-!report/notebooks/*.ipynb
-
-
-

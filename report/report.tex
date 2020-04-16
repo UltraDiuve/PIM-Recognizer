@@ -17,6 +17,10 @@
 
 \usepackage{array,multirow,makecell,tabularx}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+\usepackage{booktabs}
+\usepackage{floatrow}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
 
 \usepackage{pdfpages}
 
