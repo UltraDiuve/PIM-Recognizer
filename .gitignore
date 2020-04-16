@@ -22,7 +22,7 @@ report/img/src/*
 report/notebooks/*
 !report/notebooks/*.ipynb
 !report/divers/ 
-!report/tlbs/
+!report/tbls/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
