@@ -44,7 +44,6 @@
 
                 Viennent ensuite PassionFroid, et \'{E}piSaveurs, qui sont les autres \og grosses \fg branches historiques du Groupe.
 
-
                 \begin{figure}[htbp]\CenterFloatBoxes
                     \begin{floatrow}
                     \ffigbox{%
@@ -61,7 +60,7 @@
                     \end{floatrow}
                 \end{figure}
                     
-                Une analyse du recouvrement des référentiels montre que dans l'esemble, les branches ne travaillent pas les mêmes articles (cf. \reffig{fig:venn_article}).
+                Une analyse du recouvrement des référentiels montre que dans l'ensemble, les branches ne travaillent pas les mêmes articles (cf. \reffig{fig:venn_article}).
                 PassionFroid commercialise certains produits des branches \'{E}piSaveurs et TerreAzur, mais cela s'explique par une petite entité luxembourgeoise qui travaille des produits de tout type de stockage.
                 Une réserve toutefois par rapport à cette analyse de recouvrement produit : elle sous-estime vraisemblablement lesdits recouvrements, dans la mesure où la présence de doublons n'est pas prise en compte.
 
@@ -75,7 +74,13 @@
 
             \subsection{Les grands types de produits}
 
-            Comme montré à la \reffig{fig:repart_art_categ}, on voit bien que les données ta race.
+            Comme montré à la \reffig{fig:repart_art_categ}, on voit bien (en plus du fait que les articles étaient peu partagés entre les branches) que : 
+            \begin{itemize}
+                \item les deux types d'articles (négoce et presté) sont utilisés par les 3 branches
+                \item c'est tout de même PassionFroid qui fait l'utilisation majoritaire d'articles prestés
+                \item les branches \emph{ne} partagent \emph{pas} l'utilisation des autres \og catégories \fg\ (groupe de marchandises, conditions de stockage, hiérarchie produit, \dots)
+            \end{itemize}
+            Les indicateurs sont également récapitulés dans la \reftable{tab:repart_art_categ}.
 
             \begin{figure}[htbp]
                 \begin{center}
@@ -84,6 +89,22 @@
                 \caption{Répartition des articles en fonction des variable catégorielles}
                 \label{fig:repart_art_categ}
             \end{figure}
+
+            \begin{table}[htbp]
+                \footnotesize
+                \begin{center}
+                \input{tbls/Repartition par type.tex}
+                \vspace{5pt}
+                \input{tbls/Repartition par march_group.tex}
+                \vspace{5pt}
+                \input{tbls/Repartition par storage_cond.tex}
+                \vspace{5pt}
+                \input{tbls/Repartition par hier1.tex}
+                \end{center}
+                \caption{Utilisation des variables catégorielles article au sein des branches RHD}
+                \label{tab:repart_art_categ}
+                \normalsize
+            \end{table}
 
             Repartition articles catégories
             Focus sur les branches Jupiter.
