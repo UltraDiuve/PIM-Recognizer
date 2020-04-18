@@ -1,6 +1,6 @@
-"""PIM API Module
+"""PIM PDF Module
 
-This module aims to enable to fetch data from PIM system, into local folders.
+This module aims to parse the content of PDF files into text.
 """
 
 import pandas as pd

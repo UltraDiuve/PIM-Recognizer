@@ -24,6 +24,9 @@
 
 \usepackage{pdfpages}
 
+\usepackage{listings}
+\usepackage{minted}
+
 \usepackage{hyperref}
 
 \usepackage{titlesec} 
@@ -43,7 +46,7 @@
 \titleformat{\chapter}
     [display] % shape
     {\centering\normalfont\huge\bfseries} % format
-    {\chaptertitlename ~\thechapter} % label
+    {\chaptertitlename ~\thechapter} % label 
     {0pt} % sep between label and title body
     {\huge\MakeUppercase} % before body
 \titlespacing*{\chapter}
@@ -58,7 +61,7 @@
 
 \newcommand{\emphbox}[1]{
     \vspace{5mm}
-    \noindent\fbox{
+    \noindent\fbox{ 
         \begin{minipage}[c]{\linewidth}
             {\em #1}
         \end{minipage}
@@ -251,7 +254,6 @@
         \section{\'{E}tiquettes produit}
         \section{Fiches logistiques}
     \chapter{Le code utilisé}
-        % \label{code:analyse_quantitative}
         \includepdf[pages=-,
                     pagecommand={},
                     addtotoc={1,
@@ -260,7 +262,21 @@
                               Analyse quantitative,
                               code:analyse_quantitative}]
                     {notebooks/Analyse quantitative.pdf}
-    \chapter{Conversion des pièces jointes en textes}
-    \chapter{Identification des listes d'ingrédients}
 
+        \section{Gestion du fichier de configuration}
+        Ce petit module a pour but de permettre de gérer les paramètres du progamme dans un fichier de configuration (afin de simplifier la maintenance).
+        Il est utilisé dans l'ensemble des autres modules de ce projet.
+        \inputminted[fontsize=\scriptsize]{python}{../src/conf.py}
+        Un exemple de fichier de configuration (dont certains champs ont été anonymisés pour des raisons de confidentialité) est présenté ci-dessous.
+        TODO !! Mettre le fichier ici.
+
+        \section{Extraction des données du PIM}
+            \inputminted[fontsize=\scriptsize]{python}{../src/pimapi.py}
+        
+        \section{Conversion des pièces jointes en textes}
+            \inputminted[fontsize=\scriptsize]{python}{../src/pimpdf.py}
+        
+        \section{Identification des listes d'ingrédients}
+            \inputminted[fontsize=\scriptsize]{python}{../src/pimest.py} 
+ 
 \end{document}
