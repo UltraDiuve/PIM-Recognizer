@@ -21,6 +21,7 @@ report/img/src/*
 !report/notebooks/
 report/notebooks/*
 !report/notebooks/*.ipynb
+!report/notebooks/*.pdf
 !report/divers/ 
 !report/tbls/
 
