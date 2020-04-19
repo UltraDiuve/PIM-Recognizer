@@ -592,9 +592,9 @@ class CleanJSONDataFrame(object):
     """
     def __init__(self, data, record_path=None, meta=None,
                  prefix='_prev_duplc1'):
-        self.df = pd.io.json.json_normalize(data, record_path=record_path,
-                                            meta=meta, record_prefix=prefix,
-                                            meta_prefix=prefix)
+        self.df = pd.json_normalize(data, record_path=record_path,
+                                    meta=meta, record_prefix=prefix,
+                                    meta_prefix=prefix)
         self.prefix = prefix
         self.columns = list(self.df.columns.values)
 
