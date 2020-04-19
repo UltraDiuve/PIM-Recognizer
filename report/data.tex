@@ -21,11 +21,12 @@
         L'ensemble des analyses portant sur les branches RHD sont produites sur la base d'extractions de leur système de gestion SAP.
 
         \section{Analyses quantitatives}
+
+        Les graphes de cette section ont été produits via le code présenté en annexe, au chapitre \mref{code:analyse_quantitative}.
+        Les données pour les branches spécialistes (Délice et Création et Saveurs d'Antoine) sont issues d'informations fournies par le métier, hors système.
+        Dans l'ensemble de cette section, on raisonnera à la maille \emph{article} (cf. la définition article vs. produits, présentée à la section \mref{produit_article}).
+
             \subsection{Comparatifs entre les branches}
-
-                Les graphes de cette section ont été produits via le code présenté en annexe, au chapitre \mref{code:analyse_quantitative}.
-                Les données pour les branches spécialistes (Délice et Création et Saveurs d'Antoine) sont issues d'informations fournies par le métier, hors système.
-
 
                 En termes de volumétrie article (cf. \reffig{fig:volumetrie_article}, c'est TerreAzur qui possède le référentiel le plus étendu (environ 62 000 articles de marchandises actifs).
                 Cela s'explique par le fait que cette branche commercialise essentiellement des produits bruts, non-préemballés (ex : des cagettes de fruits ou de légumes).
@@ -106,16 +107,15 @@
                 \normalsize
             \end{table}
 
-            Repartition articles catégories
-            Focus sur les branches Jupiter.
-            Par type d'article / groupe de marchandises / groupe d'article, en retirant les articles inactifs. Toujours avec la vision article et produit (FIA).
+            Possibilité d'extension: 
+            - ajouter la vision produit (via les FIA)
+            - faire une sorte d'heatmap qui montre la forte correlation entre les différentes variables catégorielles (et les définitions associées. Ex: ZELAB + SA = Saurisserie, etc...)
 
-            Ajout aussi du niveau 1 de la hiérarchie produit. Voir la possibilité de faire une représentation en 2D (type art / hiérarchie). Avec genre une heatmap qui montre que certaines de ces variables catégorielles sont en fait très très liées.
-
-    \chapter{Les données utilisables}
+    \chapter{Les données utilisables, issues du PIM}
         \large
         Comme vu au chapitre \mref{perimetre_produit}, les données produit ne sont simplement accessibles que pour la branche \'{E}piSaveurs.
-        On se focalisera donc sur cette branche pour la suite de cette étude.
+        On se focalisera donc sur cette branche pour la suite de cette étude, ainsi que sur les produits alimentaires (en excluant donc les produits d'hygiène et de chimie, cf. section \mref{produits_nonal}).
+        Contrairement au chapitre précédent, ici on travaillera à la maille \emph{produit} (cf. la distinction produit vs. article section \mref{produit_article}).
         \normalsize
 
         \section{Données structurées}
@@ -136,7 +136,7 @@
             \item[les labels :] le(s) label(s) s'appliquant au produit (cf. section \ref{labels} page \pageref{labels})
             \item[les régimes particuliers :] Halal, Casher, Sans porc, Végétarien, Végétalien, \dots
             \item[les caractéristiques spéciales :] sans OGM, non traité par ionisation
-            \item[la présence d'allergènes :] le niveau de présence de chacun des 14 allergènes réglementés (cf. section \ref{composition} page \pageref{composition})
+            \item[la présence d'allergènes :] le niveau de présence de chacun des 14 allergènes réglementés (cf. section \mref{composition}) : absence, présence ou traces
             \item[les matières grasses utilisées :] palme, beurre, coco, tournesol, palmiste, \dots
             \item[les additifs présents :] les codes Exxx et les fonctions des additifs mis en oeuvre~\cite{additifs_regl_eu}\cite{additifs_wiki}
             \item[les données nutritionnelles obligatoires :] pour 100g ou 100mL, valeur énergétique (en kJ et kcal), matières grasses, dont acides gras saturés, Glucides, dont sucres simples, Fibres, Protéines, simplement
@@ -149,9 +149,18 @@
             \item[] 
         \end{description}
         
-        
         \section{Données non structurées}
         
+            \subsection{Les libellés}
+
+            Plusieurs libellés permettent de faire référence à chaque produit, avec des usages distincts:
+            \begin{description}
+                \item[Libellé temporaire unité de besoin :] il s'agit simplement d'un libellé qui est choisi par la personne à l'origine de la demande de référencement produit (souvent l'acheteur, cf. \reffig{fig:processus_article}), afin que le fournisseur comprenne sur quel produit porte le référencement.
+                \item[Désignation du produit fournisseur :] 
+            \end{description}
+
+            \subsection{Les listes d'ingrédients}
+
         Les listes d'ingrédients juste une liste ordonnées d'ingrédients triés par ordre décroissant de quantité mise en oeuvre.
 
         Parfois détaillé par phase, mais en général déconseillé.
