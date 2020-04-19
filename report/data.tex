@@ -146,9 +146,12 @@
             \item[le taux de TVA :] un des quatre taux définis dans la réglementation française
             \item[le code nomenclature douanière :] code identifiant les marchandises défini par les douanes pour la Déclaration d'\'{E}change de Biens~\cite{notions_DEB}
             \item[le pays d'origine pour la DEB :] le pays d'origine à déclarer dans la Déclaration d'\'{E}change de Biens~\cite{notions_DEB}
-            \item[] 
+            \item[les informations logistiques :] il s'agit du plan de conditionnement et de palettisation du produit. Elles regroupent les différents niveaux et les quantités pour passer de l'un à l'autre (ex : 3 boites dans un cartons, 64 cartons dans une palette), les poids et dimensions de ces niveaux logistiques, leurs GTIN, \dots
         \end{description}
         
+        Ajouter un tableau d'exemple avec ces données, en distingant sous forme de multiples tableaux (la logistique à part, etc...)
+        Faire un notebook pour cela.
+
         \section{Données non structurées}
         
             \subsection{Les libellés}
@@ -156,14 +159,37 @@
             Plusieurs libellés permettent de faire référence à chaque produit, avec des usages distincts:
             \begin{description}
                 \item[Libellé temporaire unité de besoin :] il s'agit simplement d'un libellé qui est choisi par la personne à l'origine de la demande de référencement produit (souvent l'acheteur, cf. \reffig{fig:processus_article}), afin que le fournisseur comprenne sur quel produit porte le référencement.
-                \item[Désignation du produit fournisseur :] 
+                \item[Désignation du produit fournisseur :] c'est le libellé qui est donné par le fournisseur afin d'identifier simplement son produit.
+                \item[Code article interne fournisseur :] c'est l'identifiant du produit, dans le système de gestion du fournisseur. Il s'agit généralement de codes, avec autant de formats distincts que de fournisseur venant contribuer.
+                \item[Marque commerciale du produit :] il s'agit du nom de la marque commerciale du produit. 
+                \item[Dénomination réglementaire :] c'est le libellé qui doit décrire de manière neutre le produit, sans notion liée au marketing (telle que la marque, entre autres), et qui doit obligatoirement figurer sur l'emballage du produit.
             \end{description}
 
+            Ajouter ici quelques exemples issus du PIM sur ces libellés.
+
             \subsection{Les listes d'ingrédients}
+            
+            L'autre grand type de donnée non structurées sont les listes d'ingrédients.
+            La construction des listes d'ingrédients doit suivre les règles suivantes, même si l'application n'est pas toujours parfaitement respectée :
+            \begin{itemize}
+                \item elle doit détailler l'ensemble des ingrédients, y compris les additifs et les arômes
+                \item elle doit être triée par ordre d'importance pondérale décroissante (i.e. les ingrédients les plus représentatifs en poids doivent être cités en premier)
+                \item la quantité de certains ingrédients (en pourcentage de la masse) par exemple ceux mis en valeur sur l'étiquetage ou dans la dénomination de vente (ex. gâteau aux fraises, pizza au jambon)
+            \end{itemize}
+            Même s'il ne s'agit pas d'une exigence réglementaire, le Groupe Pomona demande à ses fournisseurs de ne pas distinguer les ingrédients par phase comme cela se fait parfois.
+            Cela signifie, par exemple, séparer une partie de la composition du produit (la pâte de la garniture pour une tarte, la sauce et les raviolis, \dots).
+            De telles pratiques peuvent parfois induire le consommateur en erreur, comme par exemple dans la liste d'ingrédients suivante (s'applique à des chips de légumes):
+            \begin{quotation}
+                Légumes 64\% (betterave, panais, carottes, patates douces), huile de tournesol, sel marin.
+            \end{quotation}
+            Sans l'artifice d'avoir regroupé les légumes en une seule phase, le premier ingrédient de la liste aurait pu être l'huile de tournesol, qui est un ingrédient moins attractif pour un consommateur de chips de légumes.
 
-        Les listes d'ingrédients juste une liste ordonnées d'ingrédients triés par ordre décroissant de quantité mise en oeuvre.
+            \emphbox{
+            Les contraintes ci-dessus s'appliquant aux listes d'ingrédients font qu'en général, il s'agit d'une énumération d'ingrédients, sans doublon.
+            }
 
-        Parfois détaillé par phase, mais en général déconseillé.
+            Fous-y des exemples ici aussi.
+
         \section{Pièces jointes}
             \label{pieces_jointes}
 
