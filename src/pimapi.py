@@ -584,11 +584,14 @@ class Requester(object):
 class CleanJSONDataFrame(object):
     """Context manager class for cleanly importing data from JSON
 
-    This class enables to create a context manager that will:
+    This class enables to create a context manager that enables to read JSON
+    data into a dataframe, by specifying the data to keep (this feature is not
+    provided yet by the pandas json_normalize). It does so by following these
+    steps:
     - read data from a JSON into a new dataframe
     - enable one to duplicate loaded data into new fields
     - delete the loaded data when exiting, thus keeping only duplicated data
-    Complicated prefix is set to avoid duplicates.
+    Complicated prefix is set to avoid duplicates in column names.
     """
     def __init__(self, data, record_path=None, meta=None,
                  prefix='_prev_duplc1'):
