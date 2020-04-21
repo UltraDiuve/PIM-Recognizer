@@ -127,8 +127,8 @@
             \item[le code du produit :] calculé par le système
             \item[le fournisseur :] référence croisée vers le code du fournisseur
             \item[le type de produit :] épicerie, boisson alcoolisée, hygiène, chimie, boisson non-alcoolisée
-            \item[le type d'unité de base :] paquet, boîte, sachet, rouleau, bouteille, pot, \dots
             \item[le GTIN du produit :] identifiant numérique unique, utilisé entre autres pour l'étiquetage sous forme de code à barres~\cite{GS1_GTIN}
+            \item[le type d'unité de base :] paquet, boîte, sachet, rouleau, bouteille, pot, \dots
             \item[les poids :] brut, net, net égoutté (pour les conserves)
             \item[le volume :] pour les produits liquides
             \item[les durées de vie :] le type (Date Limite de Consommation ou Date de Durabilité Minimale) et la durée (totale à fin de production, garantie à livraison)
@@ -149,8 +149,43 @@
             \item[les informations logistiques :] il s'agit du plan de conditionnement et de palettisation du produit. Elles regroupent les différents niveaux et les quantités pour passer de l'un à l'autre (ex : 3 boites dans un cartons, 64 cartons dans une palette), les poids et dimensions de ces niveaux logistiques, leurs GTIN, \dots
         \end{description}
         
+        Des représentations de ces données sont présentées aux \reftable{tbl:exemple_idt}, \reftable{tbl:desc_idt}.
         Ajouter un tableau d'exemple avec ces données, en distingant sous forme de multiples tableaux (la logistique à part, etc...)
         Faire un notebook pour cela.
+
+        \begin{landscape}
+        \footnotesize   
+            \begin{table}
+                \RawFloats
+                \begin{center}
+                \input{tbls/Exemple identification.tex}%
+                \caption{Exemples de codes d'identification}%
+                \label{tbl:exemple_idt}%
+                \bigskip\bigskip
+                \input{tbls/Desc identification.tex}%
+                \caption{Description des codes d'identification sur le dataframe}%
+                \label{tbl:desc_idt}%   
+                \end{center}
+            \end{table}
+
+            \begin{table}
+                \RawFloats
+                \begin{center}
+                \input{tbls/Exemple dimensions.tex}%
+                \caption{Exemples de dimensions}%
+                \label{tbl:exemple_idt}%
+                \bigskip\bigskip
+                \input{tbls/Desc dimensions.tex}%
+                \caption{Description des dimensions sur le dataframe}%
+                \label{tbl:desc_idt}%  
+                \end{center}
+            \end{table}            
+        \normalsize
+        \end{landscape}
+
+
+
+
 
         \section{Données non structurées}
         
