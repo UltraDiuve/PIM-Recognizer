@@ -530,14 +530,24 @@ class Requester(object):
         else:
             return(filename.split('.')[-1].lower())
 
-    def result_to_dataframe(self, record_path=None, meta=None, mapping=None,
-                            index=None):
+    def result_to_dataframe(self,
+                            record_path='entries',
+                            meta=None,
+                            mapping=None,
+                            index='uid'):
         """Formats result content as a dataframe with defined format
 
         record_path and meta are pandas json_normalize method arguments
         mapping is a key : adress mapping that maps return dataframe keys to
         data adress in the JSON. Reminder: json_normalize default separator
         is '.'
+        So, for example if you want to have a record path down to the
+        ingredients table (that is, down to
+        record > properties > pprodc:mainIngredients), with the uid product as
+        index, you should use the following parameters:
+            record_path=['entries', 'properties', 'pprodc:mainIngredients'],
+            meta=[['entries', 'uid']],
+            index='entries.uid'
         index is the field identifier(s) for the field(s) to be used as index
         """
         result_json = [result.json() for result in self.result]
