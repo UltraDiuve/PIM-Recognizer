@@ -17,6 +17,7 @@
 
 \usepackage{array,multirow,makecell,tabularx}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \usepackage{booktabs}
 \usepackage{floatrow}
 % Table float box with bottom caption, box width adjusted to content
@@ -273,6 +274,16 @@
         \section{Extraction des données du PIM}
             \inputminted[fontsize=\scriptsize]{python}{../src/pimapi.py}
         
+        \section{Analyse des données du PIM}
+        \includepdf[pages=-,
+                    pagecommand={},
+                    addtotoc={1,
+                              section,
+                              3,
+                              Analyse des données du PIM,
+                              code:analyse_donnees_PIM}]
+                    {notebooks/Analyse donnees du PIM.pdf}
+
         \section{Conversion des pièces jointes en textes}
             \inputminted[fontsize=\scriptsize]{python}{../src/pimpdf.py}
         

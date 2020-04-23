@@ -116,9 +116,12 @@
         Comme vu au chapitre \mref{perimetre_produit}, les données produit ne sont simplement accessibles que pour la branche \'{E}piSaveurs.
         On se focalisera donc sur cette branche pour la suite de cette étude, ainsi que sur les produits alimentaires (en excluant donc les produits d'hygiène et de chimie, cf. section \mref{produits_nonal}).
         Contrairement au chapitre précédent, ici on travaillera à la maille \emph{produit} (cf. la distinction produit vs. article section \mref{produit_article}).
+        L'ensemble des tableaux et graphes de ce chapitre ont été produit via le notebook "Analyse des données du PIM", présenté en annexe \mref{code:analyse_donnees_PIM}.
         \normalsize
 
         \section{Données structurées}
+
+            \subsection{Description des données structurées}
 
         Les données dites structurées sont l'ensemble des données qui peuvent prendre leurs valeurs dans un domaine restreint.
         Par exemple, ce sont les données booléennes, les choix issus de listes déroulantes, les valeurs numériques\dots
@@ -149,14 +152,41 @@
             \item[les informations logistiques :] il s'agit du plan de conditionnement et de palettisation du produit. Elles regroupent les différents niveaux et les quantités pour passer de l'un à l'autre (ex : 3 boites dans un cartons, 64 cartons dans une palette), les poids et dimensions de ces niveaux logistiques, leurs GTIN, \dots
         \end{description}
         
-        Des représentations de ces données sont présentées aux \reftable{tbl:exemple_idt}, \reftable{tbl:desc_idt}.
-        Ajouter un tableau d'exemple avec ces données, en distingant sous forme de multiples tableaux (la logistique à part, etc...)
-        Faire un notebook pour cela.
+            \subsection{Analyse de ces données structurées}
 
-        \begin{landscape}
-        \footnotesize   
+                \subsubsection{Données d'identification}
+                Un exemple et une description statistique de ces données est présentées aux \reftable{tbl:exemple_idt} et \reftable{tbl:desc_idt}.
+                On peut en tirer les conclusions suivantes : 
+                \begin{itemize}
+                    \item Les codes produits sont bien des identifiants uniques des produits : on a autant de valeurs uniques que de valeurs renseignées
+                    \item Une proportion importante de produits (91\%) porte un GTIN (cf. \cite{GS1_GTIN}), ce qui reflète une \og maturité \fg des filières produits avec lesquelles travaille \'{E}piSaveurs.
+                    \item Ces GTIN sont également censés être des identifiants uniques des produits. Néanmoins, comme présenté à la 
+                \end{itemize}
+
+                \begin{figure}[htbp]\CenterFloatBoxes
+                    \begin{floatrow}
+                    \ffigbox{%
+                        \includegraphics[width=200pt]{img/repartition_gtin.png}%
+                    }{%
+                      \caption{Nombre de produits par GTIN}%
+                      \label{fig:produit_par_GTIN}%
+                    }
+                    \capbtabbox[][][c]{%
+                        \input{tbls/gtin_counts.tex}%
+                    }{%
+                      \caption{Nombre de produits par GTIN}%
+                    }
+                    \end{floatrow}
+                \end{figure}        
+
+
+        TODO : continuer l'analyse par domaine de données.
+
+        
+        \begin{landscape}   
             \begin{table}
                 \RawFloats
+                {\scriptsize
                 \begin{center}
                 \input{tbls/Exemple identification.tex}%
                 \caption{Exemples de codes d'identification}%
@@ -166,25 +196,41 @@
                 \caption{Description des codes d'identification sur le dataframe}%
                 \label{tbl:desc_idt}%   
                 \end{center}
+                }
             \end{table}
 
             \begin{table}
                 \RawFloats
+                {\scriptsize
                 \begin{center}
                 \input{tbls/Exemple dimensions.tex}%
                 \caption{Exemples de dimensions}%
-                \label{tbl:exemple_idt}%
+                \label{tbl:exemple_dim}%
                 \bigskip\bigskip
                 \input{tbls/Desc dimensions.tex}%
                 \caption{Description des dimensions sur le dataframe}%
-                \label{tbl:desc_idt}%  
+                \label{tbl:desc_dim}%  
                 \end{center}
-            \end{table}            
+                }
+            \end{table}
+
+            \begin{table}
+                \RawFloats
+                {\scriptsize
+                \begin{center}
+                \input{tbls/Exemple conservation.tex}%
+                \caption{Exemples de conservation}%
+                \label{tbl:exemple_cons}%
+                \bigskip\bigskip
+                \input{tbls/Desc conservation.tex}%
+                \caption{Description des conservations sur le dataframe}%
+                \label{tbl:desc_cons}%  
+                \end{center}
+                }
+            \end{table}
+
         \normalsize
         \end{landscape}
-
-
-
 
 
         \section{Données non structurées}
