@@ -160,8 +160,11 @@
                 \begin{itemize}
                     \item Les codes produits sont bien des identifiants uniques des produits : on a autant de valeurs uniques que de valeurs renseignées
                     \item Une proportion importante de produits (91\%) porte un GTIN (cf. \cite{GS1_GTIN}), ce qui reflète une \og maturité \fg des filières produits avec lesquelles travaille \'{E}piSaveurs.
-                    \item Ces GTIN sont également censés être des identifiants uniques des produits. Néanmoins, comme présenté à la 
+                    \item Ces GTIN sont également censés être des identifiants uniques des produits. Néanmoins, comme présenté à la \reffig{fig:produit_par_GTIN}.
+                    \item La distribution numérique des produits par fournisseur est importante. Il existe plus de 600 fournisseurs pour les 13000 produits, et l'essentiel des fournisseur n'ont qu'un nombre très limité de produits. On peut avoir une vision à la \reffig{fig:distrib_fourn_pdts} ou à la \reffig{fig:rappel_pdt_par_frn}.
                 \end{itemize}
+
+                TODO : illustrer ici les graphes suivants.
 
                 \begin{figure}[htbp]\CenterFloatBoxes
                     \begin{floatrow}
@@ -179,6 +182,21 @@
                     \end{floatrow}
                 \end{figure}        
 
+                \begin{figure}[htbp]
+                    \begin{center}
+                    \includegraphics[width=\linewidth]{img/distribution_fournisseurs_par_prd_count.png}
+                    \end{center}
+                    \caption{Distribution des fournisseurs par nombre de produits}
+                    \label{fig:distrib_fourn_pdts}
+                \end{figure}
+
+                \begin{figure}[htbp]
+                    \begin{center}
+                    \includegraphics[width=\linewidth]{img/rappel_produit_par_fournisseur.png}
+                    \end{center}
+                    \caption{Le Pareto des produits en fonction des fournisseur}
+                    \label{fig:rappel_pdt_par_frn}
+                \end{figure}
 
         TODO : continuer l'analyse par domaine de données.
 
@@ -232,7 +250,6 @@
         \normalsize
         \end{landscape}
 
-
         \section{Données non structurées}
         
             \subsection{Les libellés}
@@ -246,7 +263,7 @@
                 \item[Dénomination réglementaire :] c'est le libellé qui doit décrire de manière neutre le produit, sans notion liée au marketing (telle que la marque, entre autres), et qui doit obligatoirement figurer sur l'emballage du produit.
             \end{description}
 
-            Ajouter ici quelques exemples issus du PIM sur ces libellés.
+            TODO : Ajouter ici quelques exemples issus du PIM sur ces libellés.
 
             \subsection{Les listes d'ingrédients}
             
@@ -269,7 +286,7 @@
             Les contraintes ci-dessus s'appliquant aux listes d'ingrédients font qu'en général, il s'agit d'une énumération d'ingrédients, sans doublon.
             }
 
-            Fous-y des exemples ici aussi.
+            TODO : Fous-y des exemples ici aussi.
 
         \section{Pièces jointes}
             \label{pieces_jointes}
@@ -277,25 +294,62 @@
             Dans chacune des sections, mentionner la volumétrie de données accessibles (avec les facettes migration, statuts, \& compagnie) et tout
 
             \subsection{Fiches techniques fournisseur}
+
+            \label{fiches_techniques}
+            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
+            En général, cela ne porte pas d'information marketing.
+            Cf. les exemples en annexe.
+            Lister ici les données qu'on trouve usuellement dans les fiches techniques.
+            Et la manières dont elles sont représentées.
+
             \subsection{\'{E}tiquettes produit}
+            
+            \label{etiquettes_produit}
+            L'étiquette produit est la partie de l'emballage du produit qui porte les informations produit.
+            Selon la technologie de l'emballage - très liée au fait que le produit est plutôt brut ou plutôt transformé - il peut s'agir :
+            \begin{itemize}
+                \item d'une photo de l'étiquette collante apposée sur l'extérieur de l'emballage du produit (cf. exemple)
+                \item d'un applat de l'emballage, qui est le document qui est ensuite envoyé aux chaînes de production pour impression
+                \item ou de tout autre visuel montrant une partie indissociable de l'emballage physique du produit
+            \end{itemize}
+            Pour résumer, l'étiquette est un document qui représente l'information produit qui \og voyage avec le produit \fg.
+
+            Dire ici ce qu'on a dans les fiches techiques, et la manière dont elles sont représentées.
+
             \subsection{Fiches logistiques fournisseur}
-            \subsection{Fiches techniques et argumentaires Pomona}
+            
+            Parfois, la fiche technique ne mentionne pas les informations logistiques.
+            Plusieurs explications : la fiche technique provient d'un service, et les informations logistiques d'un autre, \dots
+            Comme les données logistiques ont une importance cruciale, on demande aux fournisseurs de nous donner un document permettant de contrôler la cohérence des données transmises.
+
         \section{Récapitulatif de la complétude des données}
 
         Mettre ici un ou plusieurs tableaux récapitulatifs illustrant les données possédées quantitativement.
 
+        Montrer également la complétude en fonction du statut, de la date de création, et des facettes de migration.
+
+        Mettre l'exemple du champ "acide gras trans >1\%"
+
         \section{Analyse qualitative des données}
         
+            \subsection{\'{E}valuation de la qualité des données}
         Montrer qu'un sondage basique fait que la qualité actuelle est perfectible
 
-        Mettre également la distribution numérique des produits par fournisseur et insister sur la difficulté posée par de multiples formats
 
+            \subsection{Types de pdf possédés}
         Dire ici qu'il y a finalement beaucoup de pdf qui possèdent des textes extractibles vs. uniquement des images.
 
         \section{Les données \og manuellement étiquetées \fg}
 
-        Montrer comment elles ont été produites
+            \subsection{Mode de constituion de l'échantillon}
+            Montrer comment elles ont été produites
 
-        Expliciter les règles de gestion qui ont été listées pendant l'étiquetage manuel
+            \subsection{Règles de gestion pour l'étiquetage manuel}
+        
+            Expliquer que l'exercice n'est pas simple (car pas mal de petites spécificités sur les contenus). 
+            Parler des produits bruts, pour lesquels on n'a parfois pas de liste d'ingrédients.
+            + la filière boissons qui est moins structurée.
+            Expliciter les règles de gestion qui ont été listées pendant l'étiquetage manuel
 
-        Evaluer la cohérence entre étiquettes manuelles et contenu du PIM
+            \subsection{Confrontation avec le contenu du PIM}
+            Evaluer la cohérence entre étiquettes manuelles et contenu du PIM

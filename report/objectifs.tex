@@ -1,0 +1,75 @@
+\part{Les objectifs de ce projet}
+    \chapter{Les cas d'usage}
+        \section{Objectifs : Qualité et productivité}
+        Comme présenté précédemment, 1 on dépense de l'énergie, et 2 on a une qualité de données qui est perfectible.
+        Un traitement automatique des documents mis à disposition permettrait de décharger les personnes qui interviennent dans le processus (fournisseurs, acheteurs, gestionnaires de référentiels, ingénieurs qualité) et de garantir une meilleure pertinence de l'information produit.
+
+        \section{La préalimentation d'information}
+        Préalimenter les informations, sous réserve d'avoir un outil suffisamment fiable, permettrait de faire gagner du temps aux fournisseurs.
+        Trois obstacles:
+        \begin{itemize}
+            \item cela n'a d'intérêt que si le système est capable de produire de l'information structurée avec une fiabilité élevée (par exemple, 80\% de données correctes serait un minimum)
+            \item cela entre en concurrence directe avec le système GDSN présenté au paragraphe portant le même nom à la section \mref{GDSN}.
+            Or, ce système est justement spécialement conçu pour faire transiter les informations produit des fournisseurs aux distributeurs, avec une standardisation des échanges
+            \item cela apporte l'essentiel de la valeur aux fournisseurs, mais pas au Groupe
+        \end{itemize}
+
+        \section{Le contrôle des informations transmises}
+
+        Cf. le schéma présenté à la \reffig{fig:processus_article}.
+        Plus le taux de détection des erreurs est élevé, et plus les erreurs sont détectées tôt, mieux c'est : 
+        \begin{itemize}
+            \item la qualité des données s'en trouve évidemment améliorée
+            \item le processus est plus court en temps, en évitant les aller-retours
+            \item on décharge l'ensemble des acteurs, en limitant la
+             
+        \end{itemize} 
+
+            \subsection{Le contrôle à la saisie fournisseur}
+            Si on alerte le fournisseur au moment où il saisit, on peut dès le début du processus éviter une erreur.
+            Cela pourrait avoir lieu quand il soumet ses donner, on fait tourner un traitement et on remonte des avertissements dans l'IHM du PIM.
+
+            \subsection{L'aide aux vérifications Pomona}
+            Lors des contrôles, on pourrait également remonter les incohérences détectées entre pièces jointes et données à contrôler.
+
+            \subsection{Les contrôles en masse asynchrones}
+            Enfin, il pourrait être pertinent de faire tourner de manière asynchrone des contrôles de qualité de données sur l'ensemble de la base.
+            TODO : détailler un peu le pourquoi c'est nécessaire (exemple du champ acides gras trans), et un des point difficile : acquittement des avertissements non pertinents.
+
+    \chapter{Le choix du cas d'usage}
+
+        \section{La représentation dominante des fiches techniques}
+        On a beaucoup de fiches techniques, pas beaucoup d'étiquettes ou de fiches logistiques (cf. la table qui va bien.)
+        On va donc plutôt dans un premier temps tenter de travailler avec les fiches techniques.
+
+        \section{Les multiples formats}
+        
+        Chaque fournisseur décide évidemment du format de document qu'il souhaite produire.
+        On a donc beaucoup de formats différents, et un Pareto finalement trop \og mou \fg pour envisager de construire des templates pour récupérer les informations automatiquement (cf. \reffig{fig:rappel_pdt_par_frn}).
+    
+        \section{Les informations \og spatialisées \fg}
+        Les données que l'on souhaite récupérer sont globalement de 3 types : 
+        \begin{itemize}
+            \item données de composition
+            \item données nutritionnelles
+            \item données logistiques
+        \end{itemize}
+
+        Comme vu dans la section \mref{fiches_techniques}, un grand nombre d'informations sont spatialisées.
+        Par exemple, la représentation des données nutritionnelles se fait régulièrement sous forme de tableau.
+        Or, c'est un peu compliqué à interpréter, car il fut réussir à interpréter un tableau, et à en sortir des couples de clé / valeur.
+
+        \section{La complexité dans la représentation des données logistiques}
+
+        Les données logistiques sont souvent difficile à interpréter pour un humain, donc cette activité peut paraître difficile à déléguer à une machine.
+        Mettre 2-3 exemples.
+
+        \section{L'identification d'une liste d'ingrédient par son contenu}
+
+        Il est possible de dire si un texte est une liste d'ingrédients, juste en lisant ce texte.
+        Par exemple, \og 14g \fg peut être une quantité de glucides, de lipides, le poids d'une pièce unitaire, \dots
+        Mais un texte tel quel <mettre ici un exemple> a de forte chance d'être le contenu d'une liste d'ingrédients.
+
+        \section{Conclusion quant au choix du cas d'usage}
+
+        \emphbox{Au vu des différentes contraintes listées dans ce document, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}
