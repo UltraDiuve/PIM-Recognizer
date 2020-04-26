@@ -8,10 +8,8 @@
 
 \usepackage{setspace}
 \spacing{1.5}
-
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
-
-\usepackage{url}
+\usepackage{calc}
 
 \usepackage{graphicx}
 
@@ -30,6 +28,7 @@
 \usepackage{listings}
 \usepackage{minted}
 
+\usepackage{url}
 \usepackage{hyperref}
 
 \usepackage{titlesec} 
@@ -108,121 +107,9 @@
 
 \input{objectifs}
 
-\part{Construction du modèle}
-    \chapter{Les principes généraux}
-        \section{Contenu du texte d'une liste d'ingrédients}
+\input{model}
 
-        En général, chaque ingrédient sera présent une seule fois dans la liste.
-
-        Le calcul d'embeddings via des modèles tels que SVD ou Word2Vec fait peu de sens.
-        \newline
-        \newline
-        \emphbox{l'extraction des textes se fait au format \emph{Bag Of Words}, sans utiliser de notion d'IDF. L'utilsation de TF semble églament sujette à caution.}
-
-        \section{Limitation à l'identification des listes d'ingrédients}
-
-        On est sur une taxonomie d'informations limitée dans les fiches techniques.
-
-        On pourrait envisager de classifier l'ensemble des textes présents dans les fiches techniques.
-
-        Mais l'absence de données étiquetées rend cette tâche impossible. La charge d'étiquetage d'un nombre représentatif de blocs de texte de fiches techniques est trop importante pour être mise en oeuvre dans le cadre de ce projet.
-
-        \section{Conversion de documents en texte}
-        
-        dire ici qu'on utilise principalement pdfminer vs. d'autres outils d'OCR.
-
-        De plus, on partira dans un premier temps sur une transformation basique d'un document en texte, sans passer par une analyse de la localisation des textes sur le document.
-            
-    \chapter{Construction d'un modèle simple \og ouvert \fg}
-        
-    Expliciter le principe de ce modèle avec un schéma simple.
-
-    Pas de mesure possible de la performance
-
-        \section{Extraction des données}
-
-        Ne garder que produits d'épicerie et boissons non alcoolisées
-
-        \section{Conversion en blocs de texte}
-        \section{Train/Test split}
-        \section{Entrainement du modèle}
-        \section{Calcul de la similarité}
-        \section{Illustration des résultats obtenus}
-    
-    \chapter{Utilisation des données manuellement étiquetées}
-
-    Expliciter pourquoi on ne peut pas faire tourner (référence parties précédentes) sur l'ensemble des données
-        
-        \section{Chargement des données manuellement étiquetées}
-
-        \section{Train/Test split}
-
-        \section{Entraînement du modèle}
-
-        \section{Illustration des prédictions obtenues}
-
-
-    \chapter{Mesure de la performance}
-    
-        \section{Précision}
-            \subsection{Approche naïve}
-
-            \subsection{Avec du \og text-postprocessing \fg}
-        
-        \section{Similarité cosinus}
-
-        \section{Fonction de \emph{loss} spécifique}
-
-        Expliciter les diverses distances, et pourquoi certaines sont plus pertinentes que d'autres.
-
-        Ex : on ne garde pas la distance de Hamming
-            \subsection{Distance de Levenshtein}
-
-            \subsection{Distance de Dameray-Levenshtein}
-
-            \subsection{Distance de Jaro}
-
-            \subsection{Distance de Jaro-Wrinkler}
-    
-        \section{Cross-validation des modèles précédents}
-            
-            \subsection{Modèle \og ouvert \fg}
-
-            \subsection{Modèle entraîné sur les données étiquetées manuellement}
-
-    \chapter{Transfer learning}
-        
-        \section{Principe du pré-entraînement}
-        
-        Expliquer qu'il s'agit d'une approche hybride des 2 modèles précédents
-
-        \section{Illustration de l'impact sur la performance}
-
-
-    \chapter{Hyperparameter tuning}
-            
-        \section{Les paramètres ajustables}
-
-        \section{Application d'une grid search}
-
-\part{Travaux subséquents}
-    \chapter{Opérationnalisation de cette maquette}    
-        \section{Client et sponsor métier}
-        \section{Définition des règles de gestion}
-        \section{Mise en place d'une organisation projet}
-        \section{Industrialisation du code}
-        Prochaines étapes : opérationnalisation via API \\
-        Documentation
-        \section{Monitoring de la performance du modèle}
-    \chapter{Extension des fonctionnalités offertes}
-        \section{Prise en compte de nouveaux types de pièces jointes}
-        \section{Utilisation d'outil d'OCR pour les pdf non structurés}
-        \section{Mise en place d'outil de spatialisation des textes}
-        \section{Construction d'outils d'extraction de données connexes à la composition}
-        \section{\'{E}largissement aux données nutritionnelles}
-        \section{Extraction d'informations complémentaires}
-        \section{\'{E}valuation de la performances sur d'autres familles de produits}
-
+\input{followup}
 
 \appendix
 \part{Annexes}
