@@ -1,6 +1,26 @@
 \part{Les données}
     \chapter{Le périmètre produit}
     \label{perimetre_produit}
+
+    \section{Les produits non-alimentaires}
+    \label{produits_nonal}
+    Un petit apparté est nécessaire concernant les produits non-alimentaires.
+    Si l'essentiel des produits commercialisés par les branches du groupe sont des produits alimentaires, comme évoqué précédemment une partie de l'activité commerciale se fait tout de même autour de produits non-alimentaires.
+    Ces produits restent malgré tout destinés exclusivement aux professionnels des métiers de bouche, et il s'agit de consommables (par opposition à des articles d'électroménager, de la vaisselle non-jetable, \dots).
+
+    On distingue en général deux catégories de produits non-alimentaires : 
+    \begin{itemize}
+        \item les produits dits \og d'hygiène \fg
+        \item les produits dits \og de chimie \fg
+    \end{itemize}
+
+    Les produits de chimie regroupent les produits qui doivent faire l'objet d'une fiche de données de sécurté au sens du réglement Européen No 1907/2006 dit \og REACH \fg (Registration, Evaluation, Authorisation and Restriction of Chemicals) \cite{reach_text}.
+
+    On appelle produits d'hygiène tous les autres produits non-alimentaires.
+    L'appelation \og d'hygiène \fg est donc réductricte, dans la mesure où cette large famille regroupe les consommables de nettoyage (éponges, papiers absorbants, \dots) mais également tout type d'autres consommables (serviettes de tables, gobelets en plastiques, pics à brochettes, boîtes de produits à emporter, \dots).
+
+    \emphbox{La commercialisation de produits non-alimentaires existe au sein du groupe, mais on se focalisera pour la suite sur les produits alimentaires qui reste le coeur de métier.}
+
         \section{Accessibilité de la donnée en fonction des branches}
 
         Comme vu à la section \mref{outils_infos}, les systèmes d'information associés à la gestion de l'information produit offrent des niveaux d'accès hétérogènes à la donnée produit.
@@ -31,7 +51,7 @@
                 En termes de volumétrie article (cf. \reffig{fig:volumetrie_article}, c'est TerreAzur qui possède le référentiel le plus étendu (environ 62 000 articles de marchandises actifs).
                 Cela s'explique par le fait que cette branche commercialise essentiellement des produits bruts, non-préemballés (ex : des cagettes de fruits ou de légumes).
                 Or, ces produits ne sont pas clairement identifiés, par exemple par un GTIN.
-                Au démarrage de cette branche, afin de limiter la charge sur les gestionnaires de référentiels, le parti a été pris de créer en avance de phase l'ensemble des articles susceptibles d'être commercialisés.
+                Au démarrage de SAP pour cette branche, afin de limiter la charge sur les gestionnaires de référentiels, le parti a été pris de créer en avance de phase l'ensemble des articles susceptibles d'être commercialisés.
                 Cela s'est traduit par la création d'un grand nombre d'articles, du fait de l'application \og brutale \fg de la combinatoire des différents critères pouvant définir un produit.
                 Un exemple (fictif) serait, sur les pommes : 
                 \begin{itemize}
@@ -160,7 +180,7 @@
                 \begin{itemize}
                     \item Les codes produits sont bien des identifiants uniques des produits : on a autant de valeurs uniques que de valeurs renseignées
                     \item Une proportion importante de produits (91\%) porte un GTIN (cf. \cite{GS1_GTIN}), ce qui reflète une \og maturité \fg des filières produits avec lesquelles travaille \'{E}piSaveurs.
-                    \item Ces GTIN sont également censés être des identifiants uniques des produits. Néanmoins, comme présenté à la \reffig{fig:produit_par_GTIN}.
+                    \item Ces GTIN sont également censés être des identifiants uniques des produits. Néanmoins, comme présenté à la \reffig{fig:produit_par_GTIN}, il peut arriver que le même GTIN soit présent sur plusieurs produits. Quelques illustrations et explications sont présentées en annexe, dans le notebook d'analyse des données.
                     \item La distribution numérique des produits par fournisseur est importante. Il existe plus de 600 fournisseurs pour les 13000 produits, et l'essentiel des fournisseur n'ont qu'un nombre très limité de produits. On peut avoir une vision à la \reffig{fig:distrib_fourn_pdts} ou à la \reffig{fig:rappel_pdt_par_frn}.
                 \end{itemize}
 

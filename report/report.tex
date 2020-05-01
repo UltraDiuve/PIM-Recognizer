@@ -76,7 +76,7 @@
 
 \newcommand{\mref}[1]{\ref{#1} page~\pageref{#1}}
 
-\title{Extraction de données relatives aux produits alimentaires à partir de documents non structurés}
+\title{Extraction des ingrédients depuis les fiches techniques de produits alimentaires}
 \author{Pierre \textsc{massé}}
 \date{Juin 2020}
 
@@ -89,13 +89,19 @@
     
     La gestion de l'information produit est devenu un enjeu de société majeur ces dernières années.
     Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de la mise en place de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière~\cite{incotext}\cite{incoexpl}.
-    \`{A} ce titre, le Groupe Pomona a lancé ces dernières années un projet majeur de refonte des processus et des outils de gestion de l'information produit.
+%    \`{A} ce titre, le Groupe Pomona a lancé ces dernières années un projet majeur de refonte des processus et des outils de gestion de l'information produit.
 
-    La première filiale du Groupe a fait l'objet d'un déploiement réussi, mais cela a toutefois mis en évidence le fait que des gains à la fois en qualité et en productivité restent accessibles.
+%    La première filiale du groupe a fait l'objet d'un déploiement réussi, mais cela a toutefois mis en évidence le fait que des gains à la fois en qualité et en productivité restent accessibles.
 
-    La mise en place d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du Groupe.
-
+    La mise en place d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du groupe.
     Le présent rapport détaille la mise en place d'un outil permettant d'extraire les listes d'ingrédients des fiches techniques transmises par les fabricants des produits.
+
+    Dans une première partie, on détaillera le contexte métier autour de la gestion de l'information produit. 
+    Nous nous analyserons ensuite les données disponibles, et les possibilités de les exploiter.
+    Nous expliciterons alors les raisons qui ont poussé à choisir le cas d'usage, et la manière dont il pourrait être mis en oeuvre au sein du Groupe Pomona.
+    La quatrième partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie ouvrira la réflexion sur les travaux à venir.
+
+
 \end{abstract}
 \normalsize
 
@@ -120,16 +126,74 @@
         \bibliography{./biblio} 
     \chapter{Exemple de documents fournisseur}
         \section{Fiches techniques}
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand=\subsection{Fiche technique sel Cerebos}
+                    ]
+                    {doc_examples/FTF_8266604c-1ea2-47ca-a4fa-649b4147e733.pdf}
+%        \includepdf[pages=2-,
+%                    scale=1
+%                    ]
+%                    {doc_examples/FTF_8266604c-1ea2-47ca-a4fa-649b4147e733.pdf}
+
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand=\subsection{Fiche technique olives Valtonia}
+                    ]
+                    {doc_examples/FTF_b7a5df3b-42b4-4cde-ae39-18f0e7a5f776.pdf}
+%        \includepdf[pages=2-,
+%                    scale=1
+%                    ]
+%                    {doc_examples/FTF_b7a5df3b-42b4-4cde-ae39-18f0e7a5f776.pdf}
+
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand=\subsection{Fiche technique Panna Cotta Nestlé}
+                    ]
+                    {doc_examples/FTF_d0aa2c1c-4317-4e5f-8a18-82e56976da22.pdf}
+        \includepdf[pages=2-,
+                    scale=0.8,
+                    pagecommand={}
+                    ]
+                    {doc_examples/FTF_d0aa2c1c-4317-4e5f-8a18-82e56976da22.pdf}
+
+
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand=\subsection{Fiche technique confiture Andros}
+                    ]
+                    {doc_examples/FTF_e4c8c61f-a401-4384-8128-181447e5bdd2.pdf}
+        \includepdf[pages=2-,
+                    scale=0.8,
+                    pagecommand={}
+                    ]
+                    {doc_examples/FTF_e4c8c61f-a401-4384-8128-181447e5bdd2.pdf}
+
+
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand={\subsection{Fiche technique ciboulette La case aux épices}},
+                    offset=0pt -15pt
+                    ]
+                    {doc_examples/FTF_eac17f96-1046-49c8-892d-a00220a75057.pdf}
+        \includepdf[pages=2-,   
+                    scale=0.8,
+                    pagecommand={}
+                    ]
+                    {doc_examples/FTF_eac17f96-1046-49c8-892d-a00220a75057.pdf}
+            
         \section{\'{E}tiquettes produit}
         \section{Fiches logistiques}
     \chapter{Le code utilisé}
+
+    % TODO ! Reprendre l'ensemble des inclusions, et faire un include en mettant un titre comme pour les fiches techniques.
+    % pour faire juste un label qui permet de pointer vers une page spécifique, utiliser addtotoc en mettant un niveau qui n'est pas présent dans la table des matières (ex : paragraphe)
+    % ex: addtotoc={2, paragraphe, 0, caption_invisible, label_a_utiliser}
+'
         \includepdf[pages=-,
                     pagecommand={},
-                    addtotoc={1,
-                              section,
-                              3,
-                              Analyse quantitative,
-                              code:analyse_quantitative}]
+                    addtotoc={1, section, 1, Analyse quantitative, code:analyse_quantitative,
+                              2, paragraph, 0, Zobi, lab:zobi}]
                     {notebooks/Analyse quantitative.pdf}
 
         \section{Gestion du fichier de configuration}
@@ -138,6 +202,7 @@
         \inputminted[fontsize=\scriptsize]{python}{../src/conf.py}
         Un exemple de fichier de configuration (dont certains champs ont été anonymisés pour des raisons de confidentialité) est présenté ci-dessous.
         TODO !! Mettre le fichier ici.
+        TODO : retirer ce test. Aller voir à la page \pageref{lab:zobi} !
 
         \section{Extraction des données du PIM}
             \inputminted[fontsize=\scriptsize]{python}{../src/pimapi.py}

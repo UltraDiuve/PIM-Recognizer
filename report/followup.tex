@@ -1,17 +1,44 @@
 \part{Travaux subséquents}
     \chapter{Opérationnalisation de cette maquette}    
         \section{Client et sponsor métier}
-        \section{Définition des règles de gestion}
+        Estimation du ROI et identification d'un sponsor et d'un client.
+
+        \section{Sélection du use case}
+        Préalimentation ou appui au contrôle de données ?
+
         \section{Mise en place d'une organisation projet}
-        \section{Industrialisation du code}
-        Prochaines étapes : opérationnalisation via API \\
-        Documentation
+            \subsection{Identification des compétences nécessaires}
+            Nécessite des compétences diverses : développement côté PIM, compétences infra, définition du niveau de criticité de cette fonctionnalité (pour définition du monitoring et des plans de reprise d'activité)
+            \subsection{Choix d'un cadre méthodologique projet}
+            Scrum, c'est ce qu'on connaît le mieux.
+            \subsection{Développement côté PIM}
+            Développement des fonctionnalités telles qu'elles ont été présentées dans la section sur le choix du use case.
+
+        \section{Industrialisation du code du modèle}
+        Refactoring de certaines classes (e.g. : le requester, qui porte trop de responsabilités)
+        Poursuite de l'écriture de tests unitaire pour avoir une couverture > 80\%.
+        Mise en place d'un processus de déploiement continu.
+        Rédaction de la documentation : revue des docstring et mise en place d'un build Sphinx
+
         \section{Monitoring de la performance du modèle}
+        voir la manière dont on peut superviser le niveau de performance du modèle.
+        Capture-t-on en direct le retour des utilisateurs dans le PIM ?
+
     \chapter{Extension des fonctionnalités offertes}
         \section{Prise en compte de nouveaux types de pièces jointes}
+        Aller chercher également les étiquettes.
+
         \section{Utilisation d'outil d'OCR pour les pdf non structurés}
+        Intégrer ce qui a déjà été fait autour des solutions cloud, Google ou Azure.
+
         \section{Mise en place d'outil de spatialisation des textes}
+        Charge importante, mais pourrait être utilisé pour d'autres sujets
+
         \section{Construction d'outils d'extraction de données connexes à la composition}
+        Détermination des allergènes sur la base du contenu des listes d'ingrédients.
+
         \section{\'{E}largissement aux données nutritionnelles}
-        \section{Extraction d'informations complémentaires}
+        Si spatialisation faisable, tenter de récupérer des données nutritionnelles.
+
         \section{\'{E}valuation de la performances sur d'autres familles de produits}
+        Construction d'une nouvelle ground truth sur des fiches techniques de PassionFroid et TerreAzur, et évaluation de la performance du modèle.

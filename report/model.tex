@@ -93,18 +93,19 @@
         \begin{center}
         \includegraphics[width=0.9\linewidth]{img/ground_truth_model.png}
         \end{center}
-        \caption{Schéma de principe du \og modèle ouvert \fg}
+        \caption{Schéma de principe du modèle basé sur les données étiquetées}
         \label{fig:ground_truth_model}
     \end{figure}     
 
 
         \section{Chargement des données manuellement étiquetées}
 
-        Un bon vieux read\_csv des familles.
+        Un bon vieux read\_csv des familles pour le résultat.
+        Les transformations à pipeliner pour les pdf et la constitution des blocs.
 
         \section{Train/Test split}
 
-        Vu qu'on a moins de données, on fait train = 400 et test = 100
+        Vu qu'on a moins de données, on fait train = 400 et test = 100.
 
         \section{Entraînement du modèle}
 
@@ -112,46 +113,113 @@
 
         \section{Illustration des prédictions obtenues}
 
+        On illustre ici le résultat.
 
     \chapter{Mesure de la performance}
     
+    Comme vu aux chapitre précédents, il est indispensable de mesurer la performance de nos modèles.
+    On le fera sur le modèle se basant sur les données manuellement étiquetées.
+    Le principe est présenté à la \reffig{fig:measured_model}.
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=0.9\linewidth]{img/measured_model.png}
+        \end{center}
+        \caption{Illustration de la méthodologie de mesure de la performance}
+        \label{fig:measured_model}
+    \end{figure}     
+
         \section{Précision}
+        
+        La métrique qui tombe le plus sous le sens est la précision.
+        On mesure la proportion de prédictions qui sont égales à la ground truth.
+
             \subsection{Approche naïve}
+
+            Illustration des résultats. 
+            Comme on s'y attend, la précision sans transformation est très sévère.
+            En particulier, prise en compte de la casse et des accents.
+            La sortie du modèle contient des retours à la ligne à la fin des lignes de texte, là où la ground truth n'en contient pas.
 
             \subsection{Avec du \og text-postprocessing \fg}
         
-        \section{Similarité cosinus}
+            On assouplit un peu les contraintes en effectuant du text processing, à la fois sur la ground truth et les résultats du modèle.
+            On tokenize (pour retirer ponctuation, \og blancs \fg), et on retire la casse et les accents pour constituer des textes qui ont plus de chance d'être égaux.
+            Ce n'est pas une astuce pour améliorer les résultats, c'est juste que cette manière de mesurer est plus pertinente.
+            Illustration des résultats en applicant diverses manières de \og post-processer \fg.
 
-        \section{Fonction de \emph{loss} spécifique}
+        \section{Fonctions de \og loss \fg spécifiques}
 
-        Expliciter les diverses distances, et pourquoi certaines sont plus pertinentes que d'autres.
+        On peut aussi définir des fonctions de loss, qui permettent d'être plus fin qu'une simple évaluation OK / KO du résultat du modèle.
+        On calculera une distance entre le résultat du modèle, et de la ground truth.
 
-        Ex : on ne garde pas la distance de Hamming
             \subsection{Distance de Levenshtein}
+
+            Brève description de chacune de ces distances.
 
             \subsection{Distance de Dameray-Levenshtein}
 
+            Brève description de chacune de ces distances.
+            
             \subsection{Distance de Jaro}
+            Brève description de chacune de ces distances.
 
             \subsection{Distance de Jaro-Wrinkler}
-    
-        \section{Cross-validation des modèles précédents}
+            Brève description de chacune de ces distances.
+
+            \subsection{Métriques non retenues}
+            Distance de Hamming
+
+            \subsection{Conclusion sur la métrique à utiliser}
+            Une fois que cela aura été fait.
+
+
+        \section{Cross-validation}
             
-            \subsection{Modèle \og ouvert \fg}
-
-            \subsection{Modèle entraîné sur les données étiquetées manuellement}
-
+        On effectue une cross validation sur le modèle travaillant sur les données manuellement étiquetées.    
+        
     \chapter{Transfer learning}
         
         \section{Principe du pré-entraînement}
         
         Expliquer qu'il s'agit d'une approche hybride des 2 modèles précédents
+        On effectue une entraînement à la fois sur une partie des listes d'ingrédients du PIM, et sur une partie des données étiquetées.
+        On vérifie ensuite, uniquement sur 
 
         \section{Illustration de l'impact sur la performance}
 
+        Ici, on montre l'impact sur la performance, du fait d'intégrer des listes d'ingrédients.
+        On met en abscisse le nombre de listes d'ingrédients qu'on ajoute, et en ordonnée la performance du modèle (avec barre d'erreurs, via cross validation).
+        On regarde si l'effet est positif : cela montrera s'il est intéressant d'avoir plus de données.
+        On regarde si on observe une saturation : cela montrera si on a déjà suffisamment de données sous formes de listes d'ingrédients dans le PIM, ou bien si ce serait intéressant d'en acquérir plus.
 
     \chapter{Hyperparameter tuning}
             
+    On peut, dans l'optique d'améliorer la performance du modèle, ajuster certains paramètres et d'évaluer l'impact via une grid search.
+    On fera tourner sur le modèle avec transfer learning.
+
         \section{Les paramètres ajustables}
 
+            \subsection{La prise en compte des \og n-grams \fg dans la tokeinzation}
+
+            On peut utiliser les n-grams lors de la tokenisation.
+
+            \subsection{L'application de \og n-grams \fg de blocs}
+
+            Voir si dans la recherche du meilleur candidat, on s'autorise la constitution de \og n-grams \fg de blocs.
+
+            \subsection{L'utilisation d'expressions régulières dans le split des blocs}
+
+            Voir si certaines expressions régulières pour splitter les blocs procurent de meilleurs résultats.
+
+            \subsection{Applications d'autres fonctions de similarité}
+
+            Voir l'impact d'utiliser d'autres manières de calculer la similarité.
+
+            1 - autre chose que la similarité cosinus (fonction du nombre de mots du bloc et de la proportion de mots issus du vocabulaire des ingrédients)
+
+            2 - en appliquant du TF et du TF-IDF
+
         \section{Application d'une grid search}
+
+        Illustrer ici les résultats d'une grid search ou d'une random search si trop gourmand.

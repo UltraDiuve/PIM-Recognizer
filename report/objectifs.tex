@@ -73,4 +73,13 @@
 
         \section{Conclusion quant au choix du cas d'usage}
 
+        Tant la préalimentation, que l'aide au contrôle des données seraient faisable d'un point de vue technique.
+        Il suffirait pour cela de publier un service, qui fonctionnerait de la manière suivante : 
+        \begin{itemize}
+            \item le PIM appelle le service, avec un message contenant l'uid du produit à contrôler ou préalimenter
+            \item le serveur récupère du PIM les données nécessaires au contrôle ou à la préalimentation
+            \item en retour, il renvoie au PIM soit l'état du contrôle (OK, erreur, avertissement, avec les précisions nécessaires), soit les données telles qu'elles doivent être préalimentées
+            \item le PIM, sur la base de ce retour, affiche le résultat du contrôle ou bien alimente les données et les présente à l'utilisateur
+        \end{itemize}
+
         \emphbox{Au vu des différentes contraintes listées dans ce document, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}

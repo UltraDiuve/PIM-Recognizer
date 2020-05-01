@@ -10,6 +10,9 @@ ground_truth/*
 !ground_truth/manually_labelled_ground_truth.xlsx
 !ground_truth/manually_labelled_ground_truth.csv
 !ground_truth/Règles d'annotation.xlsx
+# ms excel temporary files
+~*
+nohup.out
 
 # LaTeX report build artifacts (keeping only .tex and .pdf)
 report/*
