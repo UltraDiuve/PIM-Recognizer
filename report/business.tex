@@ -538,8 +538,21 @@
                     \end{center}
                     \caption{L'intégration du PIM au sein des systèmes du Groupe Pomona}
                     \label{fig:integration_PIM}
-                \end{figure} 
+                \end{figure}
 
+                \subsubsection{Le socle technologique (et un mot de vocabulaire)}
+
+                Ce logiciel a été construit sur la base de l'outil de gestion de contenu généraliste Nuxeo.
+                Il s'agit d'un outil de GED (Gestion \'{E}lectronique de Documents), et tous les objets (produits, fournisseurs, articles, \dots) qu'il stocke sont nommés \og documents \fg.
+                Dans le cadre du PIM, ce qui est habituellement appelé \og document \fg au sens d'un fichier informatique (document pdf, image png, vidéo, \dots) est appelé \og pièce jointe \fg.
+                On utilisera ce vocabulaire dans le présent rapport.
+
+                Le logiciel Nuxeo est adapté par une société - Keendoo - qui pré-paramètre la solution généraliste Nuxeo pour en faire un outil spécialisé dans la gestion d'information pour les produits alimentaires.
+
+                La dernière \og couche \fg de développement a été réalisé de manière spécifique par les équipes de développement du Groupe Pomona.
+
+                La base de données sous-jacente à l'application est une base NoSQL MongoDB.
+ 
                 \subsubsection{La GDSN}
 
                 \label{GDSN}
@@ -581,3 +594,22 @@
                 Un des aspects intéressants du PIM pour l'exploitation en masse des données produit, est qu'il expose des API permettant d'aller requéter l'ensemble de son contenu.
                 Cela concerne à la fois les données dites structurées, mais également les pièces jointes.
                 Cela rend les données produit de la branche \'{E}piSaveurs bien plus simplement accessibles que celles des autres branches.
+
+                \subsubsection{La reprise de données initiale et la migration}
+                \label{migration}
+
+                Un point à avoir également en tête est le mode d'alimentation initial du PIM pour \'{E}piSaveurs et le processus dit d'enrichissement qui ont été décidés.
+                Les données ont été transférées du système de gestion historique (le GIP, cf. section \mref{GIP}) vers le PIM, sans transformation métier.
+                Cela signifie qu'il n'y a eu ni correction, ni enrichissement de données lors du chargement initial.
+                Il a été décidé de lancer ces travaux après le démarrage, directement dans le système PIM, en utilisant les fonctionnalités de sollicitation des fournisseurs qu'il propose.
+                La manière de procéder est la suivantes :
+                \begin{itemize}
+                    \item les produits qui ont été créés lors de la reprise de données initiale sont envoyés aux fournisseurs pour qu'ils corrigent et complètent les informations produit
+                    \item le processus est ensuite le même que pour un nouveau référencement (en particulier, les contrôles et les renvois au fournisseur, tels que présenté à la \reffig{fig:processus_article})
+                    \item lorsque la validation finale des gestionnaires de référentiels est effectuée, le produit est considéré comme \og migré \fg et ses données sont réputées correctes
+                \end{itemize}
+
+                Les données du PIM étaient donc incomplètes et vraisemblablement incorrectes au démarrage, et en juin 2020, ces travaux sont toujours en cours.
+                Il existe donc des produits dans le systèmes, pour lesquels la revue et la correction des données n'a pas encore eu lieu.
+                
+

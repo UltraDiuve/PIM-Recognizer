@@ -174,6 +174,69 @@
         
             \subsection{Analyse de ces données structurées}
 
+                \subsubsection{Le statut des produits}
+                Comme cela a été présenté à la \reffig{fig:processus_article}, le processus de gestion de l'information produit fait intervenir de multiples acteurs et peut donc être assez long.
+                Un produit qui n'est pas arrivé au bout du processus et fait l'objet de contrôles et validations successives n'est pas réputé comme portant des informations correctes.
+                Dans le PIM, la \og localisation \fg~du produit dans le processus est portée par son statut (c'est une simple donnée catégorielle).
+                Seuls les produits au statut \og Validé \fg~sont considérés comme portant des données valides.
+                La répartition des produits pour chacun des statuts est présenté à la \reffig{fig:products_status}.
+
+                \begin{figure}[htbp]\CenterFloatBoxes
+                    \begin{floatrow}
+                    \ffigbox{%
+                        \includegraphics[width=200pt]{img/products_status.png}%
+                    }{%
+                      \caption{Répartition des produits par statut}%
+                      \label{fig:products_status}%
+                    }
+                    
+                    \capbtabbox[][][c]{%
+                        \tiny%
+                        \input{tbls/products_status.tex}%
+                        \normalsize%
+                    }{%
+                      \caption{Répartition des produits par statut}%
+                    }
+                    \end{floatrow}
+                \end{figure}        
+
+                De plus, comme cela a été présenté dans la section migration \mref{migration}, certains produits ont fait l'objet d'un contrôle et d'une correction après le démarrage, mais d'autres non.
+                Il est nécessaire de prendre également cet aspect en compte si l'on souhaite avoir la vision des produits qui sont censés avoir des données correctes.
+                La détermination du statut des produits vis-à-vis du processus de migration se fait au travers de facettes :
+                \begin{itemize}
+                    \item les produits qui ont été créés lors de la reprise de données initiale portent une facette "beginningMigration"
+                    \item les produits créés dans le PIM après le démarrage (cas des nouveaux référencements) ne portent pas cette facette
+                    \item les produits issus de la migration (portant la facette "beginningMigration") sont envoyés aux fournisseurs pour qu'ils complètent les données 
+                    \item une fois que le processus de validation de l'information produit est terminé (validation des gestionnaires de référentiels), une facette "endMigration" est apposée sur le produit
+                \end{itemize}
+                La répartition des produits fonction de leurs statuts de migration est présenté à la \reftable{tbl:migration_status}.
+                Les produits portant des données correctes, du point de vue de la migration, sont : 
+                \begin{itemize}
+                    \item ceux qui ont été créés après le démarrage (donc qui ont été créés avec le processus et les règles de gestion cible)
+                    \item ceux qui ont été créés à la reprise, mais qui sont identifiés comme ayant terminé le processus de migration (portant la facette de fin)
+                \end{itemize}
+
+                \begin{table}[htbp]
+                    \begin{center}
+                    \input{tbls/migration_status.tex}
+                    \caption{Répartition des produits par statut de migration}
+                    \label{tbl:migration_status}
+                    \end{center}
+                \end{table}
+
+                Si on combine le statut des produits avec leurs statut de migration, on peut calculer un statut \og Données valides \fg qui doit permettre d'identifier des produits avec des données de qualité.
+                C'est ce statut qui sera utilisé dans les paragraphes suivants, lorsqu'on fera des anlyses relatives à la qualité des données.
+                On nommera ces statuts \og En qualité \fg et \og Hors qualité \fg pour la suite de ce document.
+                La volumétrie des produits en fonction de chacun de ces statuts est présentée à la \reftable{tbl:products_quality}.
+
+                \begin{table}[htbp]
+                    \begin{center}
+                    \input{tbls/products_quality.tex}
+                    \caption{Répartition des produits par \og qualité des données \fg}
+                    \label{tbl:products_quality}
+                    \end{center}
+                \end{table}
+
                 \subsubsection{Données d'identification}
                 Un exemple et une description statistique de ces données est présentées aux \reftable{tbl:exemple_idt} et \reftable{tbl:desc_idt}.
                 On peut en tirer les conclusions suivantes : 
@@ -281,7 +344,7 @@
                 \item[Code article interne fournisseur :] c'est l'identifiant du produit, dans le système de gestion du fournisseur. Il s'agit généralement de codes, avec autant de formats distincts que de fournisseur venant contribuer.
                 \item[Marque commerciale du produit :] il s'agit du nom de la marque commerciale du produit. 
                 \item[Dénomination réglementaire :] c'est le libellé qui doit décrire de manière neutre le produit, sans notion liée au marketing (telle que la marque, entre autres), et qui doit obligatoirement figurer sur l'emballage du produit.
-            \end{description}
+                \end{description}
 
             TODO : Ajouter ici quelques exemples issus du PIM sur ces libellés.
 
@@ -312,20 +375,59 @@
         \section{Pièces jointes}
             \label{pieces_jointes}
 
-            Dans chacune des sections, mentionner la volumétrie de données accessibles (avec les facettes migration, statuts, \& compagnie) et tout
+            Dans le PIM, les pièces jointes gérées au niveau du produit sont les suivantes :
+            \begin{itemize}
+                \item les fiches techniques fournisseur
+                \item les étiquettes produits
+                \item les fiches logistiques
+            \end{itemize}
+
+            D'autres types de pièces jointes sont gérées, mais elle ne seront pas décrites dans le détail (car non pertinente pour le cas d'usage présenté):
+            \begin{description}
+                \item[les certificats des labels : ] ce sont des documents pdf produits par les organismes de certification attestant qu'un produit peut porter un label. Ils sont mis à disposition par les fournisseurs
+                \item[les images produit : ] ce sont des visuels des produits (photographies ou images construites) qui visent à être utilisées dans des catalogues ou sur les sites de vente en ligne
+                \item[les fiches techniques et argumentaires Pomona : ] ce sont des documents pdf produits par le PIM, stockées sur les articles, qui reprennent des informations produit et article (cf. section \mref{produit_article}). Elles sont transmises aux clients ou utilisés par les commerciaux Pomona.
+                Elles permettent d'avoir une présentation uniforme de l'ensemble de l'assortiment (les fiches techniques fournisseur ont des formats très variables)
+            \end{description}
 
             \subsection{Fiches techniques fournisseur}
-
             \label{fiches_techniques}
-            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
-            En général, cela ne porte pas d'information marketing.
-            Cf. les exemples en annexe.
-            Lister ici les données qu'on trouve usuellement dans les fiches techniques.
-            Et la manières dont elles sont représentées.
 
-            \subsection{\'{E}tiquettes produit}
+                \subsubsection{Généralités sur les fiches techniques}
+            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
+            Elles portent globalement l'ensemble des informations produit telles que présentées à la section \mref{info_produit}.
+            C'est le document le plus complet vis-à-vis des informations produit, il porte en général des informations complémentaires à toutes les informations présentes sur l'emballage du produit (les étiquettes).
+            En général, une fiche technique ne porte d'information que pour un unique produit, mais dans le cas d'assortiments, les informations peuvent être relatives à plusieurs d'entre eux. Cf. la fiche technique pour l'assortiment de confitures, présentée en annexe \mref{ex:FT_confiture}.
+            Les fiches techniques fournisseur sont des pièces jointes qui sont collectées par la branche \'{E}piSaveurs depuis la mise en place du logiciel de gestion historique GIP (cf. section \mref{GIP}), et il s'agit d'une données obligatoire dans le PIM également.
             
+                \subsubsection{Le format des fiches techniques}
+            Dans le PIM, ces documents sont collectés et stockés sous forme de pdf (les autres formats de fichier ne sont pas autorisés).
+            Sauf de rares exceptions, il s'agit de documents issus de logiciels de traitement de texte, au format A4 portrait.
+            Ce sont des documents techniques, et sont donc en général très structurés, avec des paragraphes, sous-paragraphes, tableaux, \dots
+            Comme cela se constate aisément sur les exemples présentés en annexe, même si les informations portées sont sensiblement toujours les mêmes, les formats de ces documents sont extrêmement variables.
+            Il n'y a aucun standard réglementaire ou normatif relatif à la construction de ces fiches, chaque industriel constitue donc son propre format.
+            On a donc un foisonnement de formats différents.
+
+                \subsubsection{Focus sur le mode de présentation de quelques informations}
+            Les informations produits suivatnes sont en général présentées de la manière suivantes dans les fiches techniques :
+            \begin{description}
+                \item[Liste d'ingrédients : ] elle est quasiment toujours présentée sous forme de texte (identique à la liste d'ingrédients telle qu'affichée sur l'emballage du produit), mais elle peut également être présentée sous forme de tableau. Cf. la fiche technique présentée en annexe \mref{ex:FT_poivron} (celle-ci ne porte pas de liste d'ingrédients sous forme de texte)
+                \item[Allergènes : ] il peuvent être :
+                \begin{itemize}
+                    \item soit mis en évidence dans la liste d'ingrédients via la police (gras, souligné, majuscules)
+                    \item soit listés hors de la liste d'ingrédient, sous forme de texte. Cf. la fiche technique présentée en annexe \mref{ex:FT_pannacotta}
+                    \item soit listés sous forme d'un tableau reprenant l'ensemble des allergènes réglementaires, et le niveau de présence associé (présence, contamination croisée ou absence). Cf. la fiche technique présentée en annexe \mref{ex:FT_ciboulette}
+                \end{itemize}
+                \item[Données nutritionnelles : ] les données nutritionnelles sont en général présentées sous forme de tableau dans les fiches techniques. De plus, les informations nutritionnelles sont souvent données pour 100 grammes (ou 100 millilitres), ce qui est réglementaire, mais également parfois pour une portion. La taille de la portion est définie arbitrairement par le fournisseur.
+                Cf. la fiche \mref{ex:FT_pannacotta}.
+                \item[Données logistiques : ] les informations relatives à la hiérarchie logistiques se présentent souvent sous forme de tableaux.
+                L'interprétation de ces tableaux est généralement complexe et nécessite un peu de réflexion.
+            \end{description}
+            
+            
+            \subsection{\'{E}tiquettes produit}
             \label{etiquettes_produit}
+
             L'étiquette produit est la partie de l'emballage du produit qui porte les informations produit.
             Selon la technologie de l'emballage - très liée au fait que le produit est plutôt brut ou plutôt transformé - il peut s'agir :
             \begin{itemize}
@@ -342,6 +444,10 @@
             Parfois, la fiche technique ne mentionne pas les informations logistiques.
             Plusieurs explications : la fiche technique provient d'un service, et les informations logistiques d'un autre, \dots
             Comme les données logistiques ont une importance cruciale, on demande aux fournisseurs de nous donner un document permettant de contrôler la cohérence des données transmises.
+
+            \subsection{Images produit}
+
+
 
         \section{Récapitulatif de la complétude des données}
 

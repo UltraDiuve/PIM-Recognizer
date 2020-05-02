@@ -126,9 +126,10 @@
         \bibliography{./biblio} 
     \chapter{Exemple de documents fournisseur}
         \section{Fiches techniques}
+        \label{ex:fiches_techniques}
         \includepdf[pages=1,
                     scale=0.7,
-                    pagecommand=\subsection{Fiche technique sel Cerebos}
+                    pagecommand={\subsection{Fiche technique sel Cerebos}\label{ex:FT_sel}}
                     ]
                     {doc_examples/FTF_8266604c-1ea2-47ca-a4fa-649b4147e733.pdf}
 %        \includepdf[pages=2-,
@@ -138,7 +139,7 @@
 
         \includepdf[pages=1,
                     scale=0.8,
-                    pagecommand=\subsection{Fiche technique olives Valtonia}
+                    pagecommand={\subsection{Fiche technique olives Valtonia}\label{ex:FT_olives}}
                     ]
                     {doc_examples/FTF_b7a5df3b-42b4-4cde-ae39-18f0e7a5f776.pdf}
 %        \includepdf[pages=2-,
@@ -148,7 +149,7 @@
 
         \includepdf[pages=1,
                     scale=0.8,
-                    pagecommand=\subsection{Fiche technique Panna Cotta Nestlé}
+                    pagecommand={\subsection{Fiche technique Panna Cotta Nestlé}\label{ex:FT_pannacotta}}
                     ]
                     {doc_examples/FTF_d0aa2c1c-4317-4e5f-8a18-82e56976da22.pdf}
         \includepdf[pages=2-,
@@ -160,7 +161,7 @@
 
         \includepdf[pages=1,
                     scale=0.8,
-                    pagecommand=\subsection{Fiche technique confiture Andros}
+                    pagecommand={\subsection{Fiche technique confiture Andros}\label{ex:FT_confiture}}
                     ]
                     {doc_examples/FTF_e4c8c61f-a401-4384-8128-181447e5bdd2.pdf}
         \includepdf[pages=2-,
@@ -172,7 +173,7 @@
 
         \includepdf[pages=1,
                     scale=0.8,
-                    pagecommand={\subsection{Fiche technique ciboulette La case aux épices}},
+                    pagecommand={\subsection{Fiche technique ciboulette La case aux épices}\label{ex:FT_ciboulette}},
                     offset=0pt -15pt
                     ]
                     {doc_examples/FTF_eac17f96-1046-49c8-892d-a00220a75057.pdf}
@@ -182,6 +183,19 @@
                     ]
                     {doc_examples/FTF_eac17f96-1046-49c8-892d-a00220a75057.pdf}
             
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand={\subsection{Fiche technique poivron El Arenal}\label{ex:FT_poivron}},
+                    offset=0pt -15pt
+                    ]
+                    {doc_examples/FTF_a552d585-cb45-43bc-8fb9-1d208485d16c.pdf}
+        \includepdf[pages=2-,   
+                    scale=0.8,
+                    pagecommand={}
+                    ]
+                    {doc_examples/FTF_a552d585-cb45-43bc-8fb9-1d208485d16c.pdf}
+                    
+
         \section{\'{E}tiquettes produit}
         \section{Fiches logistiques}
     \chapter{Le code utilisé}
