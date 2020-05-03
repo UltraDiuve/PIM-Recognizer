@@ -13,7 +13,7 @@
 
 \usepackage{graphicx}
 
-\usepackage{array,multirow,makecell,tabularx}
+\usepackage{array,multirow,makecell,tabularx, longtable}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \usepackage{booktabs}
@@ -124,11 +124,11 @@
         \listoffigures
         \bibliographystyle{plain}
         \bibliography{./biblio} 
-    \chapter{Exemple de documents fournisseur}
+    \chapter{Exemples de pièces jointes et ground truth}
         \section{Fiches techniques}
         \label{ex:fiches_techniques}
         \includepdf[pages=1,
-                    scale=0.7,
+                    scale=0.8,
                     pagecommand={\subsection{Fiche technique sel Cerebos}\label{ex:FT_sel}}
                     ]
                     {doc_examples/FTF_8266604c-1ea2-47ca-a4fa-649b4147e733.pdf}
@@ -196,8 +196,52 @@
                     {doc_examples/FTF_a552d585-cb45-43bc-8fb9-1d208485d16c.pdf}
                     
 
-        \section{\'{E}tiquettes produit}
-        \section{Fiches logistiques}
+% déclaration de la section incluse dans la première pagecommand
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\section{\'{E}tiquettes produit}\subsection{\'{E}tiquette curry Grain d'ailleurs}\label{ex:ET_curry}},
+                    offset=0pt -25pt
+                    ]
+                    {doc_examples/ET_67d3ac42-64fe-4cc2-b728-923aba1a8d66.pdf}
+ 
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\subsection{\'{E}tiquette madeleines Saint Michel}\label{ex:ET_madeleine}}
+                    ]
+                    {doc_examples/ET_0481d91b-9653-42e7-b525-9dc9b87b06f2.pdf}
+
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\subsection{\'{E}tiquette lentilles Soufflet}\label{ex:ET_lentilles}}
+                    ]
+                    {doc_examples/ET_a57c1561-b88e-4694-8bd8-55623f2afa17.pdf}
+        
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\subsection{\'{E}tiquette pannacotta Nestlé}\label{ex:ET_pannacotta}}
+                    ]
+                    {doc_examples/ET_d0aa2c1c-4317-4e5f-8a18-82e56976da22.pdf}
+        
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\subsection{\'{E}tiquette sauce soja Kikkoman}\label{ex:ET_saucesoja}}
+                    ]
+                    {doc_examples/ET_f349e71d-fa03-41bc-8fa4-7e1c9c7f6d5b.pdf}
+
+%        \section{Ground truth}
+        
+%        {\renewcommand{\arraystretch}{2}%
+%        \begin{table}[htbp]
+%            {\scriptsize
+%            \begin{center}%
+%            \input{tbls/ground_truth.tex}%
+%            \caption{L'étiquetage manuel}%
+%            \label{tbl:ground_truth}%
+%            \end{center}%
+%            }
+%        \end{table}
+%        }        
+
     \chapter{Le code utilisé}
 
     % TODO ! Reprendre l'ensemble des inclusions, et faire un include en mettant un titre comme pour les fiches techniques.
@@ -221,7 +265,6 @@
         \section{Extraction des données du PIM}
             \inputminted[fontsize=\scriptsize]{python}{../src/pimapi.py}
         
-        \section{Analyse des données du PIM}
         \includepdf[pages=-,
                     pagecommand={},
                     addtotoc={1,
@@ -230,6 +273,12 @@
                               Analyse des données du PIM,
                               code:analyse_donnees_PIM}]
                     {notebooks/Analyse donnees du PIM.pdf}
+
+        \includepdf[pages=-,
+        pagecommand={},
+        addtotoc={1, section, 1, Génération de l'échantillon de données manuellement étiquetées, code:ground_truth
+                    }]
+        {notebooks/ground_truth_constitution.pdf}
 
         \section{Conversion des pièces jointes en textes}
             \inputminted[fontsize=\scriptsize]{python}{../src/pimpdf.py}
