@@ -22,6 +22,7 @@
 \newfloatcommand{capbtabbox}{table}[][\FBwidth]
 \usepackage{rotating}
 \usepackage{lscape}
+\usepackage{multicol}
 
 \usepackage{pdfpages}
 
@@ -196,6 +197,14 @@
                     {doc_examples/FTF_a552d585-cb45-43bc-8fb9-1d208485d16c.pdf}
                     
 
+        \includepdf[pages=1,
+                    scale=0.8,
+                    pagecommand={\subsection{Fiche technique mélange trappeur Terre Exotique}\label{ex:FT_meltrappeur}},
+                    offset=0pt -15pt
+                    ]
+                    {doc_examples/FTF_e586f0d1-ae43-42ae-94db-b21ac515942e.pdf}            
+
+
 % déclaration de la section incluse dans la première pagecommand
         \includepdf[pages=1,
                     scale=0.7,
@@ -228,6 +237,11 @@
                     ]
                     {doc_examples/ET_f349e71d-fa03-41bc-8fa4-7e1c9c7f6d5b.pdf}
 
+        \includepdf[pages=1,
+                    scale=0.7,
+                    pagecommand={\subsection{\'{E}tiquette mélange trappeur Terre Exotique}\label{ex:ET_meltrappeur}}
+                    ]
+                    {doc_examples/ET_e586f0d1-ae43-42ae-94db-b21ac515942e.pdf}
 
 % déclaration de la section incluse dans la première pagecommand
         \includepdf[pages=1,

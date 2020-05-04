@@ -84,10 +84,12 @@
 
     \chapter{Utilisation des données manuellement étiquetées}
 
-    Expliciter pourquoi on ne peut pas faire tourner (référence parties précédentes) sur les listes d'ingrédients déjà présentes dans le PIM => soucis de qualité de données source. 
-    Si on entraîne sur des données de mauvaise qualité, on aura de mauvais résultats.
-    Le code de cette partie est présenté en annexe.    
+    Comme présenté à la section\mref{ingredient_comparison} relative à la comparaison entre les données du PIM et celles récupérées lors de l'étiquetage, il y a un grand nombre d'écarts.
+    Or, si on entraîne le modèle et qu'on mesure sa performance sur des données de mauvaise qualité, on aura de mauvais résultats.
+    On va donc construire un modèle se basant sur les données manuellement étiquetées.
     Le fonctionnement de ce modèle est présentés à la \reffig{fig:ground_truth_model}.
+    Le code utilisé à cette partie est présenté dans le notebook en annexe TODO ! METTRE UNE REFERENCE ICI.
+    Les différents estimateurs spécifiques sont définis dans le module pimest TODO ! METTRE UNE REFERENCE ICI !
     
     \begin{figure}[htbp]
         \begin{center}
@@ -97,21 +99,75 @@
         \label{fig:ground_truth_model}
     \end{figure}     
 
-
         \section{Chargement des données manuellement étiquetées}
 
-        Un bon vieux read\_csv des familles pour le résultat.
-        Les transformations à pipeliner pour les pdf et la constitution des blocs.
+        La toute première étape est la constution d'un dataframe contenant : 
+        \begin{itemize}
+            \item les uid pour indexer les produits
+            \item les listes d'ingrédients manuellement étiquetées depuis les fiches techniques
+            \item le contenu de chacune des fiches techniques au format texte
+        \end{itemize}
+        On commence par charger les données du fichier csv contenant les uid et les listes d'ingrédients.
+        Ensuite, un pipeline scikit learn d'acquisition des données est lancé.
+        Il s'agit de 3 transformateurs en série, qui effectuent les travaux suivants :
+        \begin{itemize}
+            \item construction du chemin pointant vers les fiches techniques (sur la base des uid)
+            \item construction d'une feature contenant les données des fichiers, en binaire
+            \item construction du texte complet de la fiche technique (en se basant sur la library pdfminer.six)
+        \end{itemize}
+        Le résultat du lancement de ce pipeline est présenté à la \reftable{tbl:mod_GT_fulltexts}.
+
+        {\renewcommand{\arraystretch}{1.5}%
+        \begin{table}[htbp]
+            \begin{center}
+            {\scriptsize
+            \input{tbls/processed_FT.tex}
+            }
+            \caption{Exemples du contenu de fiches techniques au format texte (tronqués)}
+            \label{tbl:mod_GT_fulltexts}
+            \end{center}
+        \end{table}
+        }        
+
+        \section{Découpage des textes en blocs}
+
+        Le second travail est le découpage des textes en blocs. 
+        Dans un premier temps, on va simplement effectuer ce découpage en splittant le texte lorsque deux retours à la ligne successifs sont détectés.
+        Un exemple de découpage est présenté ci-dessous.
+
+        \begin{multicols}{3}
+        \begin{spacing}{1.0}
+                ...
+        {\tiny
+        \input{tbls/block_example.tex}
+        }
+        \end{spacing}
+        \end{multicols}
+
+        On constate que le découpage n'est pas idéal, cf. la fiche technique de ce produit, présentée en annexe \mref{ex:FT_meltrappeur}.
+        Les séparations des cellules des tableaux de cette fiche ne sont pas prises en compte, et on a des blocs trop étendus.
 
         \section{Train/Test split}
 
-        Vu qu'on a moins de données, on fait train = 400 et test = 100.
+        Dans la mesure où l'on possède assez peu de données, on va conserver un échantillon assez important dans le jeu d'entraînement : 400 produits (soit 80\% des données disponibles).
 
         \section{Entraînement du modèle}
 
         On fait tourner de la même manière que sur le modèle dit \og ouvert \fg
 
         \section{Illustration des prédictions obtenues}
+
+        {\renewcommand{\arraystretch}{1.5}%
+        \begin{table}[htbp]
+            \begin{center}
+            {\scriptsize
+            \input{tbls/GT_prediction_sample.tex}
+            }
+            \caption{Extrait des résultats de la prédiction}
+            \label{tbl:GT_prediction_sample}
+            \end{center}
+        \end{table}
+        }
 
         On illustre ici le résultat.
 
