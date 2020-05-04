@@ -539,13 +539,31 @@
                 \item le plus souvent, il était possible de copier/coller la liste d'ingrédient dans le tableur Excel
                 \item le fichier a ensuite été à nouveau sauvegardé au format csv, afin de pouvoir être chargé dans pandas
             \end{itemize}
+            Une passe de nettoyage des caractères spéciaux issus des copier/coller a ensuite été faite dans excel.
 
             \subsection{Règles de gestion pour l'étiquetage manuel}
         
-            Expliquer que l'exercice n'est pas simple (car pas mal de petites spécificités sur les contenus). 
-            Parler des produits bruts, pour lesquels on n'a parfois pas de liste d'ingrédients.
-            + la filière boissons qui est moins structurée.
-            Expliciter les règles de gestion qui ont été listées pendant l'étiquetage manuel
+            Malgré le fait que l'exercice semble à priori peu complexe, en pratique un nombre assez élevé de cas particuliers ont nécessité de prendre des décisions, parfois arbitraires.
+            En général, il s'agit de décisions à prendre lorsque des mentions qui ne sont pas des ingrédients au sens strict sont incluses dans le texte des ingrédients.
+            Le principe de base qui a été retenu est d'essayer de coller au plus à ce qui est attendu dans le PIM. 
+            Par exemple, dans le PIM on demande de retirer les préfixes du type \og Ingrédients : \fg car ces mentions sont reprises telles sur les sites internet, ce qui peut se traduire par l'affichage de \og Ingrédients : Ingrédients : \dots \fg.
+
+            L'esnsemble des règles sont documentées à l'annexe \mref{annotation_rules}.
 
             \subsection{Confrontation avec le contenu du PIM}
-            Evaluer la cohérence entre étiquettes manuelles et contenu du PIM
+            
+            Il est possible de comparer les liste d'ingrédients du PIM, et ceux des données étiquetées manuellement.
+            Si on prend uniquement en compte les égalités strictes, on a un niveau de cohérence exactement à 10\% (50 produits sur les 500 du périmère).
+            Des exemples de liste d'ingrédients en écart sont présentées à la \reftable{tbl:ingredient_comparison}.
+
+            {\renewcommand{\arraystretch}{1.5}%
+            \begin{table}[htbp]
+                \begin{center}
+                {\scriptsize
+                \input{tbls/ingredient_comparison.tex}
+                }
+                \caption{Exemples d'écarts entre les données étiquetées et celles du PIM}
+                \label{tbl:ingredient_comparison}
+                \end{center}
+            \end{table}
+            }
