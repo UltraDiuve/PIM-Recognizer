@@ -137,7 +137,6 @@
 
         \begin{multicols}{3}
         \begin{spacing}{1.0}
-                ...
         {\tiny
         \input{tbls/block_example.tex}
         }
@@ -157,16 +156,33 @@
 
         \section{Illustration des prédictions obtenues}
 
+        Un échantillon des prédictions obtenues est présenté dans la \reftable{tbl:GT_prediction_sample}.
+        Pour éviter d'avoir des listes d'ingrédients prédites prenant trop de place dans cette table, celles dont la longueur dépasse 500 caractères ont été filtrées avant génération de cet échantillon.
+        Les résultats présentés à cette table sont donc vraisemblablement biaisés, dans la mesure où les très longues listes prédites doivent avoir plus de chance d'être erronées.
+
+        Les grandes tendances qui se dégagent à l'analyse de cette liste sont les suivantes : 
+        \begin{itemize}
+            \item globalement, les résultats sont bons. On retrouve régulièrement des morceaux de texte qui sont similaires à la liste cible
+            \item une erreur qui revient régulièrement est le fait que le découpage en blocs est parfois imparfait, on sélectionne \og trop large \fg
+            \item à l'inverse, le modèle n'a pas retiré des listes d'ingrédients prédites des mentions qui ont été rétirées lors de l'étiquetage manuel (cf. les règles d'annotation présentées en annexe \mref{annotation_rules}) : les préfixes de type \og Liste d'ingrédients : \fg, les allégations telles que \og Teneur totale en sucres : 60g pour 100g \fg \dots
+            \item le modèle semble plus perfomant lorsque la liste d'ingrédients réelle est longue. On le vérifiera dans le chapitre relatif à la mesure de la performance du modèle
+        \end{itemize}
+
+        Un mot sur les cas où la liste d'ingrédients cible ou prédite sont vides :
+        \begin{itemize}
+            \item Les listes d'ingrédients cible sont vides lorsque la pièce jointe ne mentionnait pas de liste d'ingrédients. Cela peut arriver, et les produits concernés n'ont pas été sortis de l'échantillon. Il est 
+            important de pouvoir aussi mesurer les faux positifs, qui sont nombreux avec cette techniques de choix systématique du meilleur candidat
+            \item Les liste d'ingrédient prédites sont vides lorsque l'outil de parsing des pdf (pdfminer.six) n'a extrait aucun texte. C'est le cas quand la pièce jointe était un document imprimé qui a été scanné. Le texte n'est présent que sous forme d'image (cf. la fiche technique du sel en annexe \mref{ex:FT_sel})
+        \end{itemize}
+
         {\renewcommand{\arraystretch}{1.5}%
-        \begin{table}[htbp]
-            \begin{center}
+        \begin{spacing}{1.0}
+        \begin{center}
             {\scriptsize
             \input{tbls/GT_prediction_sample.tex}
             }
-            \caption{Extrait des résultats de la prédiction}
-            \label{tbl:GT_prediction_sample}
-            \end{center}
-        \end{table}
+        \end{center}
+        \end{spacing}
         }
 
         On illustre ici le résultat.
