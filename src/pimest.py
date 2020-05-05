@@ -8,13 +8,14 @@ import os
 from io import BytesIO
 
 import numpy as np
+from scipy.sparse.linalg import norm as sparse_norm
+from numpy.linalg import norm
 import pandas as pd
 from pathlib import Path
+from functools import partial
 
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
-from scipy.sparse.linalg import norm as sparse_norm
 
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
@@ -494,16 +495,20 @@ class SimilaritySelector(CustomTransformer):
         self.fitted_ = True
         return(self)
 
-    def predict(self, block_list):
+    def predict(self, block_list, refit_vect=True):
         check_is_fitted(self)
-        try:
-            check_is_fitted(self.source_count_vect)
-        except NotFittedError:
-            self.source_count_vect.fit(block_list)
+        if refit_vect:
+            print('refitting in predict')
+            try:
+                self.source_count_vect.fit(block_list)
+            except ValueError:
+                print('No words in block. Return defaulted to ""')
+                return('')
         X_norms = sparse_norm(self.source_count_vect.transform(block_list),
                               axis=1)
         X_against_ingred_voc = self.count_vect.transform(block_list)
-        X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
+        # X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
+        X_dot_ingred = norm(X_against_ingred_voc.toarray(), axis=1, ord=2)
         pseudo_cosine_sim = np.divide(X_dot_ingred,
                                       X_norms,
                                       out=np.zeros(X_norms.shape),
@@ -515,6 +520,8 @@ class SimilaritySelector(CustomTransformer):
         super().transform(X)
         X = X.copy()
         block_texts = (text for block in X[self.source_col] for text in block)
+        predict_without_refit = partial(self.predict, refit_vect=False)
+        print('fitting on all dataset')
         self.source_count_vect.fit(block_texts)
-        X[self.target_col] = X[self.source_col].apply(self.predict)
+        X[self.target_col] = X[self.source_col].apply(predict_without_refit)
         return(X)

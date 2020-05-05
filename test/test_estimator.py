@@ -446,7 +446,16 @@ class TestSimilaritySelector(object):
     def test_empty_blocks(self, simil_df):
         X = simil_df.copy()
         X['blocks'].iloc[1] = ['']
-        SimilaritySelector().fit_transform(X)
+        # checking behaviour on transform :
+        # fitting the source vectorizer on the whole source col
+        assert (SimilaritySelector().fit_transform(X)['predicted'].iloc[1] ==
+                '')
+
+        # checking behaviour on predict :
+        # each call to predict should refit the source vectorizer
+        model = SimilaritySelector().fit(X)
+        model.predict(X['blocks'].iloc[0])
+        assert model.predict(['']) == ''
 
     def test_empty_ingred(self, simil_df):
         X = simil_df.copy()
