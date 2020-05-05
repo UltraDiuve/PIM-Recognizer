@@ -9,7 +9,7 @@ from io import BytesIO
 
 import numpy as np
 from scipy.sparse.linalg import norm as sparse_norm
-from numpy.linalg import norm
+from scipy.sparse import csr_matrix
 import pandas as pd
 from pathlib import Path
 from functools import partial
@@ -479,6 +479,9 @@ class SimilaritySelector(CustomTransformer):
                  target_exists='raise',
                  fit_col='Ingrédients',
                  count_vect_kwargs=dict(),
+                 similarity='projection',
+                 source_norm='l2',
+                 projected_norm='l1',
                  ):
         super().__init__(source_col=source_col,
                          target_col=target_col,
@@ -486,42 +489,98 @@ class SimilaritySelector(CustomTransformer):
                          )
         self.fit_col = fit_col
         self.count_vect_kwargs = count_vect_kwargs
+        self.similarity = similarity
+        self.source_norm = source_norm
+        self.projected_norm = projected_norm
 
     def fit(self, X, y=None):
         super().fit(X)
-        self.count_vect = CountVectorizer(self.count_vect_kwargs)
-        self.count_vect.fit(X[self.fit_col].fillna(''))
-        self.source_count_vect = CountVectorizer()
+        self._validate_similarity()
+        self._validate_norms()
+        try:
+            self.count_vect = CountVectorizer(**self.count_vect_kwargs)
+        except (TypeError):
+            raise ValueError('Unexpected argument at init in '
+                             'count_vect_kwargs.')
+            raise
+        try:
+            self.count_vect.fit(X[self.fit_col].fillna(''))
+        except (ValueError):
+            raise ValueError('Unexpected argument at fit in '
+                             'count_vect_kwargs.')
+            raise
+        self.source_count_vect = CountVectorizer(**self.count_vect_kwargs)
         self.fitted_ = True
         return(self)
 
+    def _validate_similarity(self):
+        if self.similarity not in {'projection', 'cosine'}:
+            raise ValueError(f'similarity parameter should be set to '
+                             f'\'projection\' or \'cosine\'. Got '
+                             f'\'{self.similarity}\' instead.')
+
+    def _validate_norms(self):
+        norm_dict = {'l1': partial(sparse_norm, axis=1, ord=1),
+                     'l2': partial(sparse_norm, axis=1, ord=2)}
+        try:
+            self.source_norm = norm_dict[self.source_norm]
+        except KeyError:
+            pass
+        try:
+            self.projected_norm = norm_dict[self.projected_norm]
+        except KeyError:
+            pass
+        test_mat = csr_matrix([[0, 1], [2, 3]])
+        try:
+            self.projected_norm(test_mat)
+        except (TypeError, ValueError) as e:
+            print('Incorrect projected norm provided, see full stack for '
+                  'details')
+            raise ValueError(e)
+        try:
+            self.projected_norm(test_mat)
+        except (TypeError, ValueError) as e:
+            print('Incorrect projected norm provided, see full stack for '
+                  'details')
+            raise ValueError(e)
+
     def predict(self, block_list, refit_vect=True):
+        """ function to predict best candidate
+
+        refit_vect : do we need to fit source_count_vect or not. Not necessary
+        when predict has been called from transform, as the countvectorizer has
+        been fitted on all the blocks from all the block lists.
+        """
         check_is_fitted(self)
         if refit_vect:
-            print('refitting in predict')
             try:
                 self.source_count_vect.fit(block_list)
             except ValueError:
                 print('No words in block. Return defaulted to ""')
                 return('')
-        X_norms = sparse_norm(self.source_count_vect.transform(block_list),
-                              axis=1)
-        X_against_ingred_voc = self.count_vect.transform(block_list)
-        # X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
-        X_dot_ingred = norm(X_against_ingred_voc.toarray(), axis=1, ord=2)
-        pseudo_cosine_sim = np.divide(X_dot_ingred,
-                                      X_norms,
-                                      out=np.zeros(X_norms.shape),
-                                      where=X_norms != 0)
-        self.similarity_ = pseudo_cosine_sim
-        return(block_list[np.argmax(pseudo_cosine_sim)])
+        if self.similarity == 'projection':
+            texts = self.source_count_vect.transform(block_list)
+            # Compute norm of source texts
+            texts_norms = self.source_norm(texts)
+            # project texts on corpus space
+            projected_texts = self.count_vect.transform(block_list)
+            # X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)) ...
+            # .squeeze()
+            projected_norms = self.projected_norm(projected_texts)
+            sim = np.divide(projected_norms,
+                            texts_norms,
+                            out=np.zeros(texts_norms.shape),
+                            where=texts_norms != 0)
+            self.similarity_ = sim
+            return(block_list[np.argmax(sim)])
+        if self.similarity == 'cosine':
+            raise NotImplementedError
 
     def transform(self, X):
         super().transform(X)
         X = X.copy()
         block_texts = (text for block in X[self.source_col] for text in block)
         predict_without_refit = partial(self.predict, refit_vect=False)
-        print('fitting on all dataset')
         self.source_count_vect.fit(block_texts)
         X[self.target_col] = X[self.source_col].apply(predict_without_refit)
         return(X)

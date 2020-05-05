@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+from numpy.linalg import norm
+
 from sklearn.exceptions import NotFittedError
 
 from src.pimest import PathGetter
@@ -465,3 +467,28 @@ class TestSimilaritySelector(object):
     def test_predict_no_transform(self, simil_df):
         transformer = SimilaritySelector().fit(simil_df)
         transformer.predict(['haricot', 'exploité en Inde'])
+
+    def test_incorrect_param(self, simil_df):
+        with pytest.raises(ValueError):
+            (SimilaritySelector(similarity='incorrect input')
+                .fit(simil_df))
+        model = SimilaritySelector(similarity='projection',
+                                   projected_norm='incorrect input')
+        with pytest.raises(ValueError):
+            model.fit(simil_df)
+        model = SimilaritySelector(similarity='projection',
+                                   source_norm=norm,  # non sparse norm
+                                   )
+        # with pytest.raises(ValueError):
+        model.fit(simil_df)
+
+    def test_count_vect_kwargs(self, simil_df):
+        model = SimilaritySelector(count_vect_kwargs={'binary': True})
+        model.fit(simil_df)
+        model = SimilaritySelector(count_vect_kwargs={'incorrect': True})
+        with pytest.raises(ValueError):
+            model.fit(simil_df)
+        model = (SimilaritySelector(
+                 count_vect_kwargs={'strip_accents': 'incorrect'}))
+        with pytest.raises(ValueError):
+            model.fit(simil_df)
