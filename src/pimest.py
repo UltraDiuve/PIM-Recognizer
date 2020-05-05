@@ -514,7 +514,7 @@ class SimilaritySelector(CustomTransformer):
         return(self)
 
     def _validate_similarity(self):
-        if self.similarity not in {'projection', 'cosine'}:
+        if self.similarity not in {'projection', 'cosine', 'bullshit'}:
             raise ValueError(f'similarity parameter should be set to '
                              f'\'projection\' or \'cosine\'. Got '
                              f'\'{self.similarity}\' instead.')
@@ -556,7 +556,7 @@ class SimilaritySelector(CustomTransformer):
             try:
                 self.source_count_vect.fit(block_list)
             except ValueError:
-                print('No words in block. Return defaulted to ""')
+                print('No words in blocks. Return defaulted to ""')
                 return('')
         if self.similarity == 'projection':
             texts = self.source_count_vect.transform(block_list)
@@ -573,6 +573,17 @@ class SimilaritySelector(CustomTransformer):
                             where=texts_norms != 0)
             self.similarity_ = sim
             return(block_list[np.argmax(sim)])
+        if self.similarity == 'bullshit':
+            X_norms = sparse_norm(self.source_count_vect.transform(block_list),
+                                  axis=1)
+            X_against_ingred_voc = self.count_vect.transform(block_list)
+            X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
+            pseudo_cosine_sim = np.divide(X_dot_ingred,
+                                          X_norms,
+                                          out=np.zeros(X_norms.shape),
+                                          where=X_norms != 0)
+            self.similarity_ = pseudo_cosine_sim
+            return(block_list[np.argmax(pseudo_cosine_sim)])
         if self.similarity == 'cosine':
             raise NotImplementedError
 
