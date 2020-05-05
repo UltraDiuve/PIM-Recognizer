@@ -573,17 +573,6 @@ class SimilaritySelector(CustomTransformer):
                             where=texts_norms != 0)
             self.similarity_ = sim
             return(block_list[np.argmax(sim)])
-        if self.similarity == 'bullshit':
-            X_norms = sparse_norm(self.source_count_vect.transform(block_list),
-                                  axis=1)
-            X_against_ingred_voc = self.count_vect.transform(block_list)
-            X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)).squeeze()
-            pseudo_cosine_sim = np.divide(X_dot_ingred,
-                                          X_norms,
-                                          out=np.zeros(X_norms.shape),
-                                          where=X_norms != 0)
-            self.similarity_ = pseudo_cosine_sim
-            return(block_list[np.argmax(pseudo_cosine_sim)])
         if self.similarity == 'cosine':
             raise NotImplementedError
 
