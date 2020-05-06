@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from functools import partial
 
 from numpy.linalg import norm
 
@@ -476,11 +477,14 @@ class TestSimilaritySelector(object):
                                    projected_norm='incorrect input')
         with pytest.raises(ValueError):
             model.fit(simil_df)
+
+    def test_non_sparse_norm_type(self, simil_df):
+        non_sparse_norm = partial(norm, axis=1, ord=1)
         model = SimilaritySelector(similarity='projection',
-                                   source_norm=norm,  # non sparse norm
+                                   projected_norm=non_sparse_norm,
                                    )
-        # with pytest.raises(ValueError):
-        model.fit(simil_df)
+        with pytest.raises(ValueError):
+            model.fit(simil_df)
 
     def test_count_vect_kwargs(self, simil_df):
         model = SimilaritySelector(count_vect_kwargs={'binary': True})

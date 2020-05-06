@@ -538,9 +538,9 @@ class SimilaritySelector(CustomTransformer):
                   'details')
             raise ValueError(e)
         try:
-            self.projected_norm(test_mat)
+            self.source_norm(test_mat)
         except (TypeError, ValueError) as e:
-            print('Incorrect projected norm provided, see full stack for '
+            print('Incorrect source norm provided, see full stack for '
                   'details')
             raise ValueError(e)
 
