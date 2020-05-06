@@ -464,7 +464,7 @@ class BlockSplitter(CustomTransformer):
         return(parms)
 
 
-class SimilaritySelector(CustomTransformer):
+class SimilaritySelector():
     """Class that select the most similar block from a block list
 
     This class provides functionnalities to fit an estimator on a topic
@@ -474,36 +474,30 @@ class SimilaritySelector(CustomTransformer):
     candidate.
     """
     def __init__(self,
-                 source_col='blocks',
-                 target_col='predicted',
-                 target_exists='raise',
-                 fit_col='Ingrédients',
                  count_vect_kwargs=dict(),
                  similarity='projection',
                  source_norm='l2',
                  projected_norm='l1',
                  ):
-        super().__init__(source_col=source_col,
-                         target_col=target_col,
-                         target_exists=target_exists,
-                         )
-        self.fit_col = fit_col
         self.count_vect_kwargs = count_vect_kwargs
         self.similarity = similarity
         self.source_norm = source_norm
         self.projected_norm = projected_norm
 
     def get_params(self, deep=True):
-        parms = super().get_params()
-        parms['fit_col'] = self.fit_col
+        parms = dict()
         parms['count_vect_kwargs'] = self.count_vect_kwargs
         parms['similarity'] = self.similarity
         parms['source_norm'] = self.source_norm
         parms['projected_norm'] = self.projected_norm
         return(parms)
 
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+        return(self)
+
     def fit(self, X, y=None):
-        super().fit(X)
         self._validate_similarity()
         self._validate_norms()
         try:
@@ -513,7 +507,7 @@ class SimilaritySelector(CustomTransformer):
                              'count_vect_kwargs.')
             raise
         try:
-            self.count_vect.fit(X[self.fit_col].fillna(''))
+            self.count_vect.fit(X.fillna(''))
         except (ValueError):
             raise ValueError('Unexpected argument at fit in '
                              'count_vect_kwargs.')
@@ -591,3 +585,8 @@ class SimilaritySelector(CustomTransformer):
         X = X.copy()
         X[self.target_col] = self.predict(X[self.source_col])
         return(X)
+
+    def fit_transform(self, X):
+        raise NotImplementedError('This estimator does not support '
+                                  'fit_transform method. Please chain fit() '
+                                  'and transform() calls')
