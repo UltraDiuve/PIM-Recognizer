@@ -514,7 +514,7 @@ class SimilaritySelector(CustomTransformer):
         return(self)
 
     def _validate_similarity(self):
-        if self.similarity not in {'projection', 'cosine', 'bullshit'}:
+        if self.similarity not in {'projection', 'cosine'}:
             raise ValueError(f'similarity parameter should be set to '
                              f'\'projection\' or \'cosine\'. Got '
                              f'\'{self.similarity}\' instead.')
@@ -544,43 +544,41 @@ class SimilaritySelector(CustomTransformer):
                   'details')
             raise ValueError(e)
 
-    def predict(self, block_list, refit_vect=True):
+    def predict(self, X):
         """ function to predict best candidate
 
-        refit_vect : do we need to fit source_count_vect or not. Not necessary
-        when predict has been called from transform, as the countvectorizer has
-        been fitted on all the blocks from all the block lists.
+        X : an iterable of block lists.
         """
         check_is_fitted(self)
-        if refit_vect:
-            try:
-                self.source_count_vect.fit(block_list)
-            except ValueError:
-                print('No words in blocks. Return defaulted to ""')
-                return('')
+        docs = [text for block_list in X for text in block_list]
+        try:
+            self.source_count_vect.fit(docs)
+        except ValueError:
+            print('No words in blocks. Return defaulted to ""')
+            return(np.array([''] * len(X)))
         if self.similarity == 'projection':
-            texts = self.source_count_vect.transform(block_list)
-            # Compute norm of source texts
-            texts_norms = self.source_norm(texts)
-            # project texts on corpus space
-            projected_texts = self.count_vect.transform(block_list)
-            # X_dot_ingred = np.array(X_against_ingred_voc.sum(axis=1)) ...
-            # .squeeze()
-            projected_norms = self.projected_norm(projected_texts)
-            sim = np.divide(projected_norms,
-                            texts_norms,
-                            out=np.zeros(texts_norms.shape),
-                            where=texts_norms != 0)
-            self.similarity_ = sim
-            return(block_list[np.argmax(sim)])
+            computed_sims = []
+            predicted_texts = []
+            for block_list in X:
+                texts = self.source_count_vect.transform(block_list)
+                # project texts on corpus space
+                projected_texts = self.count_vect.transform(block_list)
+                # Compute norm of source texts
+                texts_norms = self.source_norm(texts)
+                # Compute norm of projected texts
+                projected_norms = self.projected_norm(projected_texts)
+                sim = np.divide(projected_norms,
+                                texts_norms,
+                                out=np.zeros(texts_norms.shape),
+                                where=texts_norms != 0)
+                computed_sims.append(sim)
+                predicted_texts.append(block_list[np.argmax(sim)])
+            return(np.array(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
 
     def transform(self, X):
         super().transform(X)
         X = X.copy()
-        block_texts = (text for block in X[self.source_col] for text in block)
-        predict_without_refit = partial(self.predict, refit_vect=False)
-        self.source_count_vect.fit(block_texts)
-        X[self.target_col] = X[self.source_col].apply(predict_without_refit)
+        X[self.target_col] = self.predict(X[self.source_col])
         return(X)
