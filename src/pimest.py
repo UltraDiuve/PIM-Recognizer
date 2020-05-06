@@ -497,7 +497,7 @@ class SimilaritySelector():
             setattr(self, parameter, value)
         return(self)
 
-    def fit(self, X, y=None):
+    def fit(self, X, y):
         self._validate_similarity()
         self._validate_norms()
         try:
@@ -507,7 +507,7 @@ class SimilaritySelector():
                              'count_vect_kwargs.')
             raise
         try:
-            self.count_vect.fit(X.fillna(''))
+            self.count_vect.fit(y.fillna(''))
         except (ValueError):
             raise ValueError('Unexpected argument at fit in '
                              'count_vect_kwargs.')
@@ -579,14 +579,3 @@ class SimilaritySelector():
             return(np.array(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
-
-    def transform(self, X):
-        super().transform(X)
-        X = X.copy()
-        X[self.target_col] = self.predict(X[self.source_col])
-        return(X)
-
-    def fit_transform(self, X):
-        raise NotImplementedError('This estimator does not support '
-                                  'fit_transform method. Please chain fit() '
-                                  'and transform() calls')

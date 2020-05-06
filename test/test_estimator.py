@@ -423,10 +423,11 @@ class TestBlockSplitter(object):
 class TestSimilaritySelector(object):
     def test_base(self, simil_df):
         transformer = SimilaritySelector()
-        transformer.fit(simil_df['Ingrédients'])
+        transformer.fit(simil_df['blocks'], simil_df['Ingrédients'])
 
     def test_predict(self, simil_df):
-        transformer = SimilaritySelector().fit(simil_df['Ingrédients'])
+        transformer = SimilaritySelector().fit(simil_df['blocks'],
+                                               simil_df['Ingrédients'])
         test_blocks = [['fabriqué en Italie',
                         'mélange de nougat',
                         'sucre, eau et betteraves']]
@@ -438,7 +439,8 @@ class TestSimilaritySelector(object):
             SimilaritySelector().predict([['1', '2']])
 
     def test_transform(self, simil_df):
-        out_ds = (SimilaritySelector().fit(simil_df['Ingrédients'])
+        out_ds = (SimilaritySelector().fit(simil_df['blocks'],
+                                           simil_df['Ingrédients'])
                                       .predict(simil_df['blocks']))
         target_data = ['100% sucre',
                        'E110, farine',
@@ -450,30 +452,34 @@ class TestSimilaritySelector(object):
     def test_empty_blocks(self, simil_df):
         X = simil_df.copy()
         X['blocks'].iloc[1] = ['']
-        assert (SimilaritySelector().fit(X['Ingrédients'])
+        assert (SimilaritySelector().fit(X['blocks'],
+                                         X['Ingrédients'])
                                     .predict(X['blocks'])[1] == '')
-        model = SimilaritySelector().fit(X['Ingrédients'])
+        model = SimilaritySelector().fit(X['blocks'],
+                                         X['Ingrédients'])
         model.predict(X['blocks'].iloc[0])
         assert model.predict([['']]) == np.array([''])
 
     def test_empty_ingred(self, simil_df):
         X = simil_df.copy()
         X['Ingrédients'].iloc[1] = np.nan
-        SimilaritySelector().fit(X['Ingrédients']).predict(X['blocks'])
+        (SimilaritySelector().fit(X['blocks'], X['Ingrédients'])
+                             .predict(X['blocks']))
 
     def test_predict_no_transform(self, simil_df):
-        transformer = SimilaritySelector().fit(simil_df['Ingrédients'])
+        transformer = SimilaritySelector().fit(simil_df['blocks'], 
+                                               simil_df['Ingrédients'])
         assert (transformer.predict([['haricot', 'exploité en Inde']]) ==
                 np.array(['haricot']))
 
     def test_incorrect_param(self, simil_df):
         with pytest.raises(ValueError):
             (SimilaritySelector(similarity='incorrect input')
-                .fit(simil_df['Ingrédients']))
+                .fit(simil_df['blocks'], simil_df['Ingrédients']))
         model = SimilaritySelector(similarity='projection',
                                    projected_norm='incorrect input')
         with pytest.raises(ValueError):
-            model.fit(simil_df['Ingrédients'])
+            model.fit(simil_df['blocks'], simil_df['Ingrédients'])
 
     def test_non_sparse_norm_type(self, simil_df):
         non_sparse_norm = partial(norm, axis=1, ord=1)
@@ -481,18 +487,18 @@ class TestSimilaritySelector(object):
                                    projected_norm=non_sparse_norm,
                                    )
         with pytest.raises(ValueError):
-            model.fit(simil_df['Ingrédients'])
+            model.fit(simil_df['blocks'], simil_df['Ingrédients'])
 
     def test_count_vect_kwargs(self, simil_df):
         model = SimilaritySelector(count_vect_kwargs={'binary': True})
-        model.fit(simil_df['Ingrédients'])
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
         model = SimilaritySelector(count_vect_kwargs={'incorrect': True})
         with pytest.raises(ValueError):
-            model.fit(simil_df['Ingrédients'])
+            model.fit(simil_df['blocks'], simil_df['Ingrédients'])
         model = (SimilaritySelector(
                  count_vect_kwargs={'strip_accents': 'incorrect'}))
         with pytest.raises(ValueError):
-            model.fit(simil_df['Ingrédients'])
+            model.fit(simil_df['blocks'], simil_df['Ingrédients'])
 
     def test_get_params(self):
         transformer = PathGetter()
