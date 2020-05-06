@@ -497,3 +497,8 @@ class TestSimilaritySelector(object):
                  count_vect_kwargs={'strip_accents': 'incorrect'}))
         with pytest.raises(ValueError):
             model.fit(simil_df)
+
+    def test_get_params(self):
+        transformer = PathGetter()
+        arg_count = transformer.__init__.__code__.co_argcount
+        assert len(transformer.get_params()) == arg_count - 1

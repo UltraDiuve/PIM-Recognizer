@@ -493,6 +493,15 @@ class SimilaritySelector(CustomTransformer):
         self.source_norm = source_norm
         self.projected_norm = projected_norm
 
+    def get_params(self, deep=True):
+        parms = super().get_params()
+        parms['fit_col'] = self.fit_col
+        parms['count_vect_kwargs'] = self.count_vect_kwargs
+        parms['similarity'] = self.similarity
+        parms['source_norm'] = self.source_norm
+        parms['projected_norm'] = self.projected_norm
+        return(parms)
+
     def fit(self, X, y=None):
         super().fit(X)
         self._validate_similarity()
