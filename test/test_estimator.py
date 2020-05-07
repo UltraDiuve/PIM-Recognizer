@@ -467,7 +467,7 @@ class TestSimilaritySelector(object):
                              .predict(X['blocks']))
 
     def test_predict_no_transform(self, simil_df):
-        transformer = SimilaritySelector().fit(simil_df['blocks'], 
+        transformer = SimilaritySelector().fit(simil_df['blocks'],
                                                simil_df['Ingrédients'])
         assert (transformer.predict([['haricot', 'exploité en Inde']]) ==
                 np.array(['haricot']))

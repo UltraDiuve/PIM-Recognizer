@@ -88,8 +88,8 @@
     Or, si on entraîne le modèle et qu'on mesure sa performance sur des données de mauvaise qualité, on aura de mauvais résultats.
     On va donc construire un modèle se basant sur les données manuellement étiquetées.
     Le fonctionnement de ce modèle est présentés à la \reffig{fig:ground_truth_model}.
-    Le code utilisé à cette partie est présenté dans le notebook en annexe TODO ! METTRE UNE REFERENCE ICI.
-    Les différents estimateurs spécifiques sont définis dans le module pimest TODO ! METTRE UNE REFERENCE ICI !
+    La méthodologie utilisée à cette partie est présentée dans le notebook \og Modèle basé sur les données manuellement étiquetées \fg en annexe \mref{code:gt_based_model}.
+    Les différents transformateurs et estimateurs spécifiques sont définis dans le module pimest, inclu en annexe \mref{code:pimest}.
     
     \begin{figure}[htbp]
         \begin{center}
@@ -137,6 +137,7 @@
 
         \begin{multicols}{3}
         \begin{spacing}{1.0}
+        \label{blocks_examples}
         {\tiny
         \input{tbls/block_example.tex}
         }
@@ -152,7 +153,7 @@
 
         \section{Entraînement du modèle}
 
-        On fait tourner de la même manière que sur le modèle dit \og ouvert \fg
+        On fait tourner de la même manière que sur le modèle dit \og ouvert \fg, à savoir qu'on ne préprocesse pas les données avant d'appliquer le CountVectorizer.
 
         \section{Illustration des prédictions obtenues}
 
@@ -185,8 +186,6 @@
         \end{spacing}
         }
 
-        On illustre ici le résultat.
-
     \chapter{Mesure de la performance}
     
     Comme vu aux chapitre précédents, il est indispensable de mesurer la performance de nos modèles.
@@ -201,17 +200,33 @@
         \label{fig:measured_model}
     \end{figure}     
 
-        \section{Précision}
+        \section{Accuracy}
         
-        La métrique qui tombe le plus sous le sens est la précision.
-        On mesure la proportion de prédictions qui sont égales à la ground truth.
+        La métrique qui tombe le plus sous le sens est l'accuracy (on utilisera le terme anglais pour éviter les confusions avec la notion de \og precision \fg telle qu'elle est utilisée par exemple dans le f1-score).
+        On mesure simplement la proportion de prédictions qui sont égales à la ground truth.
+        La méthodologie utilisée est détaillée dans le notebook \og Mesure de la performance \fg présenté en annexe \mref{code:performance_measurement}.
 
             \subsection{Approche naïve}
 
-            Illustration des résultats. 
-            Comme on s'y attend, la précision sans transformation est très sévère.
-            En particulier, prise en compte de la casse et des accents.
-            La sortie du modèle contient des retours à la ligne à la fin des lignes de texte, là où la ground truth n'en contient pas.
+                \subsubsection{Description de cette approche}
+
+                L'approche \og naïve \fg consiste simplement à mesurer la proportion de textes prédits strictement égaux à la ground truth.
+                Or, comme cela a été vu précédemment : 
+                \begin{itemize}
+                    \item les règles d'étiquetage manuel, détaillées à l'annexe \mref{annotation_rules}, montrent que des transformations sont parfois appliquées au contenu des listes d'ingrédients des pièces jointes avant d'établir la ground truth
+                    \item les textes à comparer sont longs (jusqu'à quelques centaines de caractères), cf. \reftable{tbl:GT_prediction_sample}
+                    \item la mise en forme, en particulier les retours à la ligne, ne sont pas positionnés aux mêmes endroits. Dans le parsing des documents pdf, lorsque le texte revient à la ligne après avoir atteint le bord de la page, on a un retour à la ligne. Ce comportement n'a pas été reproduit dans l'établissement de la ground truth
+                    \item le découpage en blocs de texte, de manière simple, produit des textes qui ne sont pas toujours le reflet du contenu spatialisé de ce document (cf. l'exemple donné à la section \mref{blocks_examples}, et la fiche technique associée en annexe \mref{ex:FT_meltrappeur})
+                \end{itemize}
+                On s'attend donc à avoir une \og accuracy naïve \fg faible.
+
+                \subsubsection{Les résultats obtenus}
+
+                Comme présenté dans notebook \og Analyse de la performance \fg (cf. annexe \mref{code:performance_measurement}), les résultats obtenus sont conformes à l'attendu : l'accuracy est très faible.
+
+                Elle vaut 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure après 
+
+                \subsubsection{Nécessité d'améliorer cette métrique}
 
             \subsection{Avec du \og text-postprocessing \fg}
         
@@ -245,11 +260,6 @@
             \subsection{Conclusion sur la métrique à utiliser}
             Une fois que cela aura été fait.
 
-
-        \section{Cross-validation}
-            
-        On effectue une cross validation sur le modèle travaillant sur les données manuellement étiquetées.    
-        
     \chapter{Transfer learning}
         
         \section{Principe du pré-entraînement}

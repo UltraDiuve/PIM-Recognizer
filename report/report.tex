@@ -4,6 +4,7 @@
 \DeclareUnicodeCharacter{F076}{-}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
+\usepackage{xspace} % For space after \fg...
 
 \usepackage{lmodern}
 
@@ -272,28 +273,17 @@
 %        \end{table}
 %        }        
 
-    \chapter{Le code utilisé}
+    \chapter{Les notebooks de ce projet}
 
     % TODO ! Reprendre l'ensemble des inclusions, et faire un include en mettant un titre comme pour les fiches techniques.
     % pour faire juste un label qui permet de pointer vers une page spécifique, utiliser addtotoc en mettant un niveau qui n'est pas présent dans la table des matières (ex : paragraphe)
-    % ex: addtotoc={2, paragraphe, 0, caption_invisible, label_a_utiliser}
+    % ex: addtotoc={2, paragraph, 0, caption_invisible, label_a_utiliser}
+    % labelise la page 2 avec le label "label_a_utiliser"
 '
         \includepdf[pages=-,
                     pagecommand={},
-                    addtotoc={1, section, 1, Analyse quantitative, code:analyse_quantitative,
-                              2, paragraph, 0, Zobi, lab:zobi}]
+                    addtotoc={1, section, 1, Analyse quantitative, code:analyse_quantitative}]
                     {notebooks/Analyse quantitative.pdf}
-
-        \section{Gestion du fichier de configuration}
-        Ce petit module a pour but de permettre de gérer les paramètres du progamme dans un fichier de configuration (afin de simplifier la maintenance).
-        Il est utilisé dans l'ensemble des autres modules de ce projet.
-        \inputminted[fontsize=\scriptsize]{python}{../src/conf.py}
-        Un exemple de fichier de configuration (dont certains champs ont été anonymisés pour des raisons de confidentialité) est présenté ci-dessous.
-        TODO !! Mettre le fichier ici.
-        TODO : retirer ce test. Aller voir à la page \pageref{lab:zobi} !
-
-        \section{Extraction des données du PIM}
-            \inputminted[fontsize=\scriptsize]{python}{../src/pimapi.py}
         
         \includepdf[pages=-,
                     pagecommand={},
@@ -310,10 +300,61 @@
                     }]
         {notebooks/ground_truth_constitution.pdf}
 
-        \section{Conversion des pièces jointes en textes}
-            \inputminted[fontsize=\scriptsize]{python}{../src/pimpdf.py}
         
-        \section{Identification des listes d'ingrédients}
-            \inputminted[fontsize=\scriptsize]{python}{../src/pimest.py} 
+        %
+        % METTRE ICI LE NOTEBOOK SUR LE MODELE OUVERT !
+        %         \includepdf[pages=-,
+        % pagecommand={},
+        % addtotoc={1, section, 1, Génération de l'échantillon de données manuellement étiquetées, code:ground_truth
+        %             }]
+        % {notebooks/ground_truth_constitution.pdf}
+
  
+        \includepdf[pages=-,
+        pagecommand={},
+        addtotoc={1, section, 1, Modèle basé sur les données manuellement étiquetées, code:gt_based_model
+                    }]
+        {notebooks/gt_based_model.pdf}
+        
+    
+    \chapter{Le code des différents modules}
+
+    \section{Gestion du fichier de configuration - Module conf}
+    \label{code:conf}
+    Ce petit module a pour but de permettre de gérer les paramètres du progamme dans un fichier de configuration (afin de simplifier la maintenance).
+    Il est utilisé dans l'ensemble des autres modules de ce projet.
+
+    \begin{multicols}{2}
+    \begin{spacing}{1.0}
+        \inputminted[fontsize=\tiny]{python}{../src/conf.py}
+    \end{spacing}
+    \end{multicols}
+
+    Un exemple de fichier de configuration (dont certains champs ont été anonymisés pour des raisons de confidentialité) est présenté ci-dessous.
+    TODO !! Mettre le fichier ici.
+
+    \section{Extraction des données du PIM - Module pimapi}
+    \label{code:pimapi}
+    \begin{multicols}{2}
+    \begin{spacing}{1.0}
+    \inputminted[fontsize=\tiny]{python}{../src/pimapi.py}
+    \end{spacing}
+    \end{multicols}
+
+    \section{Conversion des pièces jointes en textes - Module pimpdf}
+    \label{code:pimpdf}
+    \begin{multicols}{2}
+    \begin{spacing}{1.0}
+    \inputminted[fontsize=\tiny]{python}{../src/pimpdf.py}
+    \end{spacing}
+    \end{multicols}
+    
+    \section{Transformateurs et estimateurs spécifiques - Module pimest}
+    \label{code:pimest}
+    \begin{multicols}{2}
+    \begin{spacing}{1.0}
+    \inputminted[fontsize=\tiny]{python}{../src/pimest.py}
+    \end{spacing}
+    \end{multicols}
+
 \end{document}
