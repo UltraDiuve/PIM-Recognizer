@@ -26,11 +26,10 @@
     \chapter{Construction d'un modèle simple \og ouvert \fg}
         
     Le fonctionnement global de ce premier modèle (présenté à la \reffig{fig:open_model}) ne respecte pas les principes du Machine Learning.
-    Il permet juste d'éprouver la méthode préssentie, ainsi que de se faire une idée de l'efficacité d'un modèle de ce type.
+    Il permet juste d'éprouver la méthode pressentie, ainsi que de se faire une idée de l'efficacité d'un modèle de ce type.
     En effet, même si on utilise des briques d'extraction de features depuis des textes, il manque une partie de mesure de la performance, indispensable pour pouvoir évaluer et améliorer la pertinence du modèle.
-    On peut toutefois tout de même effectuer un train/test split, afin d'éviter de surestimer la valeur des résultats.    
-    Le code est présenté en annexe (ref à mettre), il utilise les classes IngredientExtractor et PIMIngredientExtractor.
-    Il n'utilise pas les données étiquetées manuellement (présentées à la section \mref{manually_labelled_data}).
+    Les illustrations de ce chapitre sont issues du notebook présenté en annexe \mref{code:open_model}, et le code des classes utilisées (IngredientExtractor et PIMIngredientExtractor) est inclus dans le module pimest, en annexe \mref{code:pimest}.
+    Ce modèle n'utilise pas les données étiquetées manuellement (présentées à la section \mref{manually_labelled_data}), mais se base simplement sur les listes d'ingrédients du PIM.
 
     \begin{figure}[htbp]
         \begin{center}
@@ -40,10 +39,14 @@
         \label{fig:open_model}
     \end{figure}     
 
+        \section{Entraînement}
 
-        \section{Extraction des données}
-
-        Ne garder que produits d'épicerie et boissons non alcoolisées
+            \subsection{Périmètre}
+            
+            Pour l'entraînement de ce modèle, on va uniquement se limiter aux produits d'épicerie ou de boissons non-alcoolisées.
+            En effet, ce sont pour ces produits que la réglementation impose d'afficher en clair la composition aux consommateurs.
+            On se limitera aussi aux produits qui portent une liste d'ingrédients, et qui sont \og En qualité \fg (cf. les définitions données à la section \mref{statuts} sur les statuts des produits).
+            TODO : je me suis arrêté ici.
 
         \section{Conversion en blocs de texte}
 
@@ -223,17 +226,58 @@
                 \subsubsection{Les résultats obtenus}
 
                 Comme présenté dans notebook \og Analyse de la performance \fg (cf. annexe \mref{code:performance_measurement}), les résultats obtenus sont conformes à l'attendu : l'accuracy est très faible.
-
-                Elle vaut 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure après 
+                Elle vaut 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure sur l'échantillon de test après entraînement sur l'échantillon d'entraînement.
+                Le seul produit pour lequel la liste d'ingrédients a été correctement identifiée porte les ingrédients suivants.
+                \begin{quotation}
+                    Sirop de glucose, sucre, eau, stabilisants (E440i, E440ii, E415), acidifiants (E330, E450i), conversateur (E202).
+                \end{quotation}
+                Si on effectue une cross-validation sur l'ensemble des données étiquetées, en appliquant un découpage en 10 folds, on obtient une accuracy moyenne de $1.80\% \pm 1.89\%$.
 
                 \subsubsection{Nécessité d'améliorer cette métrique}
+                On a vu que l'accuracy calculée de manière naïve porte un jugement sévère sur la performance du modèle.
+                Par exemple, à la troisième ligne de la \reftable{tbl:GT_prediction_sample}, on voit bien que la liste d'ingrédients prédite est identique à la ground truth, si ce n'est qu les retours à la ligne ne sont pas positionnés exactement au même endroit.
+                Comme on souhaite pouvoir ajuster le modèle, il est nécessaire d'avoir une métrique de mesure de la performance qui soit plus précise.
 
             \subsection{Avec du \og text-postprocessing \fg}
-        
-            On assouplit un peu les contraintes en effectuant du text processing, à la fois sur la ground truth et les résultats du modèle.
-            On tokenize (pour retirer ponctuation, \og blancs \fg), et on retire la casse et les accents pour constituer des textes qui ont plus de chance d'être égaux.
-            Ce n'est pas une astuce pour améliorer les résultats, c'est juste que cette manière de mesurer est plus pertinente.
-            Illustration des résultats en applicant diverses manières de \og post-processer \fg.
+
+                \subsubsection{Le principe}
+                Afin de pallier ces problèmes de mise en forme de texte, on assouplit un peu les contraintes par rapport à l'égalité stricte.
+                En effectuant un traitement de text processing, à la fois sur la ground truth et les résultats du modèle, on va comparer des textes un peu plus \og standardisés \fg.
+                Les traitements effectués sont les suivants :
+                \begin{itemize}
+                    \item On passe le texte en minuscules
+                    \item On retire la ponctuation
+                    \item On remplace tous les \og whitespaces \fg (retours à la ligne, espaces multiples, tabulations, \dots) par des espaces simples
+                    \item On retire les accents
+                \end{itemize}
+                L'ensemble de ces transformations sont faites en utilisant les fonctionnalités proposées par le CountVectorizer de la bibliothèque scikit-learn (cf. le notebook en annexe \mref{code:performance_measurement} et le module pimest inclus en annexe \mref{code:pimest}).
+
+                \subsubsection{Les résultats}
+
+                Si on évalue cette nouvelle accuracy avec le text processing, sur l'échantillon d'entraînement après entraînement sur l'échantillon d'entraînement, on obtient une accuracy de 14\% (14 listes d'ingrédients correctement prédites sur 100).
+                Ces 14 listes d'ingrédients sont présentées à la \reftable{tbl:GT_postprocessed_corrects}.
+
+               {\renewcommand{\arraystretch}{1.5}%
+                \begin{table}
+                    \begin{spacing}{1.0}
+                    \begin{center}
+                    {\scriptsize
+                    \input{tbls/GT_postprocessed_corrects.tex}
+                    }
+                    \caption{Prédictions identifiées comme correctes après postprocessing}
+                    \label{tbl:GT_postprocessed_corrects}
+                    \end{center}
+                    \end{spacing}
+                \end{table}
+                }
+
+                De la même manière que précédemment, si on fait une cross-validation sur l'ensemble des données manuellement étiquetées, on obtient une accuracy de $16.60\% \pm 3.35\%$.
+
+                \subsubsection{Les limites de cette métrique}
+
+                Cette métrique est déjà plus intéressante que l'approche naïve, mais elle a quand même un défaut majeur : elle a une vision encore trop binaire des résultats.
+                En effet, que le texte soit identique à un préfixe près (cf. la quatrième ligne de la \reftable{tbl:GT_prediction_sample}), ou qu'il n'ait rien à voir (d'autres exemples sont présents dans cette même table), elle considèrera la prédiction comme erronée.
+                Or, il est important d'identifier les cas où le modèle s'est complètement trompé par rapport à ceux où il a quand même identifié le bon bloc contenant les ingrédients.
 
         \section{Fonctions de \og loss \fg spécifiques}
 

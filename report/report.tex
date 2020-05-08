@@ -300,22 +300,23 @@
                     }]
         {notebooks/ground_truth_constitution.pdf}
 
-        
-        %
-        % METTRE ICI LE NOTEBOOK SUR LE MODELE OUVERT !
-        %         \includepdf[pages=-,
-        % pagecommand={},
-        % addtotoc={1, section, 1, Génération de l'échantillon de données manuellement étiquetées, code:ground_truth
-        %             }]
-        % {notebooks/ground_truth_constitution.pdf}
-
+        \includepdf[pages=-,
+        pagecommand={},
+        addtotoc={1, section, 1, Modèle \og ouvert \fg, code:open_model
+                    }]
+        {notebooks/open_model.pdf}
  
         \includepdf[pages=-,
         pagecommand={},
         addtotoc={1, section, 1, Modèle basé sur les données manuellement étiquetées, code:gt_based_model
                     }]
         {notebooks/gt_based_model.pdf}
-        
+
+        \includepdf[pages=-,
+        pagecommand={},
+        addtotoc={1, section, 1, Mesure de la performance, code:performance_measurement
+                    }]
+        {notebooks/Performance_measurement.pdf}        
     
     \chapter{Le code des différents modules}
 
