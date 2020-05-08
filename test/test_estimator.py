@@ -455,6 +455,7 @@ class TestSimilaritySelector(object):
                        'E110, farine',
                        'haricots']
         target_ds = pd.Series(target_data,
+                              simil_df.index,
                               )
         assert pd.Series(out_ds).equals(target_ds)
 

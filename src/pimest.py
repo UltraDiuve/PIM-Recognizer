@@ -550,7 +550,7 @@ class SimilaritySelector():
     def predict(self, X):
         """ function to predict best candidate
 
-        X : an iterable of block lists.
+        X : a pandas Series of block lists, or a list.
         """
         check_is_fitted(self)
         docs = [text for block_list in X for text in block_list]
@@ -576,7 +576,10 @@ class SimilaritySelector():
                                 where=texts_norms != 0)
                 computed_sims.append(sim)
                 predicted_texts.append(block_list[np.argmax(sim)])
-            return(pd.Series(predicted_texts))
+            if isinstance(X, pd.Series):
+                return(pd.Series(predicted_texts, index=X.index))
+            else:  # for example, X is a list
+                return(pd.Series(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
 
