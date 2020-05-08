@@ -440,8 +440,8 @@ class TestSimilaritySelector(object):
         test_blocks = [['fabriqué en Italie',
                         'mélange de nougat',
                         'sucre, eau et betteraves']]
-        assert (transformer.predict(test_blocks) ==
-                np.array(['sucre, eau et betteraves']))
+        assert (all(transformer.predict(test_blocks) ==
+                pd.Series(['sucre, eau et betteraves'])))
 
     def test_predict_not_fitted(self):
         with pytest.raises(NotFittedError):
@@ -478,8 +478,8 @@ class TestSimilaritySelector(object):
     def test_predict_no_transform(self, simil_df):
         transformer = SimilaritySelector().fit(simil_df['blocks'],
                                                simil_df['Ingrédients'])
-        assert (transformer.predict([['haricot', 'exploité en Inde']]) ==
-                np.array(['haricot']))
+        assert (all(transformer.predict([['haricot', 'exploité en Inde']]) ==
+                pd.Series(['haricot'])))
 
     def test_incorrect_param(self, simil_df):
         with pytest.raises(ValueError):

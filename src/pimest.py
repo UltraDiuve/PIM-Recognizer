@@ -576,7 +576,7 @@ class SimilaritySelector():
                                 where=texts_norms != 0)
                 computed_sims.append(sim)
                 predicted_texts.append(block_list[np.argmax(sim)])
-            return(np.array(predicted_texts))
+            return(pd.Series(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
 
@@ -617,5 +617,5 @@ def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
     else:
         transformer = preprocessor
 
-    y_pred = estimator.predict(X).apply(transformer)
+    y_pred = pd.Series(estimator.predict(X)).apply(transformer)
     return((y_pred == y.apply(transformer)).mean())
