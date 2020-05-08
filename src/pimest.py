@@ -579,3 +579,43 @@ class SimilaritySelector():
             return(np.array(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
+
+
+class DummyEstimator(object):
+    """Dummy estimator that predicts y as exactly X
+
+    This estimator has been developped for testing purposes, as pytest
+    does not support yet class fixtures.
+    """
+    def fit(self, X, y=None):
+        self.fitted_ = True
+
+    def predict(self, X):
+        return(X.copy())
+
+
+def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
+    """Computes accuracy of estimator, for texts
+
+    This function enables to score an estimator that returns long texts,
+    with some text processing.
+    It computes an accuracy after text processing
+    It is based on sklearn CountVectorizer functionalities.
+    tokenize means that the input string will be tokenized as words before
+    being glued back with single spaces. It's purpose is to handle
+    whitespaces (newlines, tabs, multiple spaces, ...) and punctuation.
+    kwargs are directly passed to CountVectorizer constructor, and will
+    serve to process the texts. Most useful args are 'strip_accent' and
+    'lowercase'.
+    """
+    preprocessor_countvect = CountVectorizer(**kwargs)
+    preprocessor = preprocessor_countvect.build_preprocessor()
+    tokenizer = preprocessor_countvect.build_tokenizer()
+    if tokenize:
+        def transformer(x):
+            return(tokenizer(preprocessor(x)))
+    else:
+        transformer = preprocessor
+
+    y_pred = estimator.predict(X).apply(transformer)
+    return((y_pred == y.apply(transformer)).mean())

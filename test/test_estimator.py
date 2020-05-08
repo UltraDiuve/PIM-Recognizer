@@ -20,6 +20,8 @@ from src.pimest import PIMIngredientExtractor
 from src.pimest import PDFContentParser
 from src.pimest import BlockSplitter
 from src.pimest import SimilaritySelector
+from src.pimest import DummyEstimator
+from src.pimest import custom_accuracy
 
 
 @pytest.fixture
@@ -128,6 +130,13 @@ def simil_df():
             'blocks': blocks}
     df = pd.DataFrame(data, index=index)
     return(df)
+
+
+class TestDummy(object):
+    def test_dummy(self):
+        X = pd.DataFrame([[1, '2', 3], [4, '5', 6]],
+                         columns=['A', 'B', 'C'])
+        assert all(DummyEstimator().predict(X) == X)
 
 
 class TestIngredientExtractor(object):
@@ -504,3 +513,77 @@ class TestSimilaritySelector(object):
         transformer = PathGetter()
         arg_count = transformer.__init__.__code__.co_argcount
         assert len(transformer.get_params()) == arg_count - 1
+
+
+class TestAccuracy(object):
+
+    def test_simple_accuracy(self):
+        base_df = pd.DataFrame([['toto', 'toto']],
+                               columns=['A', 'B'])
+        passing1 = pd.DataFrame([['toto1-totoa', 'toto1-totoa']],
+                                columns=['A', 'B'])
+        test = pd.concat([base_df, passing1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=False,
+                               lowercase=False,
+                               strip_accents=None,
+                               ) == 1.
+
+        accent1 = pd.DataFrame([['tötôà', 'totoa']],
+                               columns=['A', 'B'])
+        test = pd.concat([base_df, accent1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=False,
+                               lowercase=False,
+                               strip_accents='unicode',
+                               ) == 1.
+
+        lowercase1 = pd.DataFrame([['TotOA', 'tOtoa']],
+                                  columns=['A', 'B'])
+        test = pd.concat([base_df, lowercase1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=False,
+                               lowercase=True,
+                               strip_accents=None,
+                               ) == 1.
+
+        whitespace1 = pd.DataFrame([['\ttotoa\n \t alt', 'totoa  alt ']],
+                                   columns=['A', 'B'])
+        test = pd.concat([base_df, whitespace1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=True,
+                               lowercase=False,
+                               strip_accents=None,
+                               ) == 1.
+
+        punctuation1 = pd.DataFrame([["j'en ai marre ! de toi.",
+                                     'en ai marre de : toi...']],
+                                    columns=['A', 'B'])
+        test = pd.concat([base_df, punctuation1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=True,
+                               lowercase=False,
+                               strip_accents=None,
+                               ) == 1.
+
+        totale1 = pd.DataFrame([["J'en ài MA%CLAQUE !\n T'es nãze !!.\tzobi",
+                                'en ai ma claque es naze zobi']],
+                               columns=['A', 'B'])
+        test = pd.concat([base_df, totale1], axis=0)
+        assert custom_accuracy(DummyEstimator(),
+                               test['A'],
+                               test['B'],
+                               tokenize=True,
+                               lowercase=True,
+                               strip_accents='unicode',
+                               ) == 1.
