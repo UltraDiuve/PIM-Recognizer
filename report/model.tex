@@ -25,65 +25,289 @@
             
     \chapter{Construction d'un modèle simple \og ouvert \fg}
         
-    Le fonctionnement global de ce premier modèle (présenté à la \reffig{fig:open_model}) ne respecte pas les principes du Machine Learning.
-    Il permet juste d'éprouver la méthode pressentie, ainsi que de se faire une idée de l'efficacité d'un modèle de ce type.
-    En effet, même si on utilise des briques d'extraction de features depuis des textes, il manque une partie de mesure de la performance, indispensable pour pouvoir évaluer et améliorer la pertinence du modèle.
-    Les illustrations de ce chapitre sont issues du notebook présenté en annexe \mref{code:open_model}, et le code des classes utilisées (IngredientExtractor et PIMIngredientExtractor) est inclus dans le module pimest, en annexe \mref{code:pimest}.
-    Ce modèle n'utilise pas les données étiquetées manuellement (présentées à la section \mref{manually_labelled_data}), mais se base simplement sur les listes d'ingrédients du PIM.
+        \section{Principes généraux}
 
-    \begin{figure}[htbp]
-        \begin{center}
-        \includegraphics[width=0.9\linewidth]{img/open_model.png}
-        \end{center}
-        \caption{Schéma de principe du \og modèle ouvert \fg}
-        \label{fig:open_model}
-    \end{figure}     
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/open_model.png}
+                \end{center}
+                \caption{Schéma de principe du \og modèle ouvert \fg}
+                \label{fig:open_model}
+            \end{figure}     
+
+            Le fonctionnement global de ce premier modèle (présenté à la \reffig{fig:open_model}) ne respecte pas les principes du machine learning.
+            Il permet juste d'éprouver la méthode pressentie, ainsi que de se faire une idée de l'efficacité d'un modèle de ce type.
+            En effet, même si on utilise des fonctionnalités d'extraction de features depuis des textes classiques dans des modèles de machine learning, il manque une partie de mesure de la performance, indispensable pour pouvoir évaluer et améliorer la pertinence du modèle.
+            Les illustrations de ce chapitre sont issues du notebook présenté en annexe \mref{code:open_model}, et le code des classes utilisées (IngredientExtractor et PIMIngredientExtractor) est inclus dans le module pimest, en annexe \mref{code:pimest}.
+
+            La classe PIMIngredientExtractor est juste un habillage du CountVectorizer de la bibliothèque scikit-learn et du Requester construit dans le module pimapi, permettant d'aller récupérer les données du PIM.
+            Ce modèle met en application les principes du \og Bag Of Words \fg \cite{bag_of_words_wiki}, à savoir que :
+            \begin{itemize}
+                \item un vocabulaire est établi à partir de l'ensemble des différents mots du corpus de listes d'ingrédients
+                \item chaque liste d'ingrédients est transformée en un vecteur de nombres entiers qui a la même longueur que le vocabulaire, ou chaque entier est le compte du nombre d'occurence du mot dans le vocabulaire
+            \end{itemize}
+
+            Ce modèle n'utilise pas les données étiquetées manuellement (présentées à la section \mref{manually_labelled_data}), mais se base simplement sur les listes d'ingrédients du PIM.
+            L'hypothèse qui est faite avec ce modèle est la suivante : bien que non parfaitement en qualité (i.e. exactement identiques au contenu des pièces jointes, cf. la comparaison entre la ground truth et le contenu du PIM en section \mref{ingredient_comparison}), les listes d'ingrédients du PIM sont des textes dont le contenu est très similaire à une liste d'ingrédients.
+            Un survol rapide de quelques exemples montre que cette hypothèse semble vérifiée (cf. \reftable{tbl:exemple_ingred}).
 
         \section{Entraînement}
 
-            \subsection{Périmètre}
+            \subsection{Périmètre du set d'entraînement}
             
             Pour l'entraînement de ce modèle, on va uniquement se limiter aux produits d'épicerie ou de boissons non-alcoolisées.
             En effet, ce sont pour ces produits que la réglementation impose d'afficher en clair la composition aux consommateurs.
             On se limitera aussi aux produits qui portent une liste d'ingrédients, et qui sont \og En qualité \fg (cf. les définitions données à la section \mref{statuts} sur les statuts des produits).
-            TODO : je me suis arrêté ici.
+            Sur les 13 000+ produits présents dans le PIM, environ 3 400 font partie du périmère et 9 800 en sont exclus.
 
-        \section{Conversion en blocs de texte}
+            \subsection{Constitution du vocabulaire}
 
-        On utilise la bibliothèque PDFMiner.six. 
-        Elle nous sort un long string qui contient le texte entier du document.
-        On applique une \og bête \fg fonction : on splitte ce string quand on observe 2 retours à la lignes consécutifs.
-        Le code est présenté en annexe.
-        Pour le moment, vu la proportion importante de PDF dont le contenu est extractible
+            La constitution du vocabulaire se fait de manière très basique : 
+            \begin{itemize}
+                \item les listes d'ingrédients sont mises en minuscules
+                \item les mots sont ensuite séparés aux whitespaces (espaces, retours à la ligne, tabulations, \dots) et marques de ponctuation
+            \end{itemize}
+            Pour parvenir à ce résultat, on applique simplement la méthode fit de la classe CountVectorizer de la bibliothèque scikit-learn.
+            Aucunes des autres fonctionnalités standard (retrait des accents, gestion des stopwords) n'a été activée.
+            Lors de cet apprentissage, le vocabulaire obtenu a une longueur de 2 500 mots environ, et les mots les plus fréquents sont :
+            \begin{itemize}
+                \item de     : 11419 occurences
+                \item sucre  :  2057 occurences 
+                \item sel    :  1669 occurences
+                \item eau    :  1288 occurences
+                \item acide  :  1241 occurences
+                \item lait   :  1215 occurences
+                \item huile  :  1214 occurences
+                \item poudre :  1100 occurences
+                \item en     :   962 occurences
+                \item arôme  :   938 occurences
+            \end{itemize}
+            (ces valeurs sont susceptibles de changer à la marge par rapport au notebook en annexe, avec les changements potentiels sur les données au sein du PIM)
+            Les stopwords 'de' et 'en' apparaissent dans les mots les plus fréquents.        
+        
+        \section{Prédiction}
+            
+            \subsection{Parsing des fiches techniques}
 
-        \section{Train/Test split}
+                Les fiches techniques sont extraites sous formes de binaires depuis de le PIM via des appels API.
+                On utilise ensuite la bibliothèque PDFMiner.six pour récupérer le texte de la fiche technique sous forme d'un long string.
+                Cette étape fait appel à la méthode statique PDFDecoder.content du module pimpdf, présenté en annexe \mref{code:pimpdf}.
+                On découpe ensuite ce long string en une liste de string plus court, en considérant comme séparateur la présence de deux retours à la ligne consécutifs.
+                Ce choix de séparateur a été fait car les textes produits par PDFMiner.six portent des retours à la ligne à la fin de chaque ligne typographiée, même si la phrase continue sur la ligne suivante.
+                Cette étape fournit pour chaque fiche technique le texte contenu sous forme d'une liste de strings (les blocs de texte de la \reffig{fig:open_model}).
 
-        On fait un split 50/50, on se base sur les uid pour identifier les produits.
-        Sur le train set, on récupère les listes d'ingrédients du PIM.
+            \subsection{Sélection du meilleur candidat}
 
-        \section{Entrainement du modèle}
+                \subsubsection{Principe}
+                L'identification du meilleur candidat parmi les blocs de texte se fait de la manière suivante :
+                \begin{itemize}
+                    \item on calcule une similarité avec le vocabulaire des ingrédients pour chacun des blocs de texte
+                    \item on retourne le bloc de texte avec la similarité la plus élevée
+                \end{itemize}
+                La formule de calcul de la similarité utilisée dans ce modèle a été trouvée par chance (ou plutôt par erreur, pour être honnête).
+                Néanmoins, elle donne des résultats plutôt encourageants.
+                D'autres modes de calcul de la similarité seront présentés dans la suite de ce rapport.
 
-        L'entraînement est basique : on constitue seulement un vocabulaire en utilisant la fonctionnalité mise à disposition dans scikit-learn.
+                La formule de calcul de la similarité est :
+                \[\frac{\text{Nombre de mots du candidat qui sont des ingrédients}}{\text{Norme euclidienne du vecteur du candidat}}\]
+                
+                Attention, la norme du vecteur du candidat s'entend \emph{indépendamment du vocabulaire des ingrédients}, c'est à dire que tous les mots comptent, y compris ceux n'appartenant pas au vocabulaire.
 
-        \section{Calcul de la similarité}
+                \subsubsection{Exemple}
+                Si on illustre par un exemple fictif : imaginons que le vocabulaire des ingrédients soit composé des mots \emph{\og eau \fg, \og sucre \fg et \og farine \fg}.
+                Le bloc de texte candidat est \emph{\og Sucre et farine sont biologiques. La farine est équitable.\fg}
+                Si on vectorise ce bloc de texte \emph{sur son propre vocabulaire}, on obtient le vecteur suivant : 
 
-        On calcule la similarité cosinus entre chacun des blocs, et le vocabulaire.
-        On prend, systématiquement l'argmax de la similarité qu'on propose comme liste d'ingrédients.
+                \bigskip
+                \begin{minipage}{\textwidth}
+                \captionsetup{type=table}
+                \centering
+                \begin{tabular}{cccccccc}
+                    \toprule
+                    sucre & et & farine & sont & biologiques & la & est & équitable \\
+                    \midrule
+                    1 & 1 & 2 & 1 & 1 & 1 & 1 & 1 \\
+                    \bottomrule
+                \end{tabular}
+                \caption{Exemple de vectorisation d'un texte}
+                \bigskip
+                \end{minipage}                
+
+                Sa norme euclidienne~\cite{norm_wiki} se calcule de la manière suivante (en notant $x_{i}$ le compte des mots) : 
+                \[\sqrt{\sum_{i}^{} x_{i}^{2}} = \sqrt{1 + 1 + 4 + 1 + 1 + 1 + 1 + 1} \approx 3.317\]
+
+                Le bloc contient 9 mots, dont 3 sont des ingrédients (\og farine \fg est mentionné deux fois). La similarité pour cet exemple vaut donc :
+                \[\frac{3}{3.317} \approx 0.905\]
+                \'{E}tant donné son mode de calcul, cette similarité peut tout à fait être supérieure à 1.
 
         \section{Illustration des résultats obtenus}
     
-        Mettre ici les résultats sur quelques fiches techniques présentées en annexe.
-        Spoiler : rien que comme ça, les résultats sont encourageants.
+            \subsection{Périmètre du test}
+            
+            Pour éviter de surestimer la performance du modèle, on le fait tourner sur des produits n'ont pas fait partie du set d'entraînement.            
+            Comme ce modèle ne permet de toute façon pas de fournir de résultats qui permettent de mesurer la performance, on ne le fera tourner que sur un échantillon réduit de produits, soit 5 d'entre eux.
 
-        \section{Pistes d'améliorations identifiées}
+            \subsection{Résultats}
 
-        En plus de la mesure de la performance, qui est indispensable avant de pouvoir procéder à des ajustements.
-        Pistes identifiées : 
-        \begin{itemize}
-            \item Faire un découpage du gros texte en blocs plus malin, potentiellement avec des expressions régulières
-            \item Faire des \og ngrams de blocs \og, ce qui permettrait de parfois fusionner des blocs qui ont été séparés (car contenaient des retours à la ligne successifs)
-            \item Essayer une autre manière de calculer la similarité ?
-        \end{itemize}
+            Les résultats obtenus sont les suivants :
+
+                \begin{spacing}{1.0}
+                \label{blocks_examples}
+                {\scriptsize
+                {\ttfamily 
+                \begin{verbatim}
+Fetching data from PIM for uid d9b233a6-b455-4af6-afb4-623f1f7f62a6...
+Done
+----------------------------------------------------------
+Ingredient list from PIM is :
+
+Ingrédients: Huile de tournesol, oignon, curry (11,2%) (ail, coriandre, curcuma, gingembre, paprika, poivre, cumin, poivre de Cayenne, fenouil, cardamome, noix de muscade, canelle, clous de girofle, safran), pomme, sel, exhausteur de goût (glutamate de sodium), sucre, huile de colza totalement hydrogénée, extrait de levure, ail.
+----------------------------------------------------------
+Downloading content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Parsing content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Ingredient list extracted from technical datasheet:
+
+Liste d’ingrédients : Huile de tournesol, oignon, curry (11,2%) (ail, coriandre, curcuma, gingembre, paprika, poivre, cumin,
+poivre de Cayenne, fenouil, cardamome, noix de muscade, canelle, clous de girofle, safran), pomme, sel, exhausteur de goût
+(glutamate de sodium), sucre, huile de colza totalement hydrogénée, extrait de levure, ail
+----------------------------------------------------------
+
+=======================================================================
+=======================================================================
+Fetching data from PIM for uid 5666235b-9e78-44f2-8e0e-1de53f88fe04...
+Done
+----------------------------------------------------------
+Ingredient list from PIM is :
+
+Ingrédients : Sucre, Gomme base, Sirop de glucose, Arômes, Humectant (E422), Antioxydant (E321), Colorant (E141).
+----------------------------------------------------------
+Downloading content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Parsing content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Ingredient list extracted from technical datasheet:
+
+INGRÉDIENTS : Sucre, Gomme base, Sirop de glucose, Arômes, Humectant (E422), 
+Antioxydant (E321), Colorant (E141).
+----------------------------------------------------------
+
+=======================================================================
+=======================================================================
+
+Fetching data from PIM for uid 6e976147-adeb-4d2d-925a-cb7c58c111a2...
+Done
+----------------------------------------------------------
+Ingredient list from PIM is :
+
+Maltodextrine, amidon de maïs, sel, farine de BLE, colorant : caramel ordinaire ; arômes (BLE,CELERI), huile de palme, épaississant : gomme guar ; oignon, fécule de pomme de terre, extrait de levure, jus de cuisson de viande de boeuf (0,9%), acidifiant : acide citrique ; extrait de vin blanc, extraits d'ail, de thym et de poivre. Peut contenir : LAIT, OEUF.
+
+----------------------------------------------------------
+Supplier technical datasheet from PIM for uid 6e976147-adeb-4d2d-925a-cb7c58c111a2 is:
+https://produits.groupe-pomona.fr/nuxeo/nxfile/default/6e976147-adeb-4d2d-925a-cb7c58c111a2/pprodad:technicalSheet/FT%20MAGGI%20Fonds%20Brun%20Li%C3%A9%20-%20Bo%C3%AEte%20de%20750g.pdf?changeToken=142-0
+----------------------------------------------------------
+Downloading content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Parsing content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Ingredient list extracted from technical datasheet:
+
+Maltodextrine, amidon de maïs, sel, farine de blé, colorant : caramel ordinaire ; arômes (blé,céleri), huile de palme, épaississant : gomme guar ; oignon, fécule 
+de pomme de terre, extrait de levure, jus de cuisson de viande de bœuf (0,9%), acidifiant : acide citrique ; extrait de vin blanc, extraits d'ail, de thym et de poivre. 
+Peut contenir : lait, œuf.
+
+----------------------------------------------------------
+
+=======================================================================
+=======================================================================
+
+Fetching data from PIM for uid db449562-d16d-4f72-b7a5-c0d487bc8206...
+Done
+----------------------------------------------------------
+Ingredient list from PIM is :
+
+Huile d'ARACHIDE
+
+----------------------------------------------------------
+Supplier technical datasheet from PIM for uid db449562-d16d-4f72-b7a5-c0d487bc8206 is:
+https://produits.groupe-pomona.fr/nuxeo/nxfile/default/db449562-d16d-4f72-b7a5-c0d487bc8206/pprodad:technicalSheet/FT-7744_%20Huile%20arachide%20bid%205L_HUILERIES%20DE%20SERIGNAN.pdf?changeToken=22-0
+----------------------------------------------------------
+Downloading content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Parsing content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Ingredient list extracted from technical datasheet:
+
+*Selon le règlement UE n°1259-2011 / In accordance with regulation UE n°1259-2011  
+    
+    
+CARACTERISTIQUES MICROBIOLOGIQUES 
+    
+L’huile étant un milieu anhydre, tout développement bactérien est impossible (cf. ouvrage de 
+référence  dans  ce  domaine  "La  qualité  microbiologique  des  aliments"  CNERMA-CNRS 
+coordonné par Jean-louis Jouve). 
+    
+ORIGINES/ ORIGIN 
+    
+- Amérique du Sud majoritairement 
+- Afrique de l’Ouest 
+    
+AUTRES INFORMATIONS 
+    
+
+----------------------------------------------------------
+
+=======================================================================
+=======================================================================
+
+Fetching data from PIM for uid f2af54a2-6820-4f1b-99e7-d6e64642bdf3...
+Done
+----------------------------------------------------------
+Ingredient list from PIM is :
+
+None
+
+----------------------------------------------------------
+Supplier technical datasheet from PIM for uid f2af54a2-6820-4f1b-99e7-d6e64642bdf3 is:
+https://produits.groupe-pomona.fr/nuxeo/nxfile/default/f2af54a2-6820-4f1b-99e7-d6e64642bdf3/pprodad:technicalSheet/FT-163146_Hous%20echel%20GNZ%20PE%2020u%2025U_Barbier.pdf?changeToken=78-0
+----------------------------------------------------------
+Downloading content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Parsing content of technical datasheet file...
+Done!
+----------------------------------------------------------
+Ingredient list extracted from technical datasheet:
+
+mini 16,56 ( - 10 % )
+
+----------------------------------------------------------
+
+=======================================================================
+=======================================================================  
+                \end{verbatim}
+                }
+                }
+                \end{spacing}
+
+            \subsection{Pistes d'améliorations identifiées}
+
+            En plus de la mesure de la performance, qui est indispensable avant de pouvoir procéder à des ajustements, les pistes identifiées à sont les suivantes :
+            \begin{itemize}
+                \item Faire un découpage plus élaboré du texte des pièces jointes en blocs, potentiellement avec des expressions régulières
+                \item Faire des \og ngrams de blocs \og, ce qui permettrait de parfois fusionner des blocs qui ont été séparés (car contenaient des retours à la ligne successifs)
+                \item Essayer une autre manière de calculer la similarité
+                \item \dots
+            \end{itemize}
 
     \chapter{Utilisation des données manuellement étiquetées}
 

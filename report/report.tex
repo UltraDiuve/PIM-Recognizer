@@ -1,34 +1,46 @@
 \documentclass{report}
 
-\usepackage[utf8]{inputenc}
-\DeclareUnicodeCharacter{F076}{-}
+\usepackage[utf8]{inputenc} 
+\DeclareUnicodeCharacter{F076}{-} % this bullet point is in some documents...
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{xspace} % For space after \fg...
 
-\usepackage{lmodern}
+\usepackage{lmodern} % Fonts
 
-\usepackage{setspace}
+\usepackage{setspace} % for line spacing
 \spacing{1.5}
-\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
-\usepackage{calc}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry} % for margins
 
-\usepackage{graphicx}
+\usepackage{calc} % cannot remember... ? Maths ?
+\usepackage{amsmath} % for math
+\usepackage{amssymb} % for math
+\usepackage{mathrsfs} % for math
 
-\usepackage{array,multirow,makecell,tabularx, longtable}
-\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
-\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
-\usepackage{booktabs}
-\usepackage{floatrow}
+\usepackage{graphicx} % to include images
+
+\usepackage{array,multirow,makecell,tabularx, longtable} % to manage table outputs
+\renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}} % center by default tabularx
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}} % new centered p-type column
+\usepackage{booktabs} % cant remember...
+\usepackage{floatrow} % to have floats side by side (ex : figure with associated table)
 % Table float box with bottom caption, box width adjusted to content
-\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\newfloatcommand{capbtabbox}{table}[][\FBwidth] % cant remember, got it of the web
+\usepackage{caption} % enables to caption non floating table or figures
+
 \usepackage{rotating}
 \usepackage{lscape}
 \usepackage{multicol}
+\setlength{\columnsep}{0.5cm}
 
 \usepackage{pdfpages}
 
 \usepackage{listings}
+\lstset{
+breaklines=true,
+extendedchars=true,
+literate={é}{{\'e}}1,
+}
 \usepackage{minted}
 
 \usepackage{url}
@@ -352,6 +364,11 @@
     
     \section{Transformateurs et estimateurs spécifiques - Module pimest}
     \label{code:pimest}
+
+    Ce module définit divers estimateurs et transformateurs utilisés dans les modèles.
+    Les fonctions de scoring, servant à la mesure de la performance, en font également partie.
+    Les classes `IngredientExtractor` et `PIMIngredientExtractor` ont été construite au début des travaux sur le sujet, et sont donc plus \og brouillonnes \fg que le reste du code.
+    
     \begin{multicols}{2}
     \begin{spacing}{1.0}
     \inputminted[fontsize=\tiny]{python}{../src/pimest.py}
