@@ -16,6 +16,8 @@ from functools import partial
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.utils.validation import check_is_fitted
+from jellyfish import damerau_levenshtein_distance
+from Levenshtein import distance as levenshtein_distance
 
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
@@ -597,15 +599,12 @@ class DummyEstimator(object):
         return(X.copy())
 
 
-def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
-    """Computes accuracy of estimator, for texts
+def build_text_processor(tokenize, **kwargs):
+    """ Generates a text preprocessor from sklearn CountVectorizer tools
 
-    This function enables to score an estimator that returns long texts,
-    with some text processing.
-    It computes an accuracy after text processing
     It is based on sklearn CountVectorizer functionalities.
     tokenize means that the input string will be tokenized as words before
-    being glued back with single spaces. It's purpose is to handle
+    being glued back with single spaces. Its purpose is to handle
     whitespaces (newlines, tabs, multiple spaces, ...) and punctuation.
     kwargs are directly passed to CountVectorizer constructor, and will
     serve to process the texts. Most useful args are 'strip_accent' and
@@ -616,9 +615,29 @@ def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
     tokenizer = preprocessor_countvect.build_tokenizer()
     if tokenize:
         def transformer(x):
-            return(tokenizer(preprocessor(x)))
+            return(''.join(tokenizer(preprocessor(x))))
     else:
         transformer = preprocessor
+    return(transformer)
+
+
+def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
+    """Computes accuracy of estimator, for texts
+
+    This function enables to score an estimator that returns long texts,
+    with some text processing.
+    It computes an accuracy after text processing.
+
+    See build_text_processor for information on arguments.
+    """
+    transformer = build_text_processor(tokenize, **kwargs)
+
+    y_pred = pd.Series(estimator.predict(X)).apply(transformer)
+    return((y_pred == y.apply(transformer)).mean())
+
+
+def text_similarity(estimator, X, y, tokenize=True, **kwargs):
+    transformer = build_text_processor(tokenize, **kwargs)
 
     y_pred = pd.Series(estimator.predict(X)).apply(transformer)
     return((y_pred == y.apply(transformer)).mean())

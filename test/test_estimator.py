@@ -22,6 +22,7 @@ from src.pimest import BlockSplitter
 from src.pimest import SimilaritySelector
 from src.pimest import DummyEstimator
 from src.pimest import custom_accuracy
+from src.pimest import text_similarity
 
 
 @pytest.fixture
@@ -588,3 +589,29 @@ class TestAccuracy(object):
                                lowercase=True,
                                strip_accents='unicode',
                                ) == 1.
+
+
+class TestTextSimilarity(object):
+    def test_text_similarity(self):
+        # longest texts have a length of 20 after preprocessing
+        text_df = pd.DataFrame([['arômes: Sucre   (E30 - E20)',
+                                 'aromes, surce: E30 E20'],
+                                [' émulsifiant : mon- et',
+                                 'EMULSIFIANTS MONO ET']],
+                               columns=['A', 'B'])
+        assert text_similarity(DummyEstimator(),
+                               text_df['A'],
+                               text_df['B'],
+                               tokenize=True,
+                               lowercase=True,
+                               strip_accents='unicode',
+                               distance='levenshtein',
+                               ) == 0.9
+        assert text_similarity(DummyEstimator(),
+                               text_df['A'],
+                               text_df['B'],
+                               tokenize=True,
+                               lowercase=True,
+                               strip_accents='unicode',
+                               distance='damerau-levenshtein',
+                               ) == 0.95
