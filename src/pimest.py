@@ -695,5 +695,5 @@ def text_sim_score(estimator,
                          similarity=similarity,
                          jw_prefix_weight=jw_prefix_weight,
                          )
-    similarities = df.apply(lambda x: similarity(x[0], x[1]), axis=1)
+    similarities = df.apply(lambda x: similarity(x.iloc[0], x.iloc[1]), axis=1)
     return(similarities.mean())
