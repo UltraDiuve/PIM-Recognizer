@@ -18,6 +18,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.utils.validation import check_is_fitted
 from jellyfish import damerau_levenshtein_distance
 from Levenshtein import distance as levenshtein_distance
+from Levenshtein import jaro as jaro_similarity
+from Levenshtein import jaro_winkler as jaro_winkler_similarity
 
 from .pimapi import Requester
 from .pimpdf import PDFDecoder
@@ -599,7 +601,11 @@ class DummyEstimator(object):
         return(X.copy())
 
 
-def build_text_processor(tokenize, **kwargs):
+def build_text_processor(tokenize=True,
+                         lowercase=True,
+                         strip_accents='unicode',
+                         **kwargs,
+                         ):
     """ Generates a text preprocessor from sklearn CountVectorizer tools
 
     It is based on sklearn CountVectorizer functionalities.
@@ -610,7 +616,10 @@ def build_text_processor(tokenize, **kwargs):
     serve to process the texts. Most useful args are 'strip_accent' and
     'lowercase'.
     """
-    preprocessor_countvect = CountVectorizer(**kwargs)
+    preprocessor_countvect = CountVectorizer(lowercase=lowercase,
+                                             strip_accents=strip_accents,
+                                             **kwargs,
+                                             )
     preprocessor = preprocessor_countvect.build_preprocessor()
     tokenizer = preprocessor_countvect.build_tokenizer()
     if tokenize:
@@ -621,7 +630,7 @@ def build_text_processor(tokenize, **kwargs):
     return(transformer)
 
 
-def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
+def custom_accuracy(estimator, X, y, **kwargs):
     """ Scorer that computes accuracy of estimator, for strings
 
     This function enables to score an estimator that returns long texts,
@@ -629,21 +638,29 @@ def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
     It computes an accuracy after text processing.
     See build_text_processor for information on arguments.
     """
-    transformer = build_text_processor(tokenize, **kwargs)
+    transformer = build_text_processor(**kwargs)
 
     y_pred = pd.Series(estimator.predict(X)).apply(transformer)
     return((y_pred == y.apply(transformer)).mean())
 
 
-def text_similarity(a, b, similarity):
+def text_similarity(a, b, *, similarity, jw_prefix_weight=0.1):
     """ Function that computes similarity of texts with selected method
 
-    Similarity can be : 'levenshtein', 'damerau-levenshtein'
+    Similarity can be : 'levenshtein', 'damerau-levenshtein', 'jaro',
+    'jaro-winkler'.
+    In the case of jaro-winkler, a prefix weight can be passed
     """
+    if not similarity:
+        raise ValueError('similarity is a mandatory')
     if similarity == 'levenshtein':
         dist = levenshtein_distance(a, b)
     elif similarity == 'damerau-levenshtein':
         dist = damerau_levenshtein_distance(a, b)
+    elif similarity == 'jaro':
+        return(jaro_similarity(a, b))
+    elif similarity == 'jaro-winkler':
+        return(jaro_winkler_similarity(a, b, jw_prefix_weight))
     else:
         raise NotImplementedError(f'similarity set to {similarity}. This '
                                   f'method has not been implemented yet')
@@ -656,8 +673,10 @@ def text_similarity(a, b, similarity):
 def text_sim_score(estimator,
                    X,
                    y,
-                   similarity='levenshtein',
+                   *, 
+                   similarity,
                    tokenize=True,
+                   jw_prefix_weight=0.1,
                    **kwargs,
                    ):
     """ Scorer that computes mean similarity for an estimator
@@ -672,6 +691,9 @@ def text_sim_score(estimator,
     y_pred = pd.Series(estimator.predict(X))
     y_trans, y_pred_trans = y.apply(transformer), y_pred.apply(transformer)
     df = pd.concat([y_trans, y_pred_trans], axis=1)
-    similarities = df.apply(lambda x: text_similarity(x[0], x[1], similarity),
-                            axis=1)
+    similarity = partial(text_similarity,
+                         similarity=similarity,
+                         jw_prefix_weight=jw_prefix_weight,
+                         )
+    similarities = df.apply(lambda x: similarity(x[0], x[1]), axis=1)
     return(similarities.mean())

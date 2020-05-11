@@ -615,6 +615,22 @@ class TestTextSimilarity(object):
                               strip_accents='unicode',
                               similarity='damerau-levenshtein',
                               ) == 0.925
+        text_sim_score(DummyEstimator(),
+                       text_df['A'],
+                       text_df['B'],
+                       tokenize=True,
+                       lowercase=True,
+                       strip_accents='unicode',
+                       similarity='jaro',
+                       )
+        text_sim_score(DummyEstimator(),
+                       text_df['A'],
+                       text_df['B'],
+                       tokenize=True,
+                       lowercase=True,
+                       strip_accents='unicode',
+                       similarity='jaro-winkler',
+                       )
 
     def test_invalid_input(self):
         text_df = pd.DataFrame([['arômes: Sucre   (E30 - E20)',
