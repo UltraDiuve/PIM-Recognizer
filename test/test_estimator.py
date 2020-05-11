@@ -22,7 +22,7 @@ from src.pimest import BlockSplitter
 from src.pimest import SimilaritySelector
 from src.pimest import DummyEstimator
 from src.pimest import custom_accuracy
-from src.pimest import text_similarity
+from src.pimest import text_sim_score
 
 
 @pytest.fixture
@@ -599,19 +599,35 @@ class TestTextSimilarity(object):
                                 [' émulsifiant : mon- et',
                                  'EMULSIFIANTS MONO ET']],
                                columns=['A', 'B'])
-        assert text_similarity(DummyEstimator(),
-                               text_df['A'],
-                               text_df['B'],
-                               tokenize=True,
-                               lowercase=True,
-                               strip_accents='unicode',
-                               distance='levenshtein',
-                               ) == 0.9
-        assert text_similarity(DummyEstimator(),
-                               text_df['A'],
-                               text_df['B'],
-                               tokenize=True,
-                               lowercase=True,
-                               strip_accents='unicode',
-                               distance='damerau-levenshtein',
-                               ) == 0.95
+        assert text_sim_score(DummyEstimator(),
+                              text_df['A'],
+                              text_df['B'],
+                              tokenize=True,
+                              lowercase=True,
+                              strip_accents='unicode',
+                              similarity='levenshtein',
+                              ) == 0.9
+        assert text_sim_score(DummyEstimator(),
+                              text_df['A'],
+                              text_df['B'],
+                              tokenize=True,
+                              lowercase=True,
+                              strip_accents='unicode',
+                              similarity='damerau-levenshtein',
+                              ) == 0.925
+
+    def test_invalid_input(self):
+        text_df = pd.DataFrame([['arômes: Sucre   (E30 - E20)',
+                                 'aromes, surce: E30 E20'],
+                                [' émulsifiant : mon- et',
+                                 'EMULSIFIANTS MONO ET']],
+                               columns=['A', 'B'])
+        with pytest.raises(NotImplementedError):
+            text_sim_score(DummyEstimator(),
+                           text_df['A'],
+                           text_df['B'],
+                           tokenize=True,
+                           lowercase=True,
+                           strip_accents='unicode',
+                           similarity='incorrect input',
+                           ) == 0.9

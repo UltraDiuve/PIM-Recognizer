@@ -615,19 +615,18 @@ def build_text_processor(tokenize, **kwargs):
     tokenizer = preprocessor_countvect.build_tokenizer()
     if tokenize:
         def transformer(x):
-            return(''.join(tokenizer(preprocessor(x))))
+            return(' '.join(tokenizer(preprocessor(x))))
     else:
         transformer = preprocessor
     return(transformer)
 
 
 def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
-    """Computes accuracy of estimator, for texts
+    """ Scorer that computes accuracy of estimator, for strings
 
     This function enables to score an estimator that returns long texts,
     with some text processing.
     It computes an accuracy after text processing.
-
     See build_text_processor for information on arguments.
     """
     transformer = build_text_processor(tokenize, **kwargs)
@@ -636,8 +635,43 @@ def custom_accuracy(estimator, X, y, tokenize=True, **kwargs):
     return((y_pred == y.apply(transformer)).mean())
 
 
-def text_similarity(estimator, X, y, tokenize=True, **kwargs):
-    transformer = build_text_processor(tokenize, **kwargs)
+def text_similarity(a, b, similarity):
+    """ Function that computes similarity of texts with selected method
 
-    y_pred = pd.Series(estimator.predict(X)).apply(transformer)
-    return((y_pred == y.apply(transformer)).mean())
+    Similarity can be : 'levenshtein', 'damerau-levenshtein'
+    """
+    if similarity == 'levenshtein':
+        dist = levenshtein_distance(a, b)
+    elif similarity == 'damerau-levenshtein':
+        dist = damerau_levenshtein_distance(a, b)
+    else:
+        raise NotImplementedError(f'similarity set to {similarity}. This '
+                                  f'method has not been implemented yet')
+    try:
+        return(1 - (dist / max(len(a), len(b))))
+    except ZeroDivisionError:
+        return(1.)
+
+
+def text_sim_score(estimator,
+                   X,
+                   y,
+                   similarity='levenshtein',
+                   tokenize=True,
+                   **kwargs,
+                   ):
+    """ Scorer that computes mean similarity for an estimator
+
+    This function enables to score an estimator that returns long texts,
+    with some text processing, by computing a mean silimarity between
+    predicted and target texts.
+    It computes this similarity after text processing.
+    See build_text_processor for information on arguments.
+    """
+    transformer = build_text_processor(tokenize, **kwargs)
+    y_pred = pd.Series(estimator.predict(X))
+    y_trans, y_pred_trans = y.apply(transformer), y_pred.apply(transformer)
+    df = pd.concat([y_trans, y_pred_trans], axis=1)
+    similarities = df.apply(lambda x: text_similarity(x[0], x[1], similarity),
+                            axis=1)
+    return(similarities.mean())
