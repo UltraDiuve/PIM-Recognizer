@@ -155,7 +155,7 @@
                 \label{blocks_examples}
                 {\scriptsize
                 {\ttfamily 
-                \begin{verbatim}
+                \begin{spverbatim}
 Fetching data from PIM for uid d9b233a6-b455-4af6-afb4-623f1f7f62a6...
 Done
 ----------------------------------------------------------
@@ -206,10 +206,6 @@ Done
 Ingredient list from PIM is :
 
 Maltodextrine, amidon de maïs, sel, farine de BLE, colorant : caramel ordinaire ; arômes (BLE,CELERI), huile de palme, épaississant : gomme guar ; oignon, fécule de pomme de terre, extrait de levure, jus de cuisson de viande de boeuf (0,9%), acidifiant : acide citrique ; extrait de vin blanc, extraits d'ail, de thym et de poivre. Peut contenir : LAIT, OEUF.
-
-----------------------------------------------------------
-Supplier technical datasheet from PIM for uid 6e976147-adeb-4d2d-925a-cb7c58c111a2 is:
-https://produits.groupe-pomona.fr/nuxeo/nxfile/default/6e976147-adeb-4d2d-925a-cb7c58c111a2/pprodad:technicalSheet/FT%20MAGGI%20Fonds%20Brun%20Li%C3%A9%20-%20Bo%C3%AEte%20de%20750g.pdf?changeToken=142-0
 ----------------------------------------------------------
 Downloading content of technical datasheet file...
 Done!
@@ -235,9 +231,6 @@ Ingredient list from PIM is :
 
 Huile d'ARACHIDE
 
-----------------------------------------------------------
-Supplier technical datasheet from PIM for uid db449562-d16d-4f72-b7a5-c0d487bc8206 is:
-https://produits.groupe-pomona.fr/nuxeo/nxfile/default/db449562-d16d-4f72-b7a5-c0d487bc8206/pprodad:technicalSheet/FT-7744_%20Huile%20arachide%20bid%205L_HUILERIES%20DE%20SERIGNAN.pdf?changeToken=22-0
 ----------------------------------------------------------
 Downloading content of technical datasheet file...
 Done!
@@ -277,9 +270,6 @@ Ingredient list from PIM is :
 None
 
 ----------------------------------------------------------
-Supplier technical datasheet from PIM for uid f2af54a2-6820-4f1b-99e7-d6e64642bdf3 is:
-https://produits.groupe-pomona.fr/nuxeo/nxfile/default/f2af54a2-6820-4f1b-99e7-d6e64642bdf3/pprodad:technicalSheet/FT-163146_Hous%20echel%20GNZ%20PE%2020u%2025U_Barbier.pdf?changeToken=78-0
-----------------------------------------------------------
 Downloading content of technical datasheet file...
 Done!
 ----------------------------------------------------------
@@ -294,7 +284,7 @@ mini 16,56 ( - 10 % )
 
 =======================================================================
 =======================================================================  
-                \end{verbatim}
+                \end{spverbatim}
                 }
                 }
                 \end{spacing}
@@ -503,18 +493,18 @@ mini 16,56 ( - 10 % )
                 En effet, que le texte soit identique à un préfixe près (cf. la quatrième ligne de la \reftable{tbl:GT_prediction_sample}), ou qu'il n'ait rien à voir (d'autres exemples sont présents dans cette même table), elle considèrera la prédiction comme erronée.
                 Or, il est important d'identifier les cas où le modèle s'est complètement trompé par rapport à ceux où il a quand même identifié le bon bloc contenant les ingrédients.
 
-        \section{Fonctions de \og loss \fg spécifiques}
+        \section{Fonctions de \og similarité \fg spécifiques}
 
         On peut aussi définir des fonctions de loss, qui permettent d'être plus fin qu'une simple évaluation OK / KO du résultat du modèle.
         On calculera une distance entre le résultat du modèle, et de la ground truth.
 
             \subsection{Distance de Levenshtein}
 
-            Brève description de chacune de ces distances.
+            Brève description de chacune de ces distances. OK
 
             \subsection{Distance de Dameray-Levenshtein}
 
-            Brève description de chacune de ces distances.
+            Brève description de chacune de ces distances. OK
             
             \subsection{Distance de Jaro}
             Brève description de chacune de ces distances.
@@ -522,8 +512,12 @@ mini 16,56 ( - 10 % )
             \subsection{Distance de Jaro-Wrinkler}
             Brève description de chacune de ces distances.
 
+            \subsection{Similarité cosinus}
+            Brève description aussi.
+
             \subsection{Métriques non retenues}
-            Distance de Hamming
+            Distance de Hamming : sur des chaînes de longueur identiques uniquement.
+
 
             \subsection{Conclusion sur la métrique à utiliser}
             Une fois que cela aura été fait.

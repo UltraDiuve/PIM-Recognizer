@@ -1,40 +1,61 @@
 \part{Les objectifs de ce projet}
     \chapter{Les cas d'usage}
         \section{Objectifs : Qualité et productivité}
-        Comme présenté précédemment, 1 on dépense de l'énergie, et 2 on a une qualité de données qui est perfectible.
+
+        Comme présenté précédemment (cf. \reffig{fig:processus_article}), la gestion de l'information produit est un processus lourd, avec des étapes de contrôle redondantes visant à assurer la qualité de la donnée.
         Un traitement automatique des documents mis à disposition permettrait de décharger les personnes qui interviennent dans le processus (fournisseurs, acheteurs, gestionnaires de référentiels, ingénieurs qualité) et de garantir une meilleure pertinence de l'information produit.
 
         \section{La préalimentation d'information}
-        Préalimenter les informations, sous réserve d'avoir un outil suffisamment fiable, permettrait de faire gagner du temps aux fournisseurs.
-        Trois obstacles:
+        Une des manières de gagner en productivité et en qualité serait :
+        \begin{itemize}
+            \item de modifier l'interface homme machine de l'écran de saisie des données par le fournisseur, pour que le chargement des pièces jointes se fasse en premier
+            \item d'interpréter le contenu des pièces jointes dès qu'elles sont chargées, pour alimenter les autres champs de saisie
+            \item laisser ensuite au fournisseur la possibilité de compléter et corriger ces informations avant de les soumettre à Pomona
+        \end{itemize} 
+        Il est illusoire d'automatiser totalement la saisie et d'imaginer se passer d'une saisie complémentaire par le fournisseur.
+        La mise en place de la GDSN (cf. section \mref{GDSN}), qui permet pourtant de faire transiter par EDI les données produit de manière standardisée et efficace, n'a pas permis de s'affranchir de cette tâche.
+        Sous réserve d'avoir un outil suffisamment fiable, on pourrait faire gagner du temps aux fournisseurs et améliorer la qualité de l'information produit.
+        Néanmoins, plusieurs freins existent à la mise en place 
         \begin{itemize}
             \item cela n'a d'intérêt que si le système est capable de produire de l'information structurée avec une fiabilité élevée (par exemple, 80\% de données correctes serait un minimum)
-            \item cela entre en concurrence directe avec le système GDSN présenté au paragraphe portant le même nom à la section \mref{GDSN}.
-            Or, ce système est justement spécialement conçu pour faire transiter les informations produit des fournisseurs aux distributeurs, avec une standardisation des échanges
-            \item cela apporte l'essentiel de la valeur aux fournisseurs, mais pas au Groupe
+            \item cela entre en concurrence directe avec le système GDSN - avec la question de la manière de gérer les conflits entre les information issues de ce réseau et celles extraites des pièces jointes
+            \item cela apporte l'essentiel de la valeur aux fournisseurs, et pas au groupe
         \end{itemize}
 
         \section{Le contrôle des informations transmises}
 
-        Cf. le schéma présenté à la \reffig{fig:processus_article}.
         Plus le taux de détection des erreurs est élevé, et plus les erreurs sont détectées tôt, mieux c'est : 
         \begin{itemize}
             \item la qualité des données s'en trouve évidemment améliorée
             \item le processus est plus court en temps, en évitant les aller-retours
-            \item on décharge l'ensemble des acteurs, en limitant la
-             
-        \end{itemize} 
+            \item on décharge l'ensemble des acteurs, en limitant le nombre d'interventions de chacun, ainsi que la charge administrative de synchronisation de leurs actions             
+        \end{itemize}
+        Les différentes étapes possibles pour lesquelles effectuer un contrôle sont présentées à la \reffig{fig:processus_article_aide_ctrle}.
+
+        \begin{figure}[htbp]
+            \begin{center}
+            \includegraphics[width=0.9\linewidth]{img/Processus_de_creation_article_avec_aide_au_controle.png}
+            \end{center}
+            \caption{\'{E}tapes du processus article pouvant être améliorées}
+            \label{fig:processus_article_aide_ctrle}
+        \end{figure}    
 
             \subsection{Le contrôle à la saisie fournisseur}
-            Si on alerte le fournisseur au moment où il saisit, on peut dès le début du processus éviter une erreur.
-            Cela pourrait avoir lieu quand il soumet ses donner, on fait tourner un traitement et on remonte des avertissements dans l'IHM du PIM.
+            Si on déclenche un contrôle au moment où le fournisseur soumet les données et qu'on l'alerte en cas d'incohérence, on peut dès le début du processus éviter une erreur.
+            L'avantage d'avoir une identification des problèmes aussi tôt est qu'on économise immédiatement au moins une étape de contrôle des données.
 
             \subsection{L'aide aux vérifications Pomona}
-            Lors des contrôles, on pourrait également remonter les incohérences détectées entre pièces jointes et données à contrôler.
+            Lors des contrôles inclus au sein du processus, on pourrait mettre en évidence les incohérences détectées entre pièces jointes et données à contrôler.
+            Cela permettrait de fiabiliser les étapes de contrôle, et éviter qu'une erreur soit détectée tardivement (par les gestionnaires de référentiel ou les ingénieurs qualité).
+            C'est d'autant plus intéressant que la première étape de contrôle est faite par les acheteurs.
+            Dans la mesure où c'est une tâche administrative qui n'est pas dans leur c{\oe}ur de métier, elle est souvent effectuée rapidement et est peu efficace.
 
             \subsection{Les contrôles en masse asynchrones}
             Enfin, il pourrait être pertinent de faire tourner de manière asynchrone des contrôles de qualité de données sur l'ensemble de la base.
-            TODO : détailler un peu le pourquoi c'est nécessaire (exemple du champ acides gras trans), et un des point difficile : acquittement des avertissements non pertinents.
+            Il pourrait sembler inutile d'effectuer cette tâche alors qu'on a une validation des données par l'application (contrôles \og informatiques \fg) et par des contrôleurs humains.
+            Néanmoins, il arrive fréquemment que des changements de règles de gestion informatiques ou métier soit mis en place, sans que les données soient ensuite remises à jour.
+            Par exemple, les mentions des traces d'allergènes dans les ingrédients était par le passé retirées des listes d'ingrédients, alors qu'elle sont aujourd'hui incluses. 
+            Mais aucun chantier de remise à niveau de l'historique n'a été entrepris au moment du changement de règle, d'où des données qui ne sont pas alignées avec les règles de gestion.
 
     \chapter{Le choix du cas d'usage}
 

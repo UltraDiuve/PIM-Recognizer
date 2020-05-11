@@ -35,12 +35,8 @@
 
 \usepackage{pdfpages}
 
+\usepackage{spverbatim}
 \usepackage{listings}
-\lstset{
-breaklines=true,
-extendedchars=true,
-literate={é}{{\'e}}1,
-}
 \usepackage{minted}
 
 \usepackage{url}
@@ -81,9 +77,7 @@ literate={é}{{\'e}}1,
     \noindent\fbox{ 
         \begin{minipage}[c]{\linewidth}
             {\em #1}
-        \end{minipage}
-    }
-}
+        \end{minipage}}}
 
 \newcommand{\reffig}[1]{F\textsc{igure}~\ref{#1} page~\pageref{#1}}
 
@@ -102,7 +96,7 @@ literate={é}{{\'e}}1,
 \large
 \begin{abstract}   
     
-    La gestion de l'information produit est devenu un enjeu de société majeur ces dernières années.
+    La gestion de l'information produit est devenue un enjeu de société majeur ces dernières années.
     Les scandales sanitaires récents ont déclenché une prise de conscience collective des consommateurs, en parallèle de la mise en place de réglementations de plus en plus contraignantes pour l'ensemble des acteurs de la filière~\cite{incotext}\cite{incoexpl}.
 %    \`{A} ce titre, le Groupe Pomona a lancé ces dernières années un projet majeur de refonte des processus et des outils de gestion de l'information produit.
 
@@ -112,8 +106,8 @@ literate={é}{{\'e}}1,
     Le présent rapport détaille la mise en place d'un outil permettant d'extraire les listes d'ingrédients des fiches techniques transmises par les fabricants des produits.
 
     Dans une première partie, on détaillera le contexte métier autour de la gestion de l'information produit. 
-    Nous nous analyserons ensuite les données disponibles, et les possibilités de les exploiter.
-    Nous expliciterons alors les raisons qui ont poussé à choisir le cas d'usage, et la manière dont il pourrait être mis en oeuvre au sein du Groupe Pomona.
+    Nous analyserons ensuite les données disponibles, et les possibilités de les exploiter.
+    Nous expliciterons les raisons qui ont poussé à choisir le cas d'usage, et la manière dont il pourrait être mis en oeuvre au sein du Groupe Pomona.
     La quatrième partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie ouvrira la réflexion sur les travaux à venir.
 
 
