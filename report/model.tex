@@ -453,6 +453,7 @@ mini 16,56 ( - 10 % )
                 Comme on souhaite pouvoir ajuster le modèle, il est nécessaire d'avoir une métrique de mesure de la performance qui soit plus précise.
 
             \subsection{Avec du \og text-postprocessing \fg}
+            \label{text_postprocessing}
 
                 \subsubsection{Le principe}
                 Afin de pallier ces problèmes de mise en forme de texte, on assouplit un peu les contraintes par rapport à l'égalité stricte.
@@ -495,32 +496,98 @@ mini 16,56 ( - 10 % )
 
         \section{Fonctions de \og similarité \fg spécifiques}
 
-        On peut aussi définir des fonctions de loss, qui permettent d'être plus fin qu'une simple évaluation OK / KO du résultat du modèle.
-        On calculera une distance entre le résultat du modèle, et de la ground truth.
+        On peut définir des fonctions de similarité, qui permettent d'être plus fin qu'une simple évaluation binaire du résultat du modèle.
+        Cela permet de prendre plus finement en compte les cas où le modèle a identifié un bloc très similaire à la ground truth.
+        On va pour cela s'appuyer sur diverses métriques permettant de mesurer l'écart entre des chaînes de caractères.
+        \`{A} chaque fois, on définira une fonction de scoring qui sera une similarité : \og higher is better \fg.
+        De plus, elles seront normées pour prendre leurs valeurs entre 0 (chaînes de caractères totalement différentes) et 1 (chaînes identiques), ce qui permettra d'exprimer ces métriques en pourcentage.
+        Ces similarités seront calculées après application du text-postprocessing, comme décrit à la section \mref{text_postprocessing}.
+        L'ensemble de ces similarités seront calculées sur les caractères (on pourrait envisager de les calculer sur les mots).
 
-            \subsection{Distance de Levenshtein}
+            \subsection{Similarité basée sur la distance de Levenshtein}
 
-            Brève description de chacune de ces distances. OK
+            La distance de Levenshtein~\cite{levenshtein_wiki}  entre deux chaînes de caractères est la distance d'édition pour passer de l'une à l'autre en prenant en compte les transformations suivantes :
+            \begin{itemize}
+                \item insertion d'un caractère 
+                \item suppression d'un caractère
+                \item substitution d'un caractère par un autre
+            \end{itemize}
+            Cette distance possède les caractéristiques suivantes : 
+            \begin{itemize}
+                \item elle peut se calculer entre deux chaînes de longueur différentees
+                \item elle a pour minimum 0 (si et seulement si les deux chaines sont identiques)
+                \item a pour majorant la longueur de la plus longue des deux châines
+            \end{itemize}
+            Pour construire une fonction de similarité telle que présentée en introduction de cette section, on appliquera la transformation suivante : 
+            \[sim_{lev}(s_{1}, s_{2}) = 1 - \frac{dist_{lev}(s_{1}, s_{2})}{max(len(s_{1}), len(s_{2}))}\]
+            en notant $dist_{lev}$ la distance de Levenshtein, $len(s)$ la longueur de la chaîne $s$, et $s_{1}$ et $s_{2}$ les chaînes de caractères à comparer.
+            Par exemple, la distance entre les chaînes \og rateaux \fg et \og chameau \fg vaut 4 :
+            \begin{itemize}
+                \item substitution du \og r \fg par un \og c \fg
+                \item insertion du \og h \fg
+                \item substitution du \og t \fg par un \og m \fg
+                \item suppression du \og x \fg
+            \end{itemize}
 
-            \subsection{Distance de Dameray-Levenshtein}
+            \subsection{Similarité basée sur la distance de Damerau-Levenshtein}
 
-            Brève description de chacune de ces distances. OK
+            La distance de Damerau-Levenshtein~\cite{damerau_levenshtein_wiki} est une variante de la distance de Levenshtein.
+            Elle calcule également une distance d'édition, mais en ajoutant une transformation possible : l'interversion de deux caractères successifs.
+            Les transformations possibles pour cette transformation sont :
+            \begin{itemize}
+                \item insertion d'un caractère 
+                \item suppression d'un caractère
+                \item substitution d'un caractère par un autre
+                \item interversion de deux caractères successifs
+            \end{itemize}
+            Ses caractéristiqes sont les mêmes que la distance de Levenshtein (minimum, maximum) ; et elle est toujours inférieure ou égale à la distance de Levenshtein.
+            On convertit cette distance en similarité de la même manière que la distance de Levenshtein.
+
+            \subsection{Similarité de Jaro}
             
-            \subsection{Distance de Jaro}
-            Brève description de chacune de ces distances.
+            La similarité de Jaro~\cite{jaro_wiki} est une fonction permettant de mesurer une similarité entre 0 (chaînes complètement différentes) et 1 (chaînes parfaitement identiques).
+            L'heuristique derrière cette similarité est de considérer qu'entre deux chaînes, un caractère est \og correspondant \fg (\og matching \fg) s'il est déplacé d'au moins de la moitié de la longueur de la plus longue des deux chaînes.
+            On compte         
+            Sur des chaînes longues de quelques dizaines de caractères, la quasi-totalité des caractères seront \og correspondants \fg.
+            Elle est en général plutôt adaptée à des comparaison de chaînes courtes telles que des noms propres ou des mots de passe.
 
-            \subsection{Distance de Jaro-Wrinkler}
-            Brève description de chacune de ces distances.
+            \subsection{Similarité de Jaro-Wrinkler}
+            
+            La similarité de Jaro-Winkler~\cite{jaro_winkler_wiki} est une variante de la similarité de Jaro.
+            Elle possède la même heuristique que la distance de Jaro, avec en plus comme caractéristique de donner un poids plus important aux 4 caractères qui font le début de la chaîne de caractères.
+            Cette métrique est encore moins adaptée au cas d'usage que la précédente.
 
-            \subsection{Similarité cosinus}
-            Brève description aussi.
+            \subsection{\'{E}valuation de ces similarités sur la ground truth}
 
-            \subsection{Métriques non retenues}
-            Distance de Hamming : sur des chaînes de longueur identiques uniquement.
+            Les résultats de l'évaluation de chacune de ces similarités sont présentés à la \reftable{tbl:similarities_result}.
+            \begin{table}[htbp]
+                \begin{center}
+                \input{tbls/similarities_result.tex}
+                \caption{\'{E}valuation du modèle en utilisant les métriques de similarité}
+                \label{tbl:similarities_result}
+                \end{center}
+            \end{table}
+            On constate que :
+            \begin{itemize}
+                \item les similarités de Levenshtein et Damerau-Levenshtein donnent des résultats identiques
+                \item les similarités de Jaro et de Jaro-Winkler donnent des évaluations très généreuses de la performance du modèle, comme on pouvait s'y attendre sur la base de textes longs
+            \end{itemize}
 
+            \subsection{Décision sur la métrique à utiliser et illustration}
+            
+            Les similarités de Jaro et Jaro-Winkler sont abandonnées car non pertinentes pour notre cas d'usage, qui se base sur des textes de plusieurs dizaines de caractères.
+            Les similarités de Levenshtein et Damerau-Levenshtein donnant des résultats identiques, on choisira plutôt la distance de Levenshtein car son implémentation en C (bibliothèque python-Levenshtein) semble plus performante que celle en C++ de la bibliothèque Jellyfish.
 
-            \subsection{Conclusion sur la métrique à utiliser}
-            Une fois que cela aura été fait.
+            Des exemples du début, du milieu et du bas du classement en termes de similarité de Levenshtein sur le jeu de test, après entraînement sur le jeu d'entraînement, sont présentés à la \reftable{tbl:similarity_illustration}.
+            \begin{table}[htbp]
+                \begin{center}
+                {\tiny
+                \input{tbls/similarity_illustration.tex}
+                }
+                \caption{Illustration de l'évaluation du modèle à l'aide des métriques de similarité}
+                \label{tbl:similarity_illustration}
+                \end{center}
+            \end{table}
 
     \chapter{Transfer learning}
         

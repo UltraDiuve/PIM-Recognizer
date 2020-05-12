@@ -673,7 +673,7 @@ def text_similarity(a, b, *, similarity, jw_prefix_weight=0.1):
 def text_sim_score(estimator,
                    X,
                    y,
-                   *, 
+                   *,
                    similarity,
                    tokenize=True,
                    jw_prefix_weight=0.1,
