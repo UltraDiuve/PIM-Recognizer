@@ -59,48 +59,79 @@
 
     \chapter{Le choix du cas d'usage}
 
-        \section{La représentation dominante des fiches techniques}
-        On a beaucoup de fiches techniques, pas beaucoup d'étiquettes ou de fiches logistiques (cf. la table qui va bien.)
-        On va donc plutôt dans un premier temps tenter de travailler avec les fiches techniques.
+        \section{\'{E}tiquettes contre fiches techniques}
 
-        \section{Les multiples formats et le besoin de \og spatialisation \fg}
-        \label{formats_spatialisation}
+            \subsection{La représentation dominante des fiches techniques}
+            
+            Les pièces jointes utilisées lors des contrôles métier pour la vérification des données produit sont les fiches techniques fournisseur et les étiquettes.
+            Or, les étiquettes sont moins représentées que les fiches techniques dans le PIM (cf. \reftable{tbl:attached_files_counts}).
+            
+            \subsection{L'extraction de données textuelles}
 
-        Chaque fournisseur décide évidemment du format de document qu'il souhaite produire.
-        On a donc beaucoup de formats différents, et un Pareto finalement trop \og mou \fg pour envisager de construire des templates pour récupérer les informations automatiquement (cf. \reffig{fig:rappel_pdt_par_frn}).
-    
-        \section{Les informations \og spatialisées \fg}
-        Les données que l'on souhaite récupérer sont globalement de 3 types : 
-        \begin{itemize}
-            \item données de composition
-            \item données nutritionnelles
-            \item données logistiques
-        \end{itemize}
+            Comme cela a été décrit à la section \mref{etiquettes_produit} Les étiquettes sont des pièces jointes au format pdf, mais qui peuvent être générées de multiples façons : 
+            \begin{itemize}
+                \item issues d'un logiciel graphique pour la constitution du applat du packaging
+                \item construites à partir d'une ou plusieurs photos insérées dans outil de traitement de texte
+                \item \dots
+            \end{itemize}
+            Les textes présents dans ces pdf se présentent donc parfois sous forme de textes extractibles par des bibliothèques de pdf mining, soit sous forme d'images qui nécessitent alors des fonctionnalités d'OCR (Optical Character Recognition~\cite{OCR_wiki}).
+            Le taux de pièces jointes avec des textes extractibles a été présenté à la \reftable{tbl:empty_attached_files} ; pour mémoire seul un tiers des étiquettes ont un contenu exploitable par les outils de pdfmining.
+            De plus, l'orientation des textes peut parfois faire l'objet d'une rotation (cf. l'étiquette des lentilles en annexe \mref{ex:ET_lentilles}), voire n'être pas toujours la même selon les faces de l'emballage (cf. l'étiquette de la panna cotta, en annexe \mref{ex:ET_pannacotta}).
+            Ces contraintes, bien que surmontables, imposent des travaux qui n'auraient pas d'intérêt dans le cadre de ce mémoire.
 
-        Comme vu dans la section \mref{fiches_techniques}, un grand nombre d'informations sont spatialisées.
-        Par exemple, la représentation des données nutritionnelles se fait régulièrement sous forme de tableau.
-        Or, c'est un peu compliqué à interpréter, car il fut réussir à interpréter un tableau, et à en sortir des couples de clé / valeur.
+            \emphbox{On va donc dans un premier temps travailler avec les fiches techniques plutôt qu'avec les étiquettes}
 
-        \section{La complexité dans la représentation des données logistiques}
+        
+        \section{Impossibilité de produire des templates pour l'exploitation de ces documents}
 
-        Les données logistiques sont souvent difficile à interpréter pour un humain, donc cette activité peut paraître difficile à déléguer à une machine.
-        Mettre 2-3 exemples.
+        Chaque fournisseur décide du format des fiches techniques qu'il souhaite produire.
+        On a donc beaucoup de formats différents, à peu de choses près on a un format par fournisseur.
+        On pourrait imaginer développer un outil qui sur la base d'un template permet d'extraire de manière fiable le contenu de documents qui ont toujours le même format (cela se fait par exemple pour les commandes clients reçues par mail).
+        L'établissement d'un \og traducteur \fg de documents de ce type représente une charge d'une dizaine de jours de travail par format de fichier.
+        Le Pareto des produits par fournisseur présenté à la \reffig{fig:rappel_pdt_par_frn} montre qu'il ne serait pas économiquement pertinent de construire ce genre d'outil (10 templates ne permettraient de couvrir que 3000 produits, et le gain marginal ne cesserait de diminuer ensuite).
+        On n'approche pas du seuil de rentabilité requis. 
+        En comparaison, les outils de parsing des commandes mail permettent de traiter plus de 20 000 postes de commandes par jour, avec moins de 5 templates.
 
-        \section{L'identification d'une liste d'ingrédient par son contenu}
+        \emphbox{Une approche traditionnelle d'extraction de données depuis des documents pdf ne pourra pas être appliquée pour ce cas d'usage}
 
-        Il est possible de dire si un texte est une liste d'ingrédients, juste en lisant ce texte.
-        Par exemple, \og 14g \fg peut être une quantité de glucides, de lipides, le poids d'une pièce unitaire, \dots
-        Mais un texte tel quel <mettre ici un exemple> a de forte chance d'être le contenu d'une liste d'ingrédients.
+        \section{Quelles données ?}
+
+            \subsection{Les principales données et leur mode de présentation dans les fiches techniques}
+            Les données que l'on souhaite récupérer sont globalement de 4 types : 
+            \begin{itemize}
+                \item données de composition : listes d'ingrédients
+                \item données de composition : allergènes
+                \item données nutritionnelles
+                \item données logistiques
+            \end{itemize}
+
+            Comme vu dans la section \mref{fiches_techniques}, parmi les données présentes dans les fiches techniques, seule la liste d'ingrédients se présente quasiment toujours sous la forme d'un texte brut (par opposition à un affichage au sein d'un tableau).
+            La représentation des données nutritionnelles se fait régulièrement sous forme de tableau, les données logistiques également (cf. les exemples de fiches techniques présentées en annexe, à partir de \mref{ex:FT_sel}).
+        
+            \subsection{L'identification d'une liste d'ingrédient par son contenu}
+
+            Il est possible de dire si un texte est une liste d'ingrédients, juste en lisant ce texte.
+            Il s'agit souvent d'une énumération d'ingrédients individuels (cf. la section \mref{listes_ingredients}).
+            Même sortie de son contexte, il est en général faisable pour un humain d'identifier comme telle une liste d'ingrédients.
+            Par exemple : 
+            \begin{quotation}
+                Huile de colza (70.45 \%), jaunes d’oeufs (6.2 \%), purée de tomates, eau, vinaigre, câpres (2.8 \%) (câpres, eau, sel),cornichons (2.8 \%) (cornichons, vinaigre, sel), sucre, sel,amidon modifié, acidifiant : lucono-delta-lactone, conser-vateur : sorbate de potassium, antioxydant : E385 (74mg/kg), épice, arôme naturel aneth
+            \end{quotation}
+            est de toute évidence une liste d'ingrédients.
+
+            \`{A} l'inverse, les autres grands types d'information nécessitent du contexte dans le document.
+            Par exemple, \og 14g \fg peut être une quantité de glucides, de lipides, le poids d'une pièce unitaire, \dots
+            
+            \emphbox{L'identification de listes d'ingrédients pourrait se faire sans avoir à construire de fonctionnalités s'appuyant sur le contexte au sein du document}
+
+        \section{Quels produits ?}
+        
+        Pour des raisons d'accessibilité de la donnée, on travaillera sur les produits de la branche \'{E}piSaveurs. 
+        Il est de toute façon prévu de déployer le PIM sur l'ensemble des autres branches du groupe, on pourra adresser leurs produits à ce moment-là.
+        La notion d'ingrédients n'a pas de sens pour les produits d'hygiène (cf. section \mref{produits_nonal} sur les produits non-alimentaires), mais existe pour les produits de chimie.
+        Comme les ingrédients des produits alimentaires sont en général différents des produits de chimie, on se limitera d'abord aux premiers.
+        Enfin, la réglementation étant moins stricte pour les boissons alcoolisées sur le sujet spécifique de l'étiquetage de la composition, on ne les prendra pas non plus en compte dans ce mémoire.
 
         \section{Conclusion quant au choix du cas d'usage}
 
-        Tant la préalimentation, que l'aide au contrôle des données seraient faisable d'un point de vue technique.
-        Il suffirait pour cela de publier un service, qui fonctionnerait de la manière suivante : 
-        \begin{itemize}
-            \item le PIM appelle le service, avec un message contenant l'uid du produit à contrôler ou préalimenter
-            \item le serveur récupère du PIM les données nécessaires au contrôle ou à la préalimentation
-            \item en retour, il renvoie au PIM soit l'état du contrôle (OK, erreur, avertissement, avec les précisions nécessaires), soit les données telles qu'elles doivent être préalimentées
-            \item le PIM, sur la base de ce retour, affiche le résultat du contrôle ou bien alimente les données et les présente à l'utilisateur
-        \end{itemize}
-
-        \emphbox{Au vu des différentes contraintes listées dans ce document, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}
+        \emphbox{Au vu des différentes contraintes listées dans cette partie, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} (épicerie et boissons non alcoolisées) depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}

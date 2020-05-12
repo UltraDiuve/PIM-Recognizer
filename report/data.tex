@@ -486,11 +486,34 @@
 
         \section{Récapitulatif de la complétude des données}
 
+            \subsection{Complétude des données}
         Mettre ici un ou plusieurs tableaux récapitulatifs illustrant les données possédées quantitativement.
 
         Montrer également la complétude en fonction du statut, de la date de création, et des facettes de migration.
 
         Mettre l'exemple du champ "acide gras trans >1\%"
+
+            \subsection{Complétude des pièces jointes}
+
+            Si on analyse le niveau de renseignement des données pour les étiquettes et les fiches techniques, on obtient la \reftable{tbl:attached_files_counts}.
+
+            %{\renewcommand{\arraystretch}{1.5}%
+            \begin{table}[htbp]
+                \begin{center}
+                {\tiny
+                \input{tbls/attached_files_counts.tex}
+                }
+                \caption{Analyse volumétrique des pièces jointes}
+                \label{tbl:attached_files_counts}
+                \end{center}
+            \end{table}
+            %}
+
+            On en tire comme conclusions que : 
+            \begin{itemize}
+                \item le taux de collecte de ces documents est quasiment parfait pour les produits dits \og En qualité \fg (cf. les définitions données à la section \mref{statuts})
+                \item la volumétrie d'étiquettes sur les produits \og Hors qualité \fg est bien plus faible, de l'ordre de 30\%
+            \end{itemize}
 
         \section{Analyse qualitative des données}
         
@@ -499,7 +522,31 @@
 
 
             \subsection{Types de pdf possédés}
-        Dire ici qu'il y a finalement beaucoup de pdf qui possèdent des textes extractibles vs. uniquement des images.
+
+            Une information intéressante est de faire le point sur la possibilité ou non d'extraire les textes des pdf possédés.
+            En effet, cela permet d'en exporter le contenu avec plus de simplicité et de fiabilité qu'en ayant recours à des fonctionnalités d'OCR (Optical Caracter Recognition~\cite{OCR_wiki}).
+            Pour obtenir cet indicateur, on a procédé de la manière suivante : 
+            \begin{itemize}
+                \item extraction des fichiers pdf correspondant aux étiquettes et aux fiches techniques des produits appartenant à l'échantillon de données manuellement étiquetées (la ground truth, cf. la section à venir \mref{manually_labelled_data})
+                \item application des traitements d'extractions de textes depuis les pdf sur l'ensemble de ces fichiers
+                \item comptage de ceux parmi eux qui apparaissent \og vides \fg, c'est à dire dont le retour de ces fonctionnalités les affiche comme contenant uniquement des whitespaces (espaces, tabulation, retours à la ligne, \og form feed caracters \fg, \dots)
+            \end{itemize}
+            L'application de cette méthode est présentée à la fin du notebook \og Génération de l'échantillon de données manuellement étiquetées \fg présenté en annexe \mref{code:ground_truth}.
+            Les résultats de cette analyse sont présentés à la \reftable{tbl:empty_attached_files}.
+            
+            \begin{table}[htbp]
+                \begin{center}
+                \input{tbls/empty_attached_files.tex}
+                \caption{Pièces jointes dont les textes ne sont pas extractibles}
+                \label{tbl:empty_attached_files}
+                \end{center}
+            \end{table}
+            
+            On en déduit :
+            ~\begin{itemize}
+                \item que la très grande majorité des fiches techniques on un contenu textuel extractible (96\%)
+                \item que les étiquettes, en plus d'être moins représentées que les fiches techniques, ont pour les deux tiers d'entre elles un contenu qui n'est pas exploitables par les outils de pdfmining
+            \end{itemize}
 
         \section{Les données \og manuellement étiquetées \fg}
         \label{manually_labelled_data}
