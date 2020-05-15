@@ -569,7 +569,10 @@ class Requester(object):
             df.set_index(index, inplace=True)
         return(df)
 
-    def file_report_from_result(self, mapping, index=None, record_path=None):
+    def file_report_from_result(self,
+                                mapping,
+                                index='uid',
+                                record_path='entries'):
         """Returns a dataframe about the files contained in the result
 
         This methods analyzes the content of the result, and generates a
