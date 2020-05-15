@@ -1,28 +1,66 @@
 \part{Construction du modèle}
     \chapter{Les principes généraux}
-        \section{Contenu du texte d'une liste d'ingrédients}
+        \section{Les étapes du traitement d'une pièce jointe}
 
-        En général, chaque ingrédient sera présent une seule fois dans la liste (cf. section \mref{listes_ingredients})
+        Le traitement d'une fiche technique se fera toujours en suivant les étapes suivantes : 
+        \begin{itemize}
+            \item récupération du texte de la fiche technique et découpages en blocs de texte
+            \item application de fonctionnalités de text preprocessing sur ces blocs
+            \item représentation de ces textes sous forme de vecteurs
+            \item calcul de la similarité avec les mots représentant des ingrédients pour chacun des blocs, et retour du meilleur candidat
+        \end{itemize}
 
-        Le calcul d'embeddings via des modèles tels que SVD ou Word2Vec fait peu de sens.
-        \newline
-        \newline
-        \emphbox{l'extraction des textes se fait au format \emph{Bag Of Words}, sans utiliser de notion d'IDF. L'utilsation de TF semble églament ne pas amener de valeur à priori.}
+        L'apprentissage se fera toujours de la manière suivante :
+        \begin{itemize}
+            \item application des fonctionnalités de text preprocessing identiques à celles qui seront appliquées lors de la prédiction, sur un corpus d'ingrédients
+            \item construction du vocabulaire des ingrédients
+            \item représentation de ce corpus sous forme de vecteur
+        \end{itemize}
 
-        \section{Limitation à l'identification des listes d'ingrédients}
+        \section{Text preprocessing}
 
-        On est sur une taxonomie d'informations limitée dans les fiches techniques.
-
-        On pourrait envisager de classifier l'ensemble des textes présents dans les fiches techniques.
-
-        Mais l'absence de données étiquetées rend cette tâche impossible. La charge d'étiquetage d'un nombre représentatif de blocs de texte de fiches techniques est trop importante pour être mise en oeuvre dans le cadre de ce projet.
-
-        \section{Conversion de documents en texte}
+        Pour le text preprocessing, on appliquera toujours une étape de normalisation visant à retirer la casse, la ponctuation et les caractères spéciaux ou accentués.
         
-        dire ici qu'on utilise principalement pdfminer vs. d'autres outils d'OCR.
+        Pour la gestion des stopwords, plusieurs options seront explorées : 
+        \begin{itemize}
+            \item ne rien faire sur ces stopwords
+            \item construire manuellement une liste générique de stopwords en parcourant les mots les plus fréquents du vocabulaire
+            \item construire automatiquement une liste de stopwords en retirant les mots trop ou trop peu fréquents dans le corpus de listes d'ingrédients
+            \item construire automatiquement une liste de stopwords en retirant les mots trop ou trop peu fréquents dans le corpus des blocs de texte candidats
+        \end{itemize}
 
-        De plus, on partira dans un premier temps sur une transformation basique d'un document en texte, sans passer par une analyse de la localisation des textes sur le document (cf. les difficultés présentées dans la section \mref{formats_spatialisation}).
+        \section{Vectorisation des textes}
+
+        Les textes seront représentées sous forme de vecteurs via l'approche \og Bag Of Words \fg.
+        On évaluera les méthodes suivantes pour la transformation des textes en vecteurs :
+        \begin{itemize}
+            \item de manière binaire : la coordonnée est à 1 si le mot est présent au moins une fois dans le texte, 0 sinon
+            \item en term-frequency (tf) : la coordonnée correspond à la fréquence d'apparition du mot dans le texte
+            \item en tf-idf, l'inverse document frequency pouvant être calculée en référence à plusieurs corpus de référence (le corpus des listes d'ingrédients, le corpus des blocs de texte candidats)
+        \end{itemize}
+
+        On évaluera aussi la pertinence de prendre en compte des ngrams, en allant jusqu'à une longueur de 5 si les performances du matériel à disposition le permet.
+
+
+        \section{Calcul de similarité}
+
+            \subsection{Similarité cosinus}
             
+            Cette méthode nécessite de représenter le vocabulaire des ingrédients sous la forme d'un vecteur, d'une des manières présentées à la section précédente.
+            On calcule le cosinus de l'angle entre le vecteur du vocabulaire et celui du candidat.
+            Plus ce cosinus est élevé, plus la similarité est importante.
+            Cette norme n'a pas de paramètre.
+
+            \subsection{Par projection}
+
+            Cette méthode nécessite uniquement de projeter le candidat sur le vocabulaire des ingrédients.
+            On fait ensuite le rapport entre la norme du vecteur initial, à celle de sa projection.
+            Attention, si on utilise la même norme pour mesurer le vecteur initial et sa projection, on choisira toujours les candidats dont aucun mot n'est hors du vocabulaire.
+            Une manière de s'affranchir de ceci est choisir pour mesurer le vecteur initial une norme $L_{p}$ et pour sa projection une norme $L_{q}$ avec $p > q$.
+            En effet, un résultat d'algèbre linéaire ~\cite{lpnorms} montre que :
+            \[\forall x \in \mathbb{R}^{n}, \; p > q \Rightarrow \lVert x \rVert_{p} \leqslant \lVert x \rVert_{q}\]
+
+
     \chapter{Construction d'un modèle simple \og ouvert \fg}
         
         \section{Principes généraux}
@@ -296,6 +334,7 @@ mini 16,56 ( - 10 % )
                 \item Faire un découpage plus élaboré du texte des pièces jointes en blocs, potentiellement avec des expressions régulières
                 \item Faire des \og ngrams de blocs \og, ce qui permettrait de parfois fusionner des blocs qui ont été séparés (car contenaient des retours à la ligne successifs)
                 \item Essayer une autre manière de calculer la similarité
+                \item Retirer les stop words qui sont susceptibles d'être présents à la fois dans des listes d'ingrédients et dans d'autres types de textes
                 \item \dots
             \end{itemize}
 

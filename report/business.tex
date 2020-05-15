@@ -1,14 +1,16 @@
-\part{Contexte métier}
-
-    \chapter{Description du groupe}
-
+\chapter{Contexte métier : le groupe, information produit et généralités sur les données}
+    \label{business}
     \large
-    L'objet de l'ensemble de cette première partie est de donner sur le Groupe Pomona des éclairages nécessaires à la compréhension du cas d'usage développé.
+    L'objet de l'ensemble de cette annexe est de donner sur le Groupe Pomona et la gestion de l'information produit. des éclairages nécessaires à la compréhension du cas d'usage développé.
     Bien d'autres aspects sur la société, pourraient être mentionnés (ex : des indicateurs sur l'activité, l'histoire du groupe\dots) mais ils seront omis car non indispensables à la compréhension du sujet.
     Plus de détails sur le groupe sont accessibles sur le site web de la société\cite{site_pomona}.
-    \normalsize    
+    \normalsize   
 
-        \section{Le métier du Groupe Pomona}
+    \section{Description du groupe}
+
+ 
+
+        \subsection{Le métier du Groupe Pomona}
         \label{business}
 
         Le Groupe Pomona est une société de distribution livrée de produits alimentaires à destination des professionnels des métiers de bouche.
@@ -38,11 +40,11 @@
         \emphbox{Le métier du groupe est d'être un \emph{grossiste}, qui achète et revend des produits alimentaires\footnotemark \ \emph{sans produire ou transformer quoi que ce soit}.}
         \footnotetext{dans la grande majorité des cas, cf. \emph{Les produits non-alimentaires} \mref{produits_nonal}}
 
-        \section{La décentralisation}
+        \subsection{La décentralisation}
         
         Le Groupe Pomona est un groupe fortement décentralisé, avec des organisations largement indépendantes les unes des autres. 
 
-            \subsection{Les Directions fonctionnelles}
+            \subsubsection{Les Directions fonctionnelles}
             \label{les_directions_fonctionnelles}
 
             Pour des raisons évidentes de recherche de synergies ou de conformité réglementaires, certaines activités restent toutefois mutualisées à la maille du groupe.
@@ -56,7 +58,7 @@
                 \item[La Direction Commerciale groupe (DCG) :] définit une stratégie et des bonnes pratiques commerciales et marketing
             \end{description}
 
-            \subsection{Les clients du groupe}
+            \subsubsection{Les clients du groupe}
             \label{clients}
 
             Afin de comprendre l'organisation du groupe, il est nécessaire de connaître la typologie de ses clients.
@@ -73,13 +75,13 @@
 
             Les trois premières de ces catégories représentent ce que l'on appelle la \emph{Restauration Hors Domicile (RHD)} (ou parfois également la Restauration Hors Foyer, RHF).
 
-            \subsection{Premier niveau de décentralisation : les branches}
+            \subsubsection{Premier niveau de décentralisation : les branches}
             \label{les_branches}
             Le Groupe Pomona est divisé en branches, qui sont des unités opérationnelles indépendantes, et qui ont toute latitude pour gérer leurs stratégie et politique commerciales, la gestion de leurs achats, leur stratégie marketing, \dots
             En particulier, les systèmes d'information ne sont pas identiques entre les différentes branches.
             Afin d'éviter de se concurrencer entre elles, leurs domaines d'activité respectifs ont été partitionnés par familles de produit commercialisés, segments client cibles et géographie. 
 
-                \subsubsection{Les branches RHD}
+                \paragraph{Les branches RHD}
                 
                 Les branches RHD s'adressent aux client de la Restauration Hors Domicile (cf. section \mref{clients}) en France.
                 Elles se répartissent ce marché en travaillant des gammes de produits distinctes.
@@ -96,7 +98,7 @@
                 Les branches RHD utilisent le progiciel SAP comme système de gestion.
                 La branche TerreAzur est en cours de déploiement, en 2020 environ les 2 tiers des succursales travaillent avec ce progiciel.
 
-                \subsubsection{Les branches spécialistes}
+                \paragraph{Les branches spécialistes}
 
                 Les branches spécialistes s'adressent aux clients dits spécialistes (cf. section \mref{clients}) en France.
                 Elles sont en mesure de commercialiser tout type de produit pour répondre aux besoins de leurs clients.
@@ -109,7 +111,7 @@
                 \end{description}
                 Comme pour les branches RHD, ces branches peuvent lorsqu'elles en ont l'opportunité vendre leurs produits à la GMS.
 
-                \subsubsection{L'étranger}
+                \paragraph{L'étranger}
 
                 Bien que le Groupe Pomona soit une société dont l'essentiel de l'activité est faite sur le marché français, deux réseaux sont en cours de constitution sur des pays limitrophe.
                 Ces branches sont susceptibles de travailler tout type de produit, à destination de tout type de client.
@@ -129,7 +131,7 @@
                     \label{fig:repartition_activite}
                 \end{figure}
 
-            \subsection{Le second niveau de décentralisation : les succursales}
+            \subsubsection{Le second niveau de décentralisation : les succursales}
             \label{les_succursales}
             Chacune des branches est elle-même à son tour décentralisée en un réseau d'entrepôts régionaux : les succursales (parfois également appelées simplement \og régions\fg).
             Ces succursales sont gérées comme des PME indépendantes, avec un directeur et un compte de résultat qui leur est propre.
@@ -156,26 +158,21 @@
             \end{figure}
 
 
-    \chapter{La gestion de l'information produit}
+    \section{La gestion de l'information produit}
     
-    \large
-    Ce chapitre a pour vocation à éclairer les aspects métier en lien avec la gestion de l'information produit. 
-    C'est le seul processus métier qui sera détaillé dans la mesure où c'est uniquement celui qu'il est nécessaire de connaître pour comprendre les cas d'usage développés ultérieurement.
-    \normalsize
-
-        \section{L'information produit}
+        \subsection{L'information produit}
         
-            \subsection{Utilisations de l'information produit}
+            \subsubsection{Utilisations de l'information produit}
             \label{utilisation_info_produit}
 
-                \subsubsection{Conformité réglementaire}
+                \paragraph{Conformité réglementaire}
                 La gestion de l'information produit est essentiellement une contrainte réglementaire à statisfaire.
                 Comme mentionné au préambule, la réglementation autour de l'information des consommateur s'est sans cesse complétée au cours des dernières années.
                 Un des textes centraux est le règlement n°1169/2011 dit INCO (INformation COnsommateur)\cite{incotext}\cite{incoexpl}.
                 C'est ce règlement qui définit l'ensemble des informations qui doivent être étiquetées sur le produit (liste d'ingrédients, tableau de données nutritionnelles, \dots), mais également affichée au client lors de commande en ligne sur les sites de e-commerce.
                 Il s'agit principalement d'informations relatives à la sécurité alimentaire (ex : les allergènes) ou la santé (ex : informations nutritionnelles).
 
-                \subsubsection{Attentes client}
+                \paragraph{Attentes client}
 
                 Les consommateurs finaux (les \og convives \fg) étant de plus en plus sensibles au contenu de leur assiette, les clients du groupe sont de plus en plus demandeurs d'informations relatives aux produits qu'ils commandent.
                 Ils demandent donc régulièrement des informations qui vont au-delà de ce qui est normalement prévu par la réglementaition.
@@ -183,7 +180,7 @@
                 De plus, sur certains marchés pour lesquels des contrats courant sur de longues périodes - jusqu'à un an - sont établis (les marchés publics sont très concernés), il n'y a pas d'échantillonnage des produits.
                 La seule manière pour ces clients d'évaluer la qualité des produits est de se référer aux documents contenant les informations produit, fournis par les distributeurs.
 
-                \subsubsection{Gestion}
+                \paragraph{Gestion}
 
                 Certaines informations relatives aux produits sont nécessaires pour des raison de gestion adminsitrative.
                 Par exemple, la gestion des taxes sur les produits alimentaires est complexe : 
@@ -198,7 +195,7 @@
                 Un autre type d'information capital pour la gestion des flux d'achat et de vente sont les informations logistiques, qui définissent par exemple le nombre d'unités consommateur dans le colis, le nombre de colis sur une palette, \dots
                 Une gestion rigoureuse de ces informations est indispensable pour que les flux d'achat ou de vente soient correctement exécutés (que les quantités commandées soient les bonnes, que les montants facturés soient corrects, \dots).
 
-            \subsection{Des produits bruts aux produits transformés}
+            \subsubsection{Des produits bruts aux produits transformés}
 
             Le niveau d'exigence en termes d'information produit est variable en fonction du niveau de transformation de ce produit.
             Par exemple, sur des fruits et légumes frais, à peu de choses près seul le pays d'origine doit être affiché au client.
@@ -209,12 +206,12 @@
                  \item une dénomination réglementaire
             \end{itemize}
 
-            \subsection{Les grands types d'information}
+            \subsubsection{Les grands types d'information}
             \label{info_produit}
 
             On se focalisera dans ce paragraphe sur les informations relatives aux \emph{produits alimentaires}.
 
-                \subsubsection{La composition}
+                \paragraph{La composition}
                 \label{composition}
 
                 La première grande famille de données réglementaires sont les données de composition.
@@ -252,7 +249,7 @@
                     \item[contamination croisée :] par exemple lorsque le produit fini est issu d'une chaîne de transformation qui traite un ingrédient allergène, mais que cet ingrédient ne fait pas partie de la recette. Ce cas de figure est en général mis en évidence par des mentions telles que \emph{"Peut contenir des traces de soja"} ou bien \emph{"Transformé dans un atelier processant également des fruits à coques et du sésame"}.
                 \end{description}
 
-                \subsubsection{Les informations nutritionnelles}
+                \paragraph{Les informations nutritionnelles}
 
                 Une autre grande famille d'information produit sont les informations nutritionnelles. 
                 Elles détaillent la quantité des principaux nutriments contenus dans les produits.
@@ -295,7 +292,7 @@
 
                 Les informations nutritionnelles peuvent également se présenter sous forme d'allégations, qui ont des définitions précises dans la réglementation. Ces allégations peuvent être : \emph{sans sel, faible en sucres, riche en fibres, \dots}
 
-                \subsubsection{Les origines}
+                \paragraph{Les origines}
 
                 Du fait de la complexification des opérations de transformation et de la complexification des flux d'échanges de marchandises, l'origine des produits alimentaires est une notion qui n'est pas définie avec précision dans l'absolu.
                 Il n'y a donc pas non plus de réglementation précise sur le sujet, si ce n'est que l'information produit doit toujours être présentée de manière loyale au consommateur.
@@ -305,7 +302,7 @@
                 Et à l'inverse, sur un steak haché cette information n'aura aucun sens dans la mesure où il est produit d'un assemblage de \og minerais \fg pouvant provenir de multiples pays.
                 L'industriel pourra choisir de communiquer sur le fait que la viande a été transformée en steak dans telle usine par exemple.
 
-                \subsubsection{Les données logistiques} 
+                \paragraph{Les données logistiques} 
 
                 On appelle données logistiques essentiellement le plan de palettisation et de conditionnement du produit.
                 Il s'agit de la définition de la \og hiérarchie logistique \fg du produit.
@@ -336,7 +333,7 @@
                 \end{itemize}
                 mais elles sont dépendantes d'un accord entre l'industriel et son client distributeur et ne sont donc pas à proprement parler des informations produit.
 
-                \subsubsection{Les données administratives et financières}
+                \paragraph{Les données administratives et financières}
 
                 Les données dites administratives et financières regroupent le reste des informations de gestion pour lesquelles il existe des contraintes réglementaires.
                 Il s'agit :
@@ -346,7 +343,7 @@
                     \item de toute autre taxe applicable au produit
                 \end{itemize}
 
-                \subsubsection{Les labels} 
+                \paragraph{Les labels} 
                 \label{labels}
 
                 Afin de garantir des qualités spécifiques à certains produit, des organismes de certification ont mis en place des labels pouvant s'appliquer aux produits.
@@ -361,16 +358,16 @@
                     \item la qualité \og générale \fg des produits (Label Rouge, \dots)
                 \end{itemize}
 
-                \subsubsection{Les données marketing}
+                \paragraph{Les données marketing}
 
                 Certaines données marketing font également partie de l'information produit.
                 La plus évidente est la marque commerciale du produit, qui parfois définit totalement le produit.
                 Par exemple, on sait ce qu'est un Snickers, de la Mousline, du Nutella, \dots
                 Les produits peuvent également porter d'autres allégations marketing, non réglementaires ou labelisantes : \'{E}lu produit de l'année, Vu à la télé, Issu de notre savoir-faire centenaire, \dots                
 
-        \section{Le processus}
+        \subsection{Le processus}
         
-            \subsection{Le fournisseur est propriétaire des informations produit}
+            \subsubsection{Le fournisseur est propriétaire des informations produit}
 
             Comme présenté à la section \mref{business}, le Groupe Pomona n'a pas d'activité de fabrication ou de transformation de marchandises.
             \`{A} ce titre, l'ensemble des données produits ne peuvent être déterminées que par les fournisseurs de ces produits.
@@ -381,7 +378,7 @@
 
             \emphbox{Dans tous les cas, c'est le \emph{fournisseur} qui est responsable de produire et de transmettre l'information produit aux entités du groupe Pomona.}
 
-            \subsection{La notion de produit et d'article}
+            \subsubsection{La notion de produit et d'article}
             \label{produit_article}
 
             Un mot sur la modélisation des données adoptée est nécessaire pour comprendre les grandes lignes du processus.
@@ -422,15 +419,15 @@
                 \label{fig:produit_article}
             \end{figure}          
 
-            \subsection{Les acteurs}
+            \subsubsection{Les acteurs}
 
-                \subsubsection{L'acheteur}
+                \paragraph{L'acheteur}
                 L'acheteur peut être en succursale, ou à la centrale d'achat de la branche (cf. \mref{les_branches} et \mref{les_succursales}).
                 Il est responsable de l'assortiment, i.e. des articles qui sont commercialisé par sa branche, ou sa succursale.
                 Il est à l'origine de la création d'un nouveau produit, dans la mesure où c'est lui qui va décider de le référencer ou pas.
                 La gestion de l'information produit ne représente qu'une petite partie de l'ensemble de ses responsabilités (qui peuvent inclure négociations fournisseurs, gestion du sourcing, gestion des approvisionnements, prévisions d'évolution des prix, \dots).
 
-                \subsubsection{Le fournisseur}
+                \paragraph{Le fournisseur}
                 Il a été vu que le Groupe Pomona - dans sa qualité de distributeur - n'est pas en mesure de déterminer seul les informations produit sur les marchandises qu'il commercialise.
                 \`{A} ce titre, les équipes des fournisseurs sont en charge de transmettre les information produit à Pomona.
                 En général, ce sont deux types de profil qui effectuent cette tâche : 
@@ -439,18 +436,18 @@
                     \item les ingénieurs qualité
                 \end{itemize}
 
-                \subsubsection{Le gestionnaire de référentiel - SEGER}
+                \paragraph{Le gestionnaire de référentiel - SEGER}
                 Le gestionnaire de référentiel travail au SErvice de GEstion des Référentiels (SEGER), qui sont des équipes positionnées au niveau des branches (cf. \mref{les_branches}).
                 Ils sont responsables de la qualité des données dans les référentiels métier (articles, fournisseurs, clients, \dots).
                 La gestion des données de base dans les référentiels est leur mision principale.
 
-                \subsubsection{L'ingénieur qualité}
+                \paragraph{L'ingénieur qualité}
                 L'ingénieur qualité travaille à la DQSE ou en succursale (cf. \mref{les_directions_fonctionnelles} et \mref{les_succursales}).
                 Dans le processus de gestion de l'information produit, il est en charge de contrôler la qualité des données, mais également leur conformité réglementaire (ex : on ne peut qualifier un produit de \og faible en sel \fg que s'il comporte moins de n grammes de sel pour 100 grammes de produit.)
                 La gestion de l'information produit ne représente qu'une partie des responsabilités de l'ingénieur qualité.
 
-            \subsection{Les contrôles}
-
+            \subsubsection{Les contrôles}
+            \label{controles}
             Comme cela a été vu dans la section \mref{utilisation_info_produit}, il est nécessaire que les différentes entités du groupe soient en possession d'une information produit fiable.
             Or, avoir des données de qualité nécessite des efforts de la part des métiers, en particulier lorsque le processus n'est pas entièrement porté en interne dans la société.
             \`{A} ce titre, plusieurs étapes de contrôle ont été définies dans le processus de gestion du référentiel de données produit et article :
@@ -477,20 +474,20 @@
                 \item[contrôle de la cohérence avec les pièces jointes :] en plus de données structurées, les fournisseurs transmettent également des fichiers portant des informations produit (ex : l'étiquette produit ou le visuel de l'emballage). Ces pièces jointes sont décrites à la section \mref{pieces_jointes}. La personne en charge du contrôle vérifie que les données transmises sont cohérentes avec ces documents.
             \end{description}
 
-        \section{Les outils informatiques associés}
+        \subsection{Les outils informatiques associés}
         \label{outils_infos}
 
         Comme vu dans la description des branches du groupe (voir section \mref{les_branches}), les outils informatiques ne sont pas tous les mêmes sur l'ensemble des branches.
         Ainsi, les outils utilisés pour la gestion de l'information produit ne sont pas les mêmes.
 
-            \subsection{Les branches faiblement outillées}
+            \subsubsection{Les branches faiblement outillées}
             
             Les branches étrangères (Pomona Suisse, Pomona Iberia), spécialistes (Délice et Création, Saveurs d'Antoine) et la branche TerreAzur sont aujourd'hui faiblement outillées.
             Cela signifie que l'information produit est en général stockée uniquement sous la forme de fichiers (essentiellement les pièces jointes, décrites à la section \mref{pieces_jointes}).
             L'ensemble des échanges avec les fournisseurs se font par mail, et les articles sont créés directement dans les systèmes de gestion par les gestionnaires de référentiel.
             Les liens entre les articles et les informations produit ne sont pas matérialisés dans les systèmes informatiques.
 
-            \subsection{Le GIP}
+            \subsubsection{Le GIP}
             \label{GIP}
 
             Le GIP (Gestion de l'Information Produit) est utilisé sur la branche PassionFroid.
@@ -500,7 +497,7 @@
             Il est toutefois ancien, et ne propose pas de fonctionnalité d'export en masse fiable.
             Il s'agit d'une application qui n'est pas ouverte aux utilisateurs externes au groupe, et les échanges avec les fournisseurs passent donc par des échanges de mails.
 
-            \subsection{Le PIM}
+            \subsubsection{Le PIM}
             \label{PIM}
 
             Le PIM (Product Information Management) est un système de gestion de l'information produit qui a été mis en production en mai 2019, pour la branche \'{E}piSaveurs.
@@ -508,7 +505,7 @@
             En terme de responsabilités, il vise à gérer la totalité des informations produit, mais également d'être maître sur les référentiels articles.
             Ce sera le système de référence pour tous les autres systèmes consommant de l'information produit, ou des données article.
 
-                \subsubsection{Description générale de l'outil}
+                \paragraph{Description générale de l'outil}
 
                 C'est un système qui porte l'ensemble du processus de gestion de l'information produit, tel que décrit à la \reffig{fig:processus_article}.
                 Il est accessible aux fournisseurs du groupe, qui viennent directement mettre à disposition les données et les pièces jointes.
@@ -540,7 +537,7 @@
                     \label{fig:integration_PIM}
                 \end{figure}
 
-                \subsubsection{Le socle technologique (et un mot de vocabulaire)}
+                \paragraph{Le socle technologique (et un mot de vocabulaire)}
 
                 Ce logiciel a été construit sur la base de l'outil de gestion de contenu généraliste Nuxeo.
                 Il s'agit d'un outil de GED (Gestion \'{E}lectronique de Documents), et tous les objets (produits, fournisseurs, articles, \dots) qu'il stocke sont nommés \og documents \fg.
@@ -553,7 +550,7 @@
 
                 La base de données sous-jacente à l'application est une base NoSQL MongoDB.
  
-                \subsubsection{La GDSN}
+                \paragraph{La GDSN}
 
                 \label{GDSN}
                 La GDSN (Global Data Synchronization Network) est un réseau d'échange de données produit entre industriels, distributeurs, restaurateurs, \dots
@@ -573,7 +570,7 @@
                     \label{fig:GDSN}
                 \end{figure}                 
                 
-                \subsubsection{L'identification des objets dans le PIM}
+                \paragraph{L'identification des objets dans le PIM}
 
                 Un dernier point à connaître à propos du PIM, est la manière d'identifier l'ensemble des objets en son sein.
                 Chaque objet géré (ainsi que toute version archivée) porte un identifiant unique, nommé \emph{uid} qui est totalement univoque.
@@ -589,13 +586,13 @@
                     \label{fig:uid}
                 \end{figure}                 
 
-                \subsubsection{Les API}
+                \paragraph{Les API}
 
                 Un des aspects intéressants du PIM pour l'exploitation en masse des données produit, est qu'il expose des API permettant d'aller requéter l'ensemble de son contenu.
                 Cela concerne à la fois les données dites structurées, mais également les pièces jointes.
                 Cela rend les données produit de la branche \'{E}piSaveurs bien plus simplement accessibles que celles des autres branches.
 
-                \subsubsection{La reprise de données initiale et la migration}
+                \paragraph{La reprise de données initiale et la migration}
                 \label{migration}
 
                 Un point à avoir également en tête est le mode d'alimentation initial du PIM pour \'{E}piSaveurs et le processus dit d'enrichissement qui ont été décidés.

@@ -105,22 +105,20 @@
     La mise en place d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du groupe.
     Le présent rapport détaille la mise en place d'un outil permettant d'extraire les listes d'ingrédients des fiches techniques transmises par les fabricants des produits.
 
-    Dans une première partie, on détaillera le contexte métier autour de la gestion de l'information produit. 
-    Nous analyserons ensuite les données disponibles, et les possibilités de les exploiter.
-    Nous expliciterons les raisons qui ont poussé à choisir le cas d'usage, et la manière dont il pourrait être mis en oeuvre au sein du Groupe Pomona.
-    La quatrième partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie ouvrira la réflexion sur les travaux à venir.
-
+    Dans une première partie, on explicitera les objectifs et le cas d'usage retenu.
+    Nous analyserons ensuite les données disponibles, et la manière de les exploiter.
+    La troisièeme partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie portera un regard critique sur les résultats obtenus et ouvrira la réflexion sur les travaux à venir.
 
 \end{abstract}
 \normalsize
 
+\begin{spacing}{1.0}
 \tableofcontents
-
-\input{business}
-
-\input{data}
+\end{spacing}
 
 \input{objectifs}
+
+\input{text_data_analysis}
 
 \input{model}
 
@@ -132,7 +130,14 @@
         \listoftables
         \listoffigures
         \bibliographystyle{plain}
-        \bibliography{./biblio} 
+        \bibliography{./biblio}
+        
+        
+\input{business}
+
+\input{data}
+
+
     \chapter{Exemples de pièces jointes et ground truth}
         \section{Fiches techniques}
         \label{ex:fiches_techniques}
