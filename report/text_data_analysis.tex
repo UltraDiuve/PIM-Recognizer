@@ -82,7 +82,7 @@
         \[s_{i} = \log_{2}(1 + c_{i})\]
         où $c_{i}$ est le nombre de listes d'ingrédients dans lequel le mot $i$ apparaît.
        
-        Le score vaut donc $0$ si le mot n'est pas présent dans le vocabulaire des ingrédients, $1$ s'il est présent une fois, et progresse de manière logarithmique en fonction de la \og document frequency \fg. Une illustration est donnée à la \reffig{fig:scores_bar}
+        Le score vaut donc $0$ si le mot n'est pas présent dans le vocabulaire des ingrédients, $1$ s'il est présent une fois, et progresse de manière logarithmique en fonction du taux de présence du mots dans le corpus des ingrédients (c'est une \og smooth document frequency \fg). Une illustration est donnée à la \reffig{fig:scores_bar}
 
         \begin{figure}[htbp]
             \begin{center}
@@ -96,4 +96,100 @@
 
             \subsection{Vectorisation des mots}
 
+            On calcule les embeddings des mots via l'algorithme Word2Vec, sur le corpus du contenu des documents.
+            Si l'on applique deux méthode de réduction de la dimensionnalité sur ces embeddings (PCA et ISOMAP), on peut en faire une représentation graphique.
+            Le résultat de cette projection est présenté à la \reffig{fig:word2vec_projection}.
+            On voit clairement que les embeddings des mots issus du vocabulaire des ingrédients sont localisés dans les mêmes régions.
+            Le calcul des embeddings via l'algorithme Word2Vec semble donc avoir un intérêt pour l'identification des listes d'ingrédients. 
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/word2vec_projection.png}
+                \end{center}
+                Remarque : la colormap a très légèrement été décalée pour que les mots ayant un score de 0 soient visibles (gris/bleu clair)
+                \caption{Projection des embeddings Word2Vec}
+                \label{fig:word2vec_projection}
+            \end{figure}            
+
             \subsection{Vectorisation des textes}
+
+            La vectorisation des textes va se faire sur la base de la matrice des comptes ou des fréquences de mots.
+            On commence par effectuer une PCA (après standardisation) sur les comptes de mots de chacun des textes : listes d'ingrédients ou contenu des documents.
+            Les résultats sont présentés à la \reffig{fig:PCA_counts}.            
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/PCA_counts.png}
+                \end{center}
+                \caption{Projection des comptes : PCA}
+                \label{fig:PCA_counts}
+            \end{figure}
+            Les corpus sont bien séparés. 
+            Une explication pour cette séparation assez franche est la suivante : les vecteurs du corpus des contenus de documents ont en général une norme plus élevée que celle des ingrédients.
+            La dispersion est donc plus grande pour les contenus des documents que pour les ingrédients.            
+
+            On peut appliquer une transformation similaire, mais cette fois en utilisant une Truncated SVD (cf. \reffig{fig:tSVD_counts}).
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tSVD_counts.png}
+                \end{center}
+                \caption{Projection des comptes : Truncated SVD}
+                \label{fig:tSVD_counts}
+            \end{figure}
+            Là encore, les deux corpus sont différemment localisés.
+            La même explication que pour les résultats de la PCA pourrait tenir pour expliquer cette répartition différenciée.
+
+            On peut changer d'espace de départ, en se basant sur les fréquences (\og term-frequencies \fg) d'apparition des mots dans les textes. 
+            Cela permet de countourner le problème des longueurs différentes des textes.
+            L'application d'une PCA est présentée à la \reffig{fig:PCA_freq}.
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/PCA_freq.png}
+                \end{center}
+                \caption{Projection des fréquences : PCA}
+                \label{fig:PCA_freq}
+            \end{figure}
+            Les textes correspondant aux ingrédients sont à nouveau localisés dans la même région, bien que cette fois les normes des vecteurs de l'espace de départ soient comparables entre les deux corpus.
+            Une explication serait que les nombreux \og trous \fg dans les vecteurs correspondants aux ingrédients (pour rappel, le vocabulaire des ingrédients est plus de 10 fois plus petit que le vocabulaire des documents, cf. \reftable{tbl:vocabularies}) les cantonnent à un partie limité de l'espace de départ.
+            D'où la similarité dans l'espace de la PCA.
+
+
+            Enfin, si on applique une Truncated SVD sur les fréquences de mots, on observe à nouveau une séparation franche des corpus.
+            Le résultat est présenté à la \reffig{fig:tSVD_freq}.
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tSVD_freq.png}
+                \end{center}
+                \caption{Projection des fréquences : Truncated SVD}
+                \label{fig:tSVD_freq}
+            \end{figure}
+            Cette fois, c'est le corpus des documents qui occupe une région limitée de la représentation.
+            On peut expliquer ce point par le fait que du fait que les listes d'ingrédients sont courtes, les \og term frequencies \fg sont élevées (le diviseur étant relativement plus petit).
+            Les vecteurs des listes d'ingrédients contribuent donc à des valeurs singulières importantes, et leurs projections dans les espaces correspondant sont plus longues.
+            
+            On observe de plus deux \og moustaches \fg distinctes (proches des axes de cette projection, cf. \reffig{fig:tSVD_freq_groups}).
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tSVD_freq_groups.png}
+                \end{center}
+                \caption{Groupes particuliers dans la tSVD des fréquences}
+                \label{fig:tSVD_freq_groups}
+            \end{figure}    
+            Si on compare les textes de ces deux groupes de points, on s'aperçoit que des tendances nettes se dégagent (cf. \reftable{tbl:tSVD_sample}):
+            \begin{itemize}
+                \item comme anticipé, il s'agit de listes d'ingrédients relativement courtes (d'où leur norme importante dans cet espace)
+                \item la moustache de droite reprend des listes d'ingrédients correspondant principalement à du thon ou des mono-légumes en boite
+                \item la moustache du haut correspond essentiellement à des pâtes ou des mono-produits d'épicerie (épices, farine, thé, café)        
+            \end{itemize}           
+            {\renewcommand{\arraystretch}{1.5}%
+            \begin{table}[htbp]
+                \begin{center}
+                {\scriptsize
+                \input{tbls/tSVD_sample.tex}
+                }
+                \caption{Longueur des textes dans le dataset}
+                \label{tbl:tSVD_sample}
+                \end{center}
+            \end{table}
+            }
+
+            
