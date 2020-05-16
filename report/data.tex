@@ -1,4 +1,5 @@
-\part{Les données}
+\chapter{Les données}
+
     \chapter{Le périmètre produit}
     \label{perimetre_produit}
 
@@ -274,13 +275,6 @@
                     \label{fig:distrib_fourn_pdts}
                 \end{figure}
 
-                \begin{figure}[htbp]
-                    \begin{center}
-                    \includegraphics[width=\linewidth]{img/rappel_produit_par_fournisseur.png}
-                    \end{center}
-                    \caption{Le Pareto des produits en fonction des fournisseur}
-                    \label{fig:rappel_pdt_par_frn}
-                \end{figure}
 
         TODO : continuer l'analyse par domaine de données.
 
@@ -361,159 +355,7 @@
             \end{table}
             }
 
-            \subsection{Les listes d'ingrédients}
-            \label{listes_ingredients}
 
-            L'autre grand type de donnée non structurées sont les listes d'ingrédients.
-            La construction des listes d'ingrédients doit suivre les règles suivantes, même si l'application n'est pas toujours parfaitement respectée :
-            \begin{itemize}
-                \item elle doit détailler l'ensemble des ingrédients, y compris les additifs et les arômes
-                \item elle doit être triée par ordre d'importance pondérale décroissante (i.e. les ingrédients les plus représentatifs en poids doivent être cités en premier)
-                \item la quantité de certains ingrédients (en pourcentage de la masse) par exemple ceux mis en valeur sur l'étiquetage ou dans la dénomination de vente (ex. gâteau aux fraises, pizza au jambon)
-            \end{itemize}
-            Même s'il ne s'agit pas d'une exigence réglementaire, le Groupe Pomona demande à ses fournisseurs de ne pas distinguer les ingrédients par phase comme cela se fait parfois.
-            Cela signifie, par exemple, séparer une partie de la composition du produit (la pâte de la garniture pour une tarte, la sauce et les raviolis, \dots).
-            De telles pratiques peuvent parfois induire le consommateur en erreur, comme par exemple dans la liste d'ingrédients suivante (s'applique à des chips de légumes):
-            \begin{quotation}
-                Légumes 64\% (betterave, panais, carottes, patates douces), huile de tournesol, sel marin.
-            \end{quotation}
-            Sans l'artifice d'avoir regroupé les légumes en une seule phase, le premier ingrédient de la liste aurait pu être l'huile de tournesol, qui est un ingrédient moins attractif pour un consommateur de chips de légumes.
-
-            Quelques exemples de listes d'ingrédients sont présentées à la \reftable{tbl:exemple_ingred}.
-
-            {\renewcommand{\arraystretch}{2}%
-            \begin{table}[htbp]
-                {\scriptsize
-                \begin{center}%
-                \input{tbls/ingredient_example.tex}%
-                \caption{Exemples de listes d'ingrédients}%
-                \label{tbl:exemple_ingred}%
-                \end{center}%
-                }
-            \end{table}
-            }
-
-            \emphbox{
-            Les contraintes ci-dessus s'appliquant aux listes d'ingrédients font qu'en général, il s'agit d'une énumération d'ingrédients, sans doublon.
-            }
-
-
-        \section{Pièces jointes}
-            \label{pieces_jointes}
-
-            Dans le PIM, les pièces jointes - intéressantes au titre de l'information produit - gérées au niveau du produit sont les suivantes :
-            \begin{itemize}
-                \item les fiches techniques fournisseur
-                \item les étiquettes produits
-            \end{itemize}
-    
-            D'autres types de pièces jointes sont gérées, mais elle ne seront pas décrites dans le détail (car non pertinente pour le cas d'usage présenté):
-            \begin{description}
-                \item[les certificats des labels : ] ce sont des documents pdf produits par les organismes de certification attestant qu'un produit peut porter un label. Ils sont mis à disposition par les fournisseurs
-                \item[les images produit : ] ce sont des visuels des produits (photographies ou images construites) qui visent à être utilisées dans des catalogues ou sur les sites de vente en ligne
-                \item[les fiches logistiques : ] ce sont des fichiers qui viennent compléter les informations de la fiche technique lorsque cette dernière ne porte pas les informations relatives à la hiérarchie logistique. 
-                \item[les fiches techniques et argumentaires Pomona : ] ce sont des documents pdf produits par le PIM, stockées sur les articles, qui reprennent des informations produit et article (cf. section \mref{produit_article}). Elles sont transmises aux clients ou utilisés par les commerciaux Pomona.
-                Elles permettent d'avoir une présentation uniforme de l'ensemble de l'assortiment (les fiches techniques fournisseur ont des formats très variables)
-            \end{description}
-
-            \subsection{Fiches techniques fournisseur}
-            \label{fiches_techniques}
-
-                \subsubsection{Généralités sur les fiches techniques}
-            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
-            Elles portent globalement l'ensemble des informations produit telles que présentées à la section \mref{info_produit}.
-            C'est le document le plus complet vis-à-vis des informations produit, il porte en général des informations complémentaires à toutes les informations présentes sur l'emballage du produit (les étiquettes).
-            En général, une fiche technique ne porte d'information que pour un unique produit, mais dans le cas d'assortiments, les informations peuvent être relatives à plusieurs d'entre eux. Cf. la fiche technique pour l'assortiment de confitures, présentée en annexe \mref{ex:FT_confiture}.
-            Les fiches techniques fournisseur sont des pièces jointes qui sont collectées par la branche \'{E}piSaveurs depuis la mise en place du logiciel de gestion historique GIP (cf. section \mref{GIP}), et il s'agit d'une données obligatoire dans le PIM également.
-            
-                \subsubsection{Le format des fiches techniques}
-            Dans le PIM, ces pièces jointes sont collectées et stockées sous forme de pdf (les autres formats de fichier ne sont pas autorisés).
-            Sauf de rares exceptions, il s'agit de fichiers issus de logiciels de traitement de texte, au format A4 portrait.
-            Ce sont des documents techniques, et sont donc en général très structurés, avec des paragraphes, sous-paragraphes, tableaux, \dots
-            Comme cela se constate aisément sur les exemples présentés en annexe, même si les informations portées sont sensiblement toujours les mêmes, les formats de ces documents sont extrêmement variables.
-            Il n'y a aucun standard réglementaire ou normatif relatif à la construction de ces fiches, chaque industriel constitue donc son propre format.
-            On a donc un foisonnement de formats différents.
-
-                \subsubsection{Focus sur le mode de présentation de quelques informations}
-            Les informations produits sont en général présentées de la manière suivantes dans les fiches techniques :
-            \begin{description}
-                \item[Liste d'ingrédients : ] elle est quasiment toujours présentée sous forme de texte (identique à la liste d'ingrédients telle qu'affichée sur l'emballage du produit), mais elle peut également être présentée sous forme de tableau. Cf. la fiche technique présentée en annexe \mref{ex:FT_poivron} (celle-ci ne porte pas de liste d'ingrédients sous forme de texte)
-                \item[Allergènes : ] il peuvent être :
-                \begin{itemize}
-                    \item soit mis en évidence dans la liste d'ingrédients via la police (gras, souligné, majuscules)
-                    \item soit listés hors de la liste d'ingrédient, sous forme de texte. Cf. la fiche technique présentée en annexe \mref{ex:FT_pannacotta}
-                    \item soit listés sous forme d'un tableau reprenant l'ensemble des allergènes réglementaires, et le niveau de présence associé (présence, contamination croisée ou absence). Cf. la fiche technique présentée en annexe \mref{ex:FT_ciboulette}
-                \end{itemize}
-                \item[Données nutritionnelles : ] les données nutritionnelles sont en général présentées sous forme de tableau dans les fiches techniques. De plus, les informations nutritionnelles sont souvent données pour 100 grammes (ou 100 millilitres), ce qui est réglementaire, mais également parfois pour une portion. La taille de la portion est définie arbitrairement par le fournisseur.
-                Cf. la fiche technique de la préparation pour panna cotta \mref{ex:FT_pannacotta}.
-                \item[Données logistiques : ] les informations relatives à la hiérarchie logistiques se présentent souvent sous forme de tableaux.
-                L'interprétation de ces tableaux est généralement complexe et nécessite un peu de réflexion.
-            \end{description}
-            
-            \subsection{\'{E}tiquettes produit}
-            \label{etiquettes_produit}
-
-            \subsubsection{Généralités sur les étiquettes}
-            L'étiquette produit est la partie de l'emballage du produit qui porte les informations produit.
-            Selon la technologie de l'emballage - très liée au fait que le produit est plutôt brut ou plutôt transformé - il peut s'agir :
-            \begin{itemize}
-                \item d'une photo de l'étiquette collante apposée sur l'extérieur de l'emballage du produit (cf. exemple des étiquettes de lentilles \mref{ex:ET_lentilles} ou de sauce soja \mref{ex:ET_saucesoja})
-                \item d'un applat de l'emballage, ou son bon-à-tirer, qui est le document qui est ensuite envoyé aux chaînes de production pour impression (cf. exemple du bon à tirer pour la préparation pour panna cotta \mref{ex:ET_pannacotta})
-                \item ou de tout autre visuel montrant une partie indissociable de l'emballage physique du produit (ex : un photo de la face de l'emballage qui porte les inforations produit, cf. l'étiquette des madeleines \mref{ex:ET_madeleine})
-            \end{itemize}
-            Pour résumer, l'étiquette est une pièce jointe qui représente l'information produit qui \og voyage avec le produit \fg.
-            La cohérence entre les données de l'étiquette et l'information produit transmises aux client est un enjeu majeur, dans la mesure où ce sont en général les informations portées par le produit physique qui sont correctes.
-            La collecte systématique des étiquettes produit est une nouveauté arrivée avec la mise en place du PIM pour \'{E}piSaveurs (mai 2019).
-            En théorie, les étiquettes mises à disposition par les fournisseurs devraient systématiquement porter les informations réglementaires.
-            Or, du fait de la relative nouveauté de cette collecte, les pièces jointes transmises ne sont pas toujours conformes (cf. l'étiquette des lentilles \mref{ex:ET_lentilles}, qui ne portent aucune information nutritionnelle ou de composition).
-
-            \subsubsection{Le format des étiquettes}
-            Comme les fiches techniques, ces pièces jointes sont collectées et stockées sous forme de pdf (les autres formats de fichier ne sont pas autorisés).
-            Du fait que les natures mêmes de ces pièces jointes sont diverses (cf. paragraphe précédent), il n'existe pas de format prédominant.
-
-            \subsubsection{Focus sur le mode de présentation de quelques informations}
-            Les étiquettes portent moins d'information que les fiches techniques.
-            Par exemple, elles ne portent pas d'information sur la hiérarchie logistique, les données administratives (tel que le taux de TVA ou la nomenclature douanière), les codes d'identification (hormis le GTIN qui est présent sur le code à barre), \dots
-            Les durées de vie ne sont pas mentionnées : sur l'emballage d'un produit seule la date limite apparaît, et elle dépend du lot de production.
-            En règle générale, hormis quelques allégations volontairement affichées par l'industriel, l'étiquette ne porte que les informations réglementaires.
-            Les information produit positionnées sur l'étiquette se présentes de la manière suivante :
-            \begin{description}
-                \item[Liste d'ingrédients : ] elle est toujours présentée sous forme d'un texte énumérant les ingrédients (cf. la section \mref{listes_ingredients} qui détaille le contenu d'une liste d'ingrédients)
-                \item[Allergènes : ] ils sont uniquement mis en évidence dans la liste d'ingrédients, par l'utilisation d'une police spécifique (gras, souligné, majuscule, \dots). Cela peut se constater par exemple sur l'étiquette de madeleines \mref{ex:ET_madeleine} ou celle de la sauce soja \mref{ex:ET_saucesoja}
-                \item[Données nutritionnelles : ] les données nutritionnelles se présentent souvent sous forme d'un tableau, toujours avec les valeurs pour 100 grammes ou 100 millilitres, et parfois pour une portion.
-                Il peut arriver, plutôt pour les produits peu transformés, que ces données soient simplement écrite sous forme de texte tel que \begin{quote}\'{E}nergie : 1101 kJ/260 kcal, Glucides : 57 g, Sucres : 52 g, Protéines : 4,3 g, Sel : 7,1 g\end{quote} 
-            \end{description}           
-
-        \section{Récapitulatif de la complétude des données}
-
-            \subsection{Complétude des données}
-        Mettre ici un ou plusieurs tableaux récapitulatifs illustrant les données possédées quantitativement.
-
-        Montrer également la complétude en fonction du statut, de la date de création, et des facettes de migration.
-
-        Mettre l'exemple du champ "acide gras trans >1\%"
-
-            \subsection{Complétude des pièces jointes}
-
-            Si on analyse le niveau de renseignement des données pour les étiquettes et les fiches techniques, on obtient la \reftable{tbl:attached_files_counts}.
-
-            %{\renewcommand{\arraystretch}{1.5}%
-            \begin{table}[htbp]
-                \begin{center}
-                {\tiny
-                \input{tbls/attached_files_counts.tex}
-                }
-                \caption{Analyse volumétrique des pièces jointes}
-                \label{tbl:attached_files_counts}
-                \end{center}
-            \end{table}
-            %}
-
-            On en tire comme conclusions que : 
-            \begin{itemize}
-                \item le taux de collecte de ces documents est quasiment parfait pour les produits dits \og En qualité \fg (cf. les définitions données à la section \mref{statuts})
-                \item la volumétrie d'étiquettes sur les produits \og Hors qualité \fg est bien plus faible, de l'ordre de 30\%
-            \end{itemize}
 
         \section{Analyse qualitative des données}
         
@@ -534,84 +376,8 @@
             L'application de cette méthode est présentée à la fin du notebook \og Génération de l'échantillon de données manuellement étiquetées \fg présenté en annexe \mref{code:ground_truth}.
             Les résultats de cette analyse sont présentés à la \reftable{tbl:empty_attached_files}.
             
-            \begin{table}[htbp]
-                \begin{center}
-                \input{tbls/empty_attached_files.tex}
-                \caption{Pièces jointes dont les textes ne sont pas extractibles}
-                \label{tbl:empty_attached_files}
-                \end{center}
-            \end{table}
-            
             On en déduit :
             ~\begin{itemize}
                 \item que la très grande majorité des fiches techniques on un contenu textuel extractible (96\%)
                 \item que les étiquettes, en plus d'être moins représentées que les fiches techniques, ont pour les deux tiers d'entre elles un contenu qui n'est pas exploitables par les outils de pdfmining
             \end{itemize}
-
-        \section{Les données \og manuellement étiquetées \fg}
-        \label{manually_labelled_data}
-
-            \subsection{Pour répondre à quel besoin ?}
-
-            La qualité des données actuellement présentes dans le système fait que la cohérence entre les listes d'ingrédients du PIM et celles présentes dans les fiches techniques n'est pas assurée.
-            Comme dans tout modèle de machine learning se basant sur des données, il est indispensable ici d'avoir des données dont on est sûrs de la qualité.
-            Il a donc été décidé d'étiqueter manuellement un échantillon représentatif de fiches techniques, en leur faisant correspondre leurs listes d'ingrédients.
-
-            \subsection{Mode de constitution de l'échantillon}
-            
-            Le code pour la constitution de l'échantillon est présenté dans le notebook en annexe \mref{code:ground_truth}.
-
-            Les règles de gestion adoptées pour la constitution de cet échantillon sont les suivantes :
-            \begin{itemize}
-                \item On constitue un échantillon de 500 fiches techniques étiquetées
-                \item On se limite aux produits d'\'{E}picerie et de Boisson non alcoolisée, car ce sont les produits pour lesquels la réglementation impose d'afficher une liste d'ingrédients aux consommateurs
-                \item On stratifie cet échantillon par type de produit (\'{E}picerie vs. Boisson non alcoolisée)
-                \item On se limite évidemment à des produits qui possèdent une fiche technique
-            \end{itemize}
-            Il aurait pu être intéressant de se limiter aux produits \og en qualité \fg (cf. les définitions données à la section \mref{def:en_qualite} sur les statuts des produits), mais l'étiquetage manuel avait été fait avant l'analyse de ces statuts.
-            La constitution de cet échantillon s'est traduite par la génération d'un fichier csv de 500 lignes, avec 3 colonnes : 
-            \begin{itemize}
-                \item l'uid du produit de l'échantillon
-                \item la désignation produit fournisseur
-                \item une colonne vide, visant à accueillir les listes d'ingrédients lors de l'étiquetage manuel
-            \end{itemize}
-
-            \subsection{Méthodologie de l'étiquetage manuel}
-
-            Cette activité s'est faite simplement, dans un environnement Windows : 
-            \begin{itemize}
-                \item les pièces jointes ont été téléchargées localement, dans des dossiers portant l'uid du produit associé
-                \item le csv contenant les uid et les désignation produit fournisseur a été ouvert dans le tableur Microsoft Excel
-                \item en prenant chaque uid séquentiellement, il était relativement rapide de rechercher localement la fiche technique correspondante dans l'explorateur de fichier et de l'ouvrir
-                \item le plus souvent, il était possible de copier/coller la liste d'ingrédient dans le tableur Excel
-                \item le fichier a ensuite été à nouveau sauvegardé au format csv, afin de pouvoir être chargé dans pandas
-            \end{itemize}
-            Une passe de nettoyage des caractères spéciaux issus des copier/coller a ensuite été faite dans excel.
-
-            \subsection{Règles de gestion pour l'étiquetage manuel}
-        
-            Malgré le fait que l'exercice semble à priori peu complexe, en pratique un nombre assez élevé de cas particuliers ont nécessité de prendre des décisions, parfois arbitraires.
-            En général, il s'agit de décisions à prendre lorsque des mentions qui ne sont pas des ingrédients au sens strict sont incluses dans le texte des ingrédients.
-            Le principe de base qui a été retenu est d'essayer de coller au plus à ce qui est attendu dans le PIM. 
-            Par exemple, dans le PIM on demande de retirer les préfixes du type \og Ingrédients : \fg car ces mentions sont reprises telles sur les sites internet, ce qui peut se traduire par l'affichage de \og Ingrédients : Ingrédients : \dots \fg.
-
-            L'esnsemble des règles sont documentées à l'annexe \mref{annotation_rules}.
-
-            \subsection{Confrontation avec le contenu du PIM}
-            \label{ingredient_comparison}
-            Il est possible de comparer les liste d'ingrédients du PIM, et ceux des données étiquetées manuellement.
-            Si on prend uniquement en compte les égalités strictes, on a un niveau de cohérence exactement à 10\% (50 produits sur les 500 du périmère).
-            Des exemples de liste d'ingrédients en écart sont présentées à la \reftable{tbl:ingredient_comparison}.
-            Il apparaît clairement que l'essentiel des écarts sur cet échantillon sont dus à des ajustements de forme (mise en majuscule des allergènes, retrait de parenthèses, retours à la ligne, \dots).
-
-            {\renewcommand{\arraystretch}{1.5}%
-            \begin{table}[htbp]
-                \begin{center}
-                {\scriptsize
-                \input{tbls/ingredient_comparison.tex}
-                }
-                \caption{Exemples d'écarts entre les données étiquetées et celles du PIM}
-                \label{tbl:ingredient_comparison}
-                \end{center}
-            \end{table}
-            }
