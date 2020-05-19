@@ -8,14 +8,16 @@ import os
 from io import BytesIO
 
 import numpy as np
+from numpy.linalg import norm as dense_norm
 from scipy.sparse.linalg import norm as sparse_norm
 from scipy.sparse import csr_matrix
 import pandas as pd
 from pathlib import Path
 from functools import partial
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.utils.validation import check_is_fitted
+from sklearn.preprocessing import normalize
 from jellyfish import damerau_levenshtein_distance
 from Levenshtein import distance as levenshtein_distance
 from Levenshtein import jaro as jaro_similarity
@@ -502,8 +504,14 @@ class SimilaritySelector():
     def fit(self, X, y):
         self._validate_similarity()
         self._validate_norms()
+        # if norm not specified in count_vect_kwargs, set to None
+        # and do not use idf by default
+        if 'norm' not in self.count_vect_kwargs:
+            self.count_vect_kwargs['norm'] = None
+        if 'use_idf' not in self.count_vect_kwargs:
+            self.count_vect_kwargs['use_idf'] = False
         try:
-            self.count_vect = CountVectorizer(**self.count_vect_kwargs)
+            self.count_vect = TfidfVectorizer(**self.count_vect_kwargs)
         except (TypeError):
             raise ValueError('Unexpected argument at init in '
                              'count_vect_kwargs.')
@@ -514,7 +522,8 @@ class SimilaritySelector():
             raise ValueError('Unexpected argument at fit in '
                              'count_vect_kwargs.')
             raise
-        self.source_count_vect = CountVectorizer(**self.count_vect_kwargs)
+        self.source_count_vect = TfidfVectorizer(**self.count_vect_kwargs)
+        self._y_ = y.copy()
         self.fitted_ = True
         return(self)
 
@@ -552,7 +561,7 @@ class SimilaritySelector():
     def predict(self, X):
         """ function to predict best candidate
 
-        X : a pandas Series of block lists, or a list.
+        X : a pandas Series of block lists, or a list of block lists.
         """
         check_is_fitted(self)
         docs = [text for block_list in X for text in block_list]
@@ -561,9 +570,9 @@ class SimilaritySelector():
         except ValueError:
             print('No words in blocks. Return defaulted to ""')
             return(np.array([''] * len(X)))
+        self.computed_sims_ = []
+        predicted_texts = []
         if self.similarity == 'projection':
-            computed_sims = []
-            predicted_texts = []
             for block_list in X:
                 texts = self.source_count_vect.transform(block_list)
                 # project texts on corpus space
@@ -576,14 +585,33 @@ class SimilaritySelector():
                                 texts_norms,
                                 out=np.zeros(texts_norms.shape),
                                 where=texts_norms != 0)
-                computed_sims.append(sim)
+                self.computed_sims_.append(sim)
                 predicted_texts.append(block_list[np.argmax(sim)])
             if isinstance(X, pd.Series):
                 return(pd.Series(predicted_texts, index=X.index))
             else:  # for example, X is a list
                 return(pd.Series(predicted_texts))
         if self.similarity == 'cosine':
-            raise NotImplementedError
+            # compute target vector in docs corpus space
+            target_vector = self.source_count_vect.transform(self._y_)
+            target_vector = np.asarray(target_vector.mean(axis=0)).ravel()
+            # normalize target vector
+            try:
+                target_vector /= dense_norm(target_vector, ord=2)
+            except ZeroDivisionError:
+                pass
+            print(target_vector)
+            for block_list in X:
+                candidates = self.source_count_vect.transform(block_list)
+                # normalize candidates
+                normalize(candidates, norm='l2', axis=1, copy=False)
+                sim = np.dot(candidates.toarray(), target_vector)
+                self.computed_sims_.append(sim)
+                predicted_texts.append(block_list[np.argmax(sim)])
+            if isinstance(X, pd.Series):
+                return(pd.Series(predicted_texts, index=X.index))
+            else:  # for example, X is a list
+                return(pd.Series(predicted_texts))
 
     def fit_predict(self, X, y):
         self.fit(X, y)

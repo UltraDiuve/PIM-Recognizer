@@ -520,6 +520,19 @@ class TestSimilaritySelector(object):
         model = SimilaritySelector()
         model.fit_predict(simil_df['blocks'], simil_df['Ingrédients'])
 
+    def test_predict_cosine(self, simil_df):
+        model = SimilaritySelector(similarity='cosine',
+                                   )
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)
+
 
 class TestAccuracy(object):
 
