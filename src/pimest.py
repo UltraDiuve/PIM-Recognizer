@@ -587,20 +587,13 @@ class SimilaritySelector():
                                 where=texts_norms != 0)
                 self.computed_sims_.append(sim)
                 predicted_texts.append(block_list[np.argmax(sim)])
-            if isinstance(X, pd.Series):
-                return(pd.Series(predicted_texts, index=X.index))
-            else:  # for example, X is a list
-                return(pd.Series(predicted_texts))
         if self.similarity == 'cosine':
             # compute target vector in docs corpus space
             target_vector = self.source_count_vect.transform(self._y_)
-            target_vector = np.asarray(target_vector.mean(axis=0)).ravel()
+            target_vector = np.asarray(target_vector.mean(axis=0))
             # normalize target vector
-            try:
-                target_vector /= dense_norm(target_vector, ord=2)
-            except ZeroDivisionError:
-                pass
-            print(target_vector)
+            normalize(target_vector, norm='l2', axis=1, copy=False)
+            target_vector = target_vector.ravel()
             for block_list in X:
                 candidates = self.source_count_vect.transform(block_list)
                 # normalize candidates
@@ -608,10 +601,10 @@ class SimilaritySelector():
                 sim = np.dot(candidates.toarray(), target_vector)
                 self.computed_sims_.append(sim)
                 predicted_texts.append(block_list[np.argmax(sim)])
-            if isinstance(X, pd.Series):
-                return(pd.Series(predicted_texts, index=X.index))
-            else:  # for example, X is a list
-                return(pd.Series(predicted_texts))
+        if isinstance(X, pd.Series):
+            return(pd.Series(predicted_texts, index=X.index))
+        else:  # for example, X is a list
+            return(pd.Series(predicted_texts))
 
     def fit_predict(self, X, y):
         self.fit(X, y)
