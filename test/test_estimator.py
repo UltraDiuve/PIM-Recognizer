@@ -516,6 +516,10 @@ class TestSimilaritySelector(object):
         arg_count = transformer.__init__.__code__.co_argcount
         assert len(transformer.get_params()) == arg_count - 1
 
+    def test_fit_predict(self, simil_df):
+        model = SimilaritySelector()
+        model.fit_predict(simil_df['blocks'], simil_df['Ingrédients'])
+
 
 class TestAccuracy(object):
 

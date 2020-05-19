@@ -412,7 +412,7 @@ mini 16,56 ( - 10 % )
         On fait tourner de la même manière que sur le modèle dit \og ouvert \fg, à savoir qu'on ne préprocesse pas les données avant d'appliquer le CountVectorizer.
 
         \section{Illustration des prédictions obtenues}
-
+        \label{prediction_gt_illustration}
         Un échantillon des prédictions obtenues est présenté dans la \reftable{tbl:GT_prediction_sample}.
         Pour éviter d'avoir des listes d'ingrédients prédites prenant trop de place dans cette table, celles dont la longueur dépasse 500 caractères ont été filtrées avant génération de cet échantillon.
         Les résultats présentés à cette table sont donc vraisemblablement biaisés, dans la mesure où les très longues listes prédites doivent avoir plus de chance d'être erronées.
@@ -627,6 +627,22 @@ mini 16,56 ( - 10 % )
                 \label{tbl:similarity_illustration}
                 \end{center}
             \end{table}
+
+        \section{Performance en fonction de la longueur de la liste d'ingrédients}
+
+        \`{A} la section \mref{prediction_gt_illustration}, on avait mentionné le fait que le modèle semblait moins performant lorsque la liste d'ingrédients cible était courte.
+        Maintenant que nous avons une fonctionnalité de mesure de la performance, il est possible de confirmer ou d'infirmer ce point.
+        
+        \begin{figure}[htbp]
+            \begin{center}
+            \includegraphics[width=0.7\linewidth]{img/perf_vs_length.png}
+            \end{center}
+            \caption{Performance du modèle en fonction de la longueur des listes d'ingrédients}
+            \label{fig:measured_model}
+        \end{figure}     
+
+        
+
 
     \chapter{Transfer learning}
         

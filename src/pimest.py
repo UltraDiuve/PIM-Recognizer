@@ -474,8 +474,6 @@ class SimilaritySelector():
     This class provides functionnalities to fit an estimator on a topic
     specific vocabulary, and to retrieve the best candidate amongst these
     blocks.
-    It can append a new column to an input pandas DataFrame with the best
-    candidate.
     """
     def __init__(self,
                  count_vect_kwargs=dict(),
@@ -586,6 +584,10 @@ class SimilaritySelector():
                 return(pd.Series(predicted_texts))
         if self.similarity == 'cosine':
             raise NotImplementedError
+
+    def fit_predict(self, X, y):
+        self.fit(X, y)
+        return(self.predict(X))
 
 
 class DummyEstimator(object):
