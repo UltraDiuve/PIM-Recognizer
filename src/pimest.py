@@ -6,9 +6,7 @@ ingredient list from an iterable of text blocks.
 
 import os
 from io import BytesIO
-
 import numpy as np
-from numpy.linalg import norm as dense_norm
 from scipy.sparse.linalg import norm as sparse_norm
 from scipy.sparse import csr_matrix
 import pandas as pd
@@ -534,29 +532,23 @@ class SimilaritySelector():
                              f'\'{self.similarity}\' instead.')
 
     def _validate_norms(self):
-        norm_dict = {'l1': partial(sparse_norm, axis=1, ord=1),
-                     'l2': partial(sparse_norm, axis=1, ord=2)}
-        try:
-            self.source_norm = norm_dict[self.source_norm]
-        except KeyError:
-            pass
-        try:
-            self.projected_norm = norm_dict[self.projected_norm]
-        except KeyError:
-            pass
         test_mat = csr_matrix([[0, 1], [2, 3]])
-        try:
-            self.projected_norm(test_mat)
-        except (TypeError, ValueError) as e:
-            print('Incorrect projected norm provided, see full stack for '
-                  'details')
-            raise ValueError(e)
-        try:
-            self.source_norm(test_mat)
-        except (TypeError, ValueError) as e:
-            print('Incorrect source norm provided, see full stack for '
-                  'details')
-            raise ValueError(e)
+        for norm_ in ('source_norm', 'projected_norm'):
+            norm_val = getattr(self, norm_)
+            try:
+                if norm_val[0] == 'l':
+                    l_order = int(norm_val[1:])
+                    norm_func = partial(sparse_norm, axis=1, ord=l_order)
+                    setattr(self, norm_, norm_func)
+            except Exception:
+                pass
+            norm_val = getattr(self, norm_)
+            try:
+                norm_val(test_mat)
+            except (TypeError, ValueError) as e:
+                print(f'Incorrect {norm_} provided, see full stack for '
+                      f'details')
+                raise ValueError(e)
 
     def predict(self, X):
         """ function to predict best candidate

@@ -10,6 +10,7 @@ from pathlib import Path
 from functools import partial
 
 from numpy.linalg import norm
+from scipy.sparse.linalg import norm as sparse_norm
 
 from sklearn.exceptions import NotFittedError
 
@@ -532,6 +533,22 @@ class TestSimilaritySelector(object):
                               simil_df.index,
                               )
         assert pd.Series(out_ds).equals(target_ds)
+
+    def test_l_norm_values(self, simil_df):
+        l2_norm = partial(sparse_norm, axis=1, ord=2)
+        model = SimilaritySelector(similarity='projection',
+                                   source_norm='l3',
+                                   projected_norm=l2_norm,
+                                   )
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)                                   
 
 
 class TestAccuracy(object):
