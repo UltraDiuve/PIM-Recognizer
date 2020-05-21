@@ -14,6 +14,7 @@ from pathlib import Path
 from functools import partial
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.utils.validation import check_is_fitted
 from sklearn.preprocessing import normalize
 from jellyfish import damerau_levenshtein_distance
@@ -476,18 +477,24 @@ class SimilaritySelector():
     blocks.
     """
     def __init__(self,
-                 count_vect_kwargs=dict(),
+                 count_vect_type='TfidfVectorizer',
+                 count_vect_kwargs=None,
                  similarity='projection',
                  source_norm='l2',
                  projected_norm='l1',
                  ):
-        self.count_vect_kwargs = count_vect_kwargs
+        self.count_vect_type = count_vect_type
+        if count_vect_kwargs:
+            self.count_vect_kwargs = count_vect_kwargs
+        else:
+            self.count_vect_kwargs = dict()
         self.similarity = similarity
         self.source_norm = source_norm
         self.projected_norm = projected_norm
 
     def get_params(self, deep=True):
         parms = dict()
+        parms['count_vect_type'] = self.count_vect_type
         parms['count_vect_kwargs'] = self.count_vect_kwargs
         parms['similarity'] = self.similarity
         parms['source_norm'] = self.source_norm
@@ -501,27 +508,57 @@ class SimilaritySelector():
 
     def fit(self, X, y):
         self._validate_similarity()
+        self._validate_vectorizer_type()
         self._validate_norms()
         # if norm not specified in count_vect_kwargs, set to None
-        # and do not use idf by default
+        # no normalization except if specifically asked for.
         if 'norm' not in self.count_vect_kwargs:
             self.count_vect_kwargs['norm'] = None
-        if 'use_idf' not in self.count_vect_kwargs:
+        if (self.count_vect_type == 'TfidfVectorizer'
+                and 'use_idf' not in self.count_vect_kwargs):
             self.count_vect_kwargs['use_idf'] = False
         try:
-            self.count_vect = TfidfVectorizer(**self.count_vect_kwargs)
+            count_vect = self._vectorizer_class(**self.count_vect_kwargs)
         except (TypeError):
             raise ValueError('Unexpected argument at init in '
                              'count_vect_kwargs.')
             raise
+        self.source_count_vect = count_vect
+        docs = [text for block_list in X for text in block_list]
         try:
-            self.count_vect.fit(y.fillna(''))
-        except (ValueError):
-            raise ValueError('Unexpected argument at fit in '
-                             'count_vect_kwargs.')
+            self.source_count_vect.fit(docs)
+        except Exception:
+            print('Exception raised at fitting source vectorizer. See full '
+                  'stack for details.')
             raise
-        self.source_count_vect = TfidfVectorizer(**self.count_vect_kwargs)
-        self._y_ = y.copy()
+
+        if self.similarity == 'projection':
+            # default use_idf to False.
+            kwargs = self.count_vect_kwargs.copy()
+            kwargs['use_idf'] = False
+            try:
+                # set a target space TFIDF Vectorizer to measure projected norm
+                # must NOT be a HashingVectorizer as vocabulary should NOT be
+                # extended
+                self.count_vect = TfidfVectorizer(**kwargs)
+            except (TypeError):
+                raise ValueError('Unexpected argument at init in '
+                                 'count_vect_kwargs.')
+                raise
+            try:
+                self.count_vect.fit(y.fillna(''))
+            except (ValueError):
+                raise ValueError('Unexpected argument at fit in '
+                                 'count_vect_kwargs.')
+                raise
+
+        if self.similarity == 'cosine':
+            # compute target vector in docs corpus space
+            target_vector = self.source_count_vect.transform(y)
+            target_vector = np.asarray(target_vector.mean(axis=0))
+            # normalize target vector to compute cosine sim via dot product
+            normalize(target_vector, norm='l2', axis=1, copy=False)
+            self.target_vector = target_vector.ravel()
         self.fitted_ = True
         return(self)
 
@@ -530,6 +567,15 @@ class SimilaritySelector():
             raise ValueError(f'similarity parameter should be set to '
                              f'\'projection\' or \'cosine\'. Got '
                              f'\'{self.similarity}\' instead.')
+
+    def _validate_vectorizer_type(self):
+        vect_types = {'TfidfVectorizer': TfidfVectorizer,
+                      'HashingVectorizer': HashingVectorizer}
+        if self.count_vect_type not in vect_types.keys():
+            raise ValueError(f'count_vect_type parameter should be set to '
+                             f'\'TfidfVectorizer\' or \'HashingVectorizer\'. '
+                             f'Got \'{self.count_vect_type}\' instead.')
+        self._vectorizer_class = vect_types[self.count_vect_type]
 
     def _validate_norms(self):
         test_mat = csr_matrix([[0, 1], [2, 3]])
@@ -556,16 +602,10 @@ class SimilaritySelector():
         X : a pandas Series of block lists, or a list of block lists.
         """
         check_is_fitted(self)
-        docs = [text for block_list in X for text in block_list]
-        try:
-            self.source_count_vect.fit(docs)
-        except ValueError:
-            print('No words in blocks. Return defaulted to ""')
-            return(np.array([''] * len(X)))
         self.computed_sims_ = []
         predicted_texts = []
-        if self.similarity == 'projection':
-            for block_list in X:
+        for block_list in X:
+            if self.similarity == 'projection':
                 texts = self.source_count_vect.transform(block_list)
                 # project texts on corpus space
                 projected_texts = self.count_vect.transform(block_list)
@@ -577,22 +617,15 @@ class SimilaritySelector():
                                 texts_norms,
                                 out=np.zeros(texts_norms.shape),
                                 where=texts_norms != 0)
-                self.computed_sims_.append(sim)
-                predicted_texts.append(block_list[np.argmax(sim)])
-        if self.similarity == 'cosine':
-            # compute target vector in docs corpus space
-            target_vector = self.source_count_vect.transform(self._y_)
-            target_vector = np.asarray(target_vector.mean(axis=0))
-            # normalize target vector
-            normalize(target_vector, norm='l2', axis=1, copy=False)
-            target_vector = target_vector.ravel()
-            for block_list in X:
+            if self.similarity == 'cosine':
                 candidates = self.source_count_vect.transform(block_list)
                 # normalize candidates
                 normalize(candidates, norm='l2', axis=1, copy=False)
-                sim = np.dot(candidates.toarray(), target_vector)
-                self.computed_sims_.append(sim)
-                predicted_texts.append(block_list[np.argmax(sim)])
+                # compute cosine sim via dot product (normalized vectors)
+                sim = np.dot(candidates.toarray(), self.target_vector)
+            self.computed_sims_.append(sim)
+            predicted_texts.append(block_list[np.argmax(sim)])
+
         if isinstance(X, pd.Series):
             return(pd.Series(predicted_texts, index=X.index))
         else:  # for example, X is a list

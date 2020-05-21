@@ -469,8 +469,8 @@ class TestSimilaritySelector(object):
                                     .predict(X['blocks'])[1] == '')
         model = SimilaritySelector().fit(X['blocks'],
                                          X['Ingrédients'])
-        model.predict(X['blocks'].iloc[0])
-        assert model.predict([['']]) == np.array([''])
+        model.predict([X['blocks'].iloc[0]])
+        assert (model.predict([['']]) == np.array([''])).all()
 
     def test_empty_ingred(self, simil_df):
         X = simil_df.copy()
@@ -548,7 +548,20 @@ class TestSimilaritySelector(object):
         target_ds = pd.Series(target_data,
                               simil_df.index,
                               )
-        assert pd.Series(out_ds).equals(target_ds)                                   
+        assert pd.Series(out_ds).equals(target_ds)
+
+    def test_hashing_type(self, simil_df):
+        model = SimilaritySelector(count_vect_type='HashingVectorizer',
+                                   )
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)    
 
 
 class TestAccuracy(object):
