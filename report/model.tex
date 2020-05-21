@@ -632,14 +632,16 @@ mini 16,56 ( - 10 % )
 
         \`{A} la section \mref{prediction_gt_illustration}, on avait mentionné le fait que le modèle semblait moins performant lorsque la liste d'ingrédients cible était courte.
         Maintenant que nous avons une fonctionnalité de mesure de la performance, il est possible de confirmer ou d'infirmer ce point.
-        
+        La représentation de ce lien est présentée en \reffig{fig:perf_vs_length}.
+        Il y a bien une corrélation positive entre longueur de la liste d'ingrédients et performance du modèle ($r^{2} \approx 0.340$, après retrait des outliers).
+        Le mode de production de ce graphe est présenté à la fin du notebook \og Mesure de la performance \fg inclus en annexe \mref{code:performance_measurement}.
         \begin{figure}[htbp]
             \begin{center}
             \includegraphics[width=0.7\linewidth]{img/perf_vs_length.png}
             \end{center}
             \caption{Performance du modèle en fonction de la longueur des listes d'ingrédients}
-            \label{fig:measured_model}
-        \end{figure}     
+            \label{fig:perf_vs_length}
+        \end{figure}
 
         
 
