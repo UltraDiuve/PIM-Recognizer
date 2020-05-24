@@ -609,6 +609,32 @@ class TestSimilaritySelector(object):
         target = np.asarray(hasher.fit_transform([target]).todense())
         assert (target == scores).all()
 
+    def test_cosine_with_score(self, simil_df):
+        # absolute scoring
+        model = SimilaritySelector(similarity='cosine',
+                                   scoring='absolute_score')
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)
+        # relative scoring
+        model = SimilaritySelector(similarity='cosine',
+                                   scoring='relative_score')
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)
+
 
 class TestAccuracy(object):
 

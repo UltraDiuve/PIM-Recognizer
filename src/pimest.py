@@ -563,12 +563,17 @@ class SimilaritySelector():
         if self.similarity == 'cosine':
             if self.scoring == 'default':
                 # compute target vector in docs corpus space
+                # if binary : document frequency of words in ingred corpus
+                # if not : term counts in ingred corpus
                 target_vector = self.source_count_vect.transform(y)
                 target_vector = np.asarray(target_vector.mean(axis=0))
+            elif self.scoring == 'absolute_score':
+                # smooth doc frequency (log2(1+df))
+                target_vector = np.asarray(self.compute_score(X, y))
             elif self.scoring == 'relative_score':
-                raise NotImplementedError('Not yet implemented')
-                # compute here relative score on X and Y
-
+                # smooth relative doc frequency
+                target_vector = np.asarray(self.compute_score(X, y,
+                                                              kind='absolute'))
             # normalize target vector to compute cosine sim via dot product
             normalize(target_vector, norm='l2', axis=1, copy=False)
             self.target_vector = target_vector.ravel()
