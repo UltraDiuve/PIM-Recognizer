@@ -13,6 +13,7 @@ from numpy.linalg import norm
 from scipy.sparse.linalg import norm as sparse_norm
 from scipy.sparse import csr_matrix
 from sklearn.exceptions import NotFittedError
+from sklearn.feature_extraction import FeatureHasher
 
 from src.pimest import PathGetter
 from src.pimest import ContentGetter
@@ -571,6 +572,42 @@ class TestSimilaritySelector(object):
         diff = model.compute_diff(text, text_sub)
         target = csr_matrix([[1, 0, 0], [1, 0, 1]])
         assert (diff.todense() == target.todense()).all()
+
+    def test_score(self):
+        # test absolute score
+        voc = ['aa bb cc']
+        text = [['aa', 'aa', 'bb'], 'cc aa aa']
+        text_sub = pd.Series(['bb bb', ['bb']])
+        model = SimilaritySelector().fit(pd.Series([voc]), pd.Series(voc))
+        target = np.array([[0., 1., 0.]])
+        assert (np.asarray(model.compute_score(text, text_sub))
+                == target).all()
+        # test relative score with diff
+        voc = ['aa bb cc dd ee']
+        docs = pd.Series([['dd', 'dd', 'bb'],
+                          'bb dd ee ee'])
+        targ = pd.Series(['aa dd dd',
+                         ['aa dd ee']])
+        model = SimilaritySelector().fit(pd.Series([voc]), pd.Series(voc))
+        target = np.array([[1., -1, 0., 1., 0.]])
+        scores = np.asarray(model.compute_score(docs, targ, kind='relative'))
+        assert (target == scores).all()
+        # test relative score with diff and HashingVectorizer
+        voc = ['aa bb cc dd ee']
+        docs = pd.Series([['dd', 'dd', 'bb'],
+                          'bb dd ee ee'])
+        targ = pd.Series(['aa dd dd',
+                         ['aa dd ee']])
+        model = SimilaritySelector(count_vect_type='HashingVectorizer')
+        model.fit(pd.Series([voc]), pd.Series(voc))
+        scores = np.asarray(model.compute_score(docs, targ, kind='relative'))
+        parms = model.source_count_vect.get_params()
+        hasher_parms = {key: val for key, val in parms.items()
+                        if key in {'n_features', 'alternate_sign'}}
+        hasher = FeatureHasher(**hasher_parms, input_type='dict')
+        target = {'aa': 1., 'bb': -1., 'cc': 0., 'dd': 1., 'ee': 0.}
+        target = np.asarray(hasher.fit_transform([target]).todense())
+        assert (target == scores).all()
 
 
 class TestAccuracy(object):

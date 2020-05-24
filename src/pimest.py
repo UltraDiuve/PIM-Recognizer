@@ -521,6 +521,8 @@ class SimilaritySelector():
         if (self.count_vect_type == 'TfidfVectorizer'
                 and 'use_idf' not in self.count_vect_kwargs):
             self.count_vect_kwargs['use_idf'] = False
+        if self.count_vect_type == 'HashingVectorizer':
+            self.count_vect_kwargs['alternate_sign'] = False
         try:
             count_vect = self._vectorizer_class(**self.count_vect_kwargs)
         except (TypeError):
@@ -539,6 +541,8 @@ class SimilaritySelector():
         if self.similarity == 'projection':
             # default use_idf to False.
             kwargs = self.count_vect_kwargs.copy()
+            if 'alternate_sign' in kwargs:
+                del(kwargs['alternate_sign'])
             kwargs['use_idf'] = False
             try:
                 # set a target space TFIDF Vectorizer to measure projected norm
@@ -644,6 +648,57 @@ class SimilaritySelector():
         self.fit(X, y)
         return(self.predict(X))
 
+    def compute_score(self, X, y, kind='absolute', diff=True):
+        """ Method that computes the scores of words based on 2 corpora
+
+        It takes into input X (list of block list or list of string) and y
+        (same formats), and returns a vector with the score of each word in
+        this estimator vocabulary.
+        The vectorizer must have been fitted before.
+        This method computes :
+        - absolute scores for words in y : log2(1 + df) in y
+        - relative scores between X and y (the higher, the more y-ish the word)
+        Its value is log2(1 + df_y) - log2(1 + df_X)
+        If diff is set to True, words counts from y will be deducted from X
+        before computing document frequencies (e.g. when y text is supposed to
+        be included in X).
+        """
+        if kind not in {'absolute', 'relative'}:
+            raise ValueError(f"Unexpected value for 'kind' argument. "
+                             f"'absolute' or 'relative' expected, got {kind} "
+                             f"instead.")
+        X = self.list_flatten(X)
+        y = self.list_flatten(y)
+
+        # set up word_counter with binary = True
+        word_counter = clone(self.source_count_vect)
+        word_counter.set_params(binary=True,
+                                norm=None,
+                                )
+        try:
+            # if vectorizer is a TFIDF Vectorizer, then use vocabulary from it
+            # and no idf
+            voc = self.source_count_vect.vocabulary_
+            word_counter.set_params(use_idf=False,
+                                    vocabulary=voc)
+        except Exception:
+            # do nothing if it is a HashingVectorizer
+            pass
+        word_counter.fit(self.list_flatten(X))
+
+        if kind == 'absolute':
+            doc_freq = word_counter.transform(y).sum(axis=0) / len(y)
+            return(np.log2(doc_freq + 1))
+
+        if kind == 'relative':
+            if diff:
+                X = self.compute_diff(X, y)
+            else:
+                X = word_counter.transform(X)
+            doc_freq = word_counter.transform(y).sum(axis=0) / len(y)
+            doc_freq2 = X.sum(axis=0) / X.shape[0]
+            return(np.log2(doc_freq + 1) - np.log2(doc_freq2 + 1))
+
     def compute_diff(self, text, text_to_substract, binary=True):
         """ Method that substracts the word of second texts to the first ones
 
@@ -667,14 +722,8 @@ class SimilaritySelector():
             word_counter.set_params(binary=False)
 
         # step 1: flatten inputs
-        def list_flatten(block_list_iterable):
-            texts = [' '.join(block_list) if not isinstance(block_list, str)
-                     else block_list
-                     for block_list in block_list_iterable
-                     ]
-            return(texts)
-        text = list_flatten(text)
-        text_to_substract = list_flatten(text_to_substract)
+        text = self.list_flatten(text)
+        text_to_substract = self.list_flatten(text_to_substract)
 
         # step 2: produce csr_matrix counts for each text list
         text_ = word_counter.fit_transform(text)
@@ -686,6 +735,13 @@ class SimilaritySelector():
         else:
             raise NotImplementedError('Non binary difference not yet '
                                       'implemented.')
+
+    def list_flatten(self, block_list_iterable):
+        texts = [' '.join(block_list) if not isinstance(block_list, str)
+                 else block_list
+                 for block_list in block_list_iterable
+                 ]
+        return(texts)
 
 
 class DummyEstimator(object):
