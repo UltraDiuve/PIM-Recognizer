@@ -17,6 +17,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.utils.validation import check_is_fitted
 from sklearn.preprocessing import normalize
+from sklearn.base import clone
 from jellyfish import damerau_levenshtein_distance
 from Levenshtein import distance as levenshtein_distance
 from Levenshtein import jaro as jaro_similarity
@@ -482,6 +483,7 @@ class SimilaritySelector():
                  similarity='projection',
                  source_norm='l2',
                  projected_norm='l1',
+                 scoring='default',
                  ):
         self.count_vect_type = count_vect_type
         if count_vect_kwargs:
@@ -491,6 +493,7 @@ class SimilaritySelector():
         self.similarity = similarity
         self.source_norm = source_norm
         self.projected_norm = projected_norm
+        self.scoring = scoring
 
     def get_params(self, deep=True):
         parms = dict()
@@ -499,6 +502,7 @@ class SimilaritySelector():
         parms['similarity'] = self.similarity
         parms['source_norm'] = self.source_norm
         parms['projected_norm'] = self.projected_norm
+        parms['scoring'] = self.scoring
         return(parms)
 
     def set_params(self, **parameters):
@@ -553,9 +557,14 @@ class SimilaritySelector():
                 raise
 
         if self.similarity == 'cosine':
-            # compute target vector in docs corpus space
-            target_vector = self.source_count_vect.transform(y)
-            target_vector = np.asarray(target_vector.mean(axis=0))
+            if self.scoring == 'default':
+                # compute target vector in docs corpus space
+                target_vector = self.source_count_vect.transform(y)
+                target_vector = np.asarray(target_vector.mean(axis=0))
+            elif self.scoring == 'relative_score':
+                raise NotImplementedError('Not yet implemented')
+                # compute here relative score on X and Y
+
             # normalize target vector to compute cosine sim via dot product
             normalize(target_vector, norm='l2', axis=1, copy=False)
             self.target_vector = target_vector.ravel()
@@ -634,6 +643,49 @@ class SimilaritySelector():
     def fit_predict(self, X, y):
         self.fit(X, y)
         return(self.predict(X))
+
+    def compute_diff(self, text, text_to_substract, binary=True):
+        """ Method that substracts the word of second texts to the first ones
+
+        This method takes non vectorized texts, as it will work with term
+        counts in every case (and vectorization can be made binary with this
+        estimator).
+        It returns a csr_matrix with resulting term counts.
+
+        text : an iterable of strings or block lists (list of strings)
+        text_to_substract : an iterable of strings or block lists (list of
+        strings)
+        """
+        # this method requires the estimator has already been fitted
+        check_is_fitted(self)
+        word_counter = clone(self.source_count_vect)
+        try:
+            voc = self.source_count_vect.vocabulary_
+            word_counter.set_params(binary=False,
+                                    vocabulary=voc)
+        except AttributeError:
+            word_counter.set_params(binary=False)
+
+        # step 1: flatten inputs
+        def list_flatten(block_list_iterable):
+            texts = [' '.join(block_list) if not isinstance(block_list, str)
+                     else block_list
+                     for block_list in block_list_iterable
+                     ]
+            return(texts)
+        text = list_flatten(text)
+        text_to_substract = list_flatten(text_to_substract)
+
+        # step 2: produce csr_matrix counts for each text list
+        text_ = word_counter.fit_transform(text)
+        text_to_substract_ = word_counter.transform(text_to_substract)
+
+        # step 3: compute difference
+        if binary:
+            return(text_ > text_to_substract_)
+        else:
+            raise NotImplementedError('Non binary difference not yet '
+                                      'implemented.')
 
 
 class DummyEstimator(object):

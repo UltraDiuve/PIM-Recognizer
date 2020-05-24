@@ -11,7 +11,7 @@ from functools import partial
 
 from numpy.linalg import norm
 from scipy.sparse.linalg import norm as sparse_norm
-
+from scipy.sparse import csr_matrix
 from sklearn.exceptions import NotFittedError
 
 from src.pimest import PathGetter
@@ -562,6 +562,15 @@ class TestSimilaritySelector(object):
                               simil_df.index,
                               )
         assert pd.Series(out_ds).equals(target_ds)
+
+    def test_text_diff(self):
+        voc = ['aa bb cc']
+        text = [['aa', 'aa', 'bb'], 'cc aa aa']
+        text_sub = pd.Series(['bb bb', ['aa']])
+        model = SimilaritySelector().fit(pd.Series([voc]), pd.Series(voc))
+        diff = model.compute_diff(text, text_sub)
+        target = csr_matrix([[1, 0, 0], [1, 0, 1]])
+        assert (diff.todense() == target.todense()).all()
 
 
 class TestAccuracy(object):
