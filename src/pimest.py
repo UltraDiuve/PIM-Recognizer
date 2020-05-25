@@ -717,7 +717,7 @@ class SimilaritySelector():
         strings)
         """
         # this method requires the estimator has already been fitted
-        check_is_fitted(self)
+        check_is_fitted(self.source_count_vect)
         word_counter = clone(self.source_count_vect)
         try:
             voc = self.source_count_vect.vocabulary_
