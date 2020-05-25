@@ -809,9 +809,14 @@ class SimilaritySelector():
     def _tokenizer(self):
         prepro = self.source_count_vect.build_preprocessor()
         token = self.source_count_vect.build_tokenizer()
+        stop_words = self.source_count_vect.stop_words
 
         def tokenize(text):
-            return(token(prepro(text)))
+            words = token(prepro(text))
+            if stop_words:
+                return([word for word in words if word not in stop_words])
+            else:
+                return(words)
 
         return(tokenize)
 
