@@ -489,19 +489,13 @@ class SimilaritySelector():
                  embedding_parms=None,
                  ):
         self.count_vect_type = count_vect_type
-        if count_vect_kwargs:
-            self.count_vect_kwargs = count_vect_kwargs
-        else:
-            self.count_vect_kwargs = dict()
+        self.count_vect_kwargs = count_vect_kwargs
         self.similarity = similarity
         self.source_norm = source_norm
         self.projected_norm = projected_norm
         self.scoring = scoring
         self.embedding_method = embedding_method
-        if embedding_parms:
-            self.embedding_parms = embedding_parms
-        else:
-            self.embedding_parms = dict()
+        self.embedding_parms = embedding_parms
 
     def get_params(self, deep=True):
         parms = dict()
@@ -527,6 +521,10 @@ class SimilaritySelector():
         self._validate_embedding_method()
         # if norm not specified in count_vect_kwargs, set to None
         # no normalization except if specifically asked for.
+        if not self.count_vect_kwargs:
+            self.count_vect_kwargs = dict()
+        if not self.embedding_parms:
+            self.embedding_parms = dict()
         if 'norm' not in self.count_vect_kwargs:
             self.count_vect_kwargs['norm'] = None
         if (self.count_vect_type == 'TfidfVectorizer'
@@ -745,7 +743,8 @@ class SimilaritySelector():
         strings)
         """
         # this method requires the estimator has already been fitted
-        check_is_fitted(self.source_count_vect)
+        if not self.count_vect_type == 'HashingVectorizer':
+            check_is_fitted(self.source_count_vect)
         word_counter = clone(self.source_count_vect)
         try:
             voc = self.source_count_vect.vocabulary_
