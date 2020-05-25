@@ -634,7 +634,7 @@ class SimilaritySelector():
                 raise ValueError(e)
 
     def _validate_embedding_method(self):
-        if self.embedding_method not in {'Word2Vec', 'tSVD'}:
+        if self.embedding_method not in {'Word2Vec', 'tSVD', None}:
             raise ValueError(f'embedding_method parameter should be set to '
                              f'\'Word2Vec\' or \'tSVD\'. Got '
                              f'\'{self.embedding_method}\' instead.')
