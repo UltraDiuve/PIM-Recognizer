@@ -573,7 +573,7 @@ class SimilaritySelector():
             elif self.scoring == 'relative_score':
                 # smooth relative doc frequency
                 target_vector = np.asarray(self.compute_score(X, y,
-                                                              kind='absolute'))
+                                                              kind='relative'))
             # normalize target vector to compute cosine sim via dot product
             normalize(target_vector, norm='l2', axis=1, copy=False)
             self.target_vector = target_vector.ravel()
