@@ -635,6 +635,23 @@ class TestSimilaritySelector(object):
                               )
         assert pd.Series(out_ds).equals(target_ds)
 
+    def test_embedding(self, simil_df):
+        with pytest.raises(ValueError):
+            (SimilaritySelector(embedding_method='incorrect')
+                .fit(simil_df['blocks'], simil_df['Ingrédients']))
+        model = SimilaritySelector(embedding_method='Word2Vec')
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])
+        target_data = ['100% sucre',
+                       'E110, farine',
+                       'haricots']
+        target_ds = pd.Series(target_data,
+                              simil_df.index,
+                              )
+        assert pd.Series(out_ds).equals(target_ds)
+        model = SimilaritySelector(embedding_method='tSVD')
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+
 
 class TestAccuracy(object):
 

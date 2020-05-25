@@ -18,6 +18,7 @@ from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.utils.validation import check_is_fitted
 from sklearn.preprocessing import normalize
 from sklearn.base import clone
+from gensim.models import Word2Vec
 from jellyfish import damerau_levenshtein_distance
 from Levenshtein import distance as levenshtein_distance
 from Levenshtein import jaro as jaro_similarity
@@ -484,6 +485,8 @@ class SimilaritySelector():
                  source_norm='l2',
                  projected_norm='l1',
                  scoring='default',
+                 embedding_method=None,
+                 embedding_parms=None,
                  ):
         self.count_vect_type = count_vect_type
         if count_vect_kwargs:
@@ -494,6 +497,11 @@ class SimilaritySelector():
         self.source_norm = source_norm
         self.projected_norm = projected_norm
         self.scoring = scoring
+        self.embedding_method = embedding_method
+        if embedding_parms:
+            self.embedding_parms = embedding_parms
+        else:
+            self.embedding_parms = dict()
 
     def get_params(self, deep=True):
         parms = dict()
@@ -503,6 +511,8 @@ class SimilaritySelector():
         parms['source_norm'] = self.source_norm
         parms['projected_norm'] = self.projected_norm
         parms['scoring'] = self.scoring
+        parms['embedding_method'] = self.embedding_method
+        parms['embedding_parms'] = self.embedding_parms
         return(parms)
 
     def set_params(self, **parameters):
@@ -514,6 +524,7 @@ class SimilaritySelector():
         self._validate_similarity()
         self._validate_vectorizer_type()
         self._validate_norms()
+        self._validate_embedding_method()
         # if norm not specified in count_vect_kwargs, set to None
         # no normalization except if specifically asked for.
         if 'norm' not in self.count_vect_kwargs:
@@ -523,6 +534,8 @@ class SimilaritySelector():
             self.count_vect_kwargs['use_idf'] = False
         if self.count_vect_type == 'HashingVectorizer':
             self.count_vect_kwargs['alternate_sign'] = False
+        if 'strip_accents' not in self.count_vect_kwargs:
+            self.count_vect_kwargs['strip_accents'] = 'unicode'
         try:
             count_vect = self._vectorizer_class(**self.count_vect_kwargs)
         except (TypeError):
@@ -537,6 +550,9 @@ class SimilaritySelector():
             print('Exception raised at fitting source vectorizer. See full '
                   'stack for details.')
             raise
+
+        if self.embedding_method:
+            self.compute_embeddings(X, y)
 
         if self.similarity == 'projection':
             # default use_idf to False.
@@ -574,6 +590,9 @@ class SimilaritySelector():
                 # smooth relative doc frequency
                 target_vector = np.asarray(self.compute_score(X, y,
                                                               kind='relative'))
+            # if embeddings have been computed, target gets embbedded to
+            if hasattr(self, 'embeddings'):
+                target_vector = np.dot(target_vector, self.embeddings)
             # normalize target vector to compute cosine sim via dot product
             normalize(target_vector, norm='l2', axis=1, copy=False)
             self.target_vector = target_vector.ravel()
@@ -614,6 +633,12 @@ class SimilaritySelector():
                       f'details')
                 raise ValueError(e)
 
+    def _validate_embedding_method(self):
+        if self.embedding_method not in {'Word2Vec', 'tSVD'}:
+            raise ValueError(f'embedding_method parameter should be set to '
+                             f'\'Word2Vec\' or \'tSVD\'. Got '
+                             f'\'{self.embedding_method}\' instead.')
+
     def predict(self, X):
         """ function to predict best candidate
 
@@ -637,6 +662,9 @@ class SimilaritySelector():
                                 where=texts_norms != 0)
             if self.similarity == 'cosine':
                 candidates = self.source_count_vect.transform(block_list)
+                # if embeddings are set, transform the candidates with these
+                if hasattr(self, 'embeddings'):
+                    candidates = np.dot(candidates, self.embeddings)
                 # normalize candidates
                 normalize(candidates, norm='l2', axis=1, copy=False)
                 # compute cosine sim via dot product (normalized vectors)
@@ -742,11 +770,69 @@ class SimilaritySelector():
                                       'implemented.')
 
     def list_flatten(self, block_list_iterable):
+        """ This methods takes an iterable of block list, and convert already
+        tokenized blocks back to string
+        """
         texts = [' '.join(block_list) if not isinstance(block_list, str)
                  else block_list
                  for block_list in block_list_iterable
                  ]
         return(texts)
+
+    def compute_embeddings(self, X, y):
+        """ This method computes embeddings from corpus
+
+        It instanciates the self.embedding attribute with an array having
+        as many rows as there are words in the vocabulay.
+        These embeddings are then used during prediction.
+        Embeddings are computed on X full texts.
+        """
+        if self.count_vect_type == 'HashingVectorizer':
+            raise NotImplementedError('Cannot compute embeddings with '
+                                      'HashingVectorizer')
+        if self.embedding_method == 'Word2Vec':
+            # step 1 : construct a tokenized corpus
+            X = self.sentencize_corpus(X)
+            # step 2 : train a Word2Vec instance
+            if 'min_count' not in self.embedding_parms.keys():
+                self.embedding_parms['min_count'] = 1
+            model = Word2Vec(X, **self.embedding_parms)
+            feat_count = model.wv[list(model.wv.vocab.keys())[0]].shape[0]
+            words_count = len(self.source_count_vect.vocabulary_)
+            embeddings = np.zeros((words_count, feat_count))
+            for word in model.wv.vocab.keys():
+                idx = self.source_count_vect.vocabulary_[word]
+                embeddings[idx] = model.wv[word]
+            self.embeddings = embeddings
+        if self.embedding_method == 'tSVD':
+            raise NotImplementedError('not yet done...')
+
+    def _tokenizer(self):
+        prepro = self.source_count_vect.build_preprocessor()
+        token = self.source_count_vect.build_tokenizer()
+
+        def tokenize(text):
+            return(token(prepro(text)))
+
+        return(tokenize)
+
+    def sentencize_corpus(self, X):
+        """ This method takes a corpus splitted in blocks back to a continuous
+        doc and then tokenizes it.
+
+        ex : [
+                ['salade ninja', 'très bon'] # doc 1: 2 blocs
+                ['fourmi joséphine', 'pingouin pédalo', 'sel'] # doc 2: 3 blocs
+              ]
+        devient :
+            [
+                ['salade', 'ninja', 'tres', 'bon']
+                ['fourmi', 'josephine', 'pingouin', 'pedalo', 'sel']
+            ]
+        Il s'agit du format attendu par Word2Vec de gensim.
+        """
+        tokenizer = self._tokenizer()
+        return(X.apply(lambda x: tokenizer('\n\n'.join(x))))
 
 
 class DummyEstimator(object):
