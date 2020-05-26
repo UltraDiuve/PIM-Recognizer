@@ -662,11 +662,15 @@ class SimilaritySelector():
                 candidates = self.source_count_vect.transform(block_list)
                 # if embeddings are set, transform the candidates with these
                 if hasattr(self, 'embeddings'):
-                    candidates = np.dot(candidates, self.embeddings)
+                    candidates = np.dot(candidates.toarray(), self.embeddings)
                 # normalize candidates
                 normalize(candidates, norm='l2', axis=1, copy=False)
                 # compute cosine sim via dot product (normalized vectors)
-                sim = np.dot(candidates.toarray(), self.target_vector)
+                try:
+                    candidates = candidates.toarray()
+                except AttributeError:
+                    pass
+                sim = np.dot(candidates, self.target_vector)
             self.computed_sims_.append(sim)
             predicted_texts.append(block_list[np.argmax(sim)])
 
