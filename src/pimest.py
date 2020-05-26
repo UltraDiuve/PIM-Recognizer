@@ -7,6 +7,7 @@ ingredient list from an iterable of text blocks.
 import os
 from io import BytesIO
 import numpy as np
+from numpy.testing import assert_allclose
 from scipy.sparse.linalg import norm as sparse_norm
 from scipy.sparse import csr_matrix
 import pandas as pd
@@ -15,6 +16,7 @@ from functools import partial
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.decomposition import TruncatedSVD
 from sklearn.utils.validation import check_is_fitted
 from sklearn.preprocessing import normalize
 from sklearn.base import clone
@@ -788,27 +790,39 @@ class SimilaritySelector():
         It instanciates the self.embedding attribute with an array having
         as many rows as there are words in the vocabulay.
         These embeddings are then used during prediction.
-        Embeddings are computed on X full texts.
+        Embeddings are computed on X full texts (i.e. complete docs)
         """
+        X = X.copy(deep=True)
         if self.count_vect_type == 'HashingVectorizer':
             raise NotImplementedError('Cannot compute embeddings with '
                                       'HashingVectorizer')
         if self.embedding_method == 'Word2Vec':
-            # step 1 : construct a tokenized corpus
+            # step 1: construct a tokenized corpus
             X = self.sentencize_corpus(X)
-            # step 2 : train a Word2Vec instance
+            # step 2: train a Word2Vec instance
             if 'min_count' not in self.embedding_parms.keys():
                 self.embedding_parms['min_count'] = 1
+            if 'size' not in self.embedding_parms.keys():
+                self.embedding_parms['size'] = 100
             model = Word2Vec(X, **self.embedding_parms)
+            # step 3: construct the embeddings nparray
             feat_count = model.wv[list(model.wv.vocab.keys())[0]].shape[0]
             words_count = len(self.source_count_vect.vocabulary_)
             embeddings = np.zeros((words_count, feat_count))
             for word in model.wv.vocab.keys():
                 idx = self.source_count_vect.vocabulary_[word]
                 embeddings[idx] = model.wv[word]
-            self.embeddings = embeddings
         if self.embedding_method == 'tSVD':
-            raise NotImplementedError('not yet done...')
+            # step 1: reconstruct a full corpus
+            X = X.apply(lambda x: '\n\n'.join(x))
+            # step 2: vectorize this new text
+            X = self.source_count_vect.transform(X)
+            # step 3: compute embeddings
+            if 'n_components' not in self.embedding_parms.keys():
+                self.embedding_parms['n_components'] = 100
+            model = TruncatedSVD(**self.embedding_parms).fit(X)
+            embeddings = model.components_.T
+        self.embeddings = embeddings
 
     def _tokenizer(self):
         prepro = self.source_count_vect.build_preprocessor()
@@ -827,7 +841,7 @@ class SimilaritySelector():
     def sentencize_corpus(self, X):
         """ This method takes a corpus splitted in blocks back to a continuous
         doc and then tokenizes it.
-
+        Each doc becomes a sentence.
         ex : [
                 ['salade ninja', 'très bon'] # doc 1: 2 blocs
                 ['fourmi joséphine', 'pingouin pédalo', 'sel'] # doc 2: 3 blocs

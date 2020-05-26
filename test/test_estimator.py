@@ -650,8 +650,12 @@ class TestSimilaritySelector(object):
                               simil_df.index,
                               )
         assert pd.Series(out_ds).equals(target_ds)
-        model = SimilaritySelector(embedding_method='tSVD')
-        # model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        embed_parms = {'n_components': 5}
+        model = SimilaritySelector(embedding_method='tSVD',
+                                   embedding_parms=embed_parms)
+        model.fit(simil_df['blocks'], simil_df['Ingrédients'])
+        out_ds = model.predict(simil_df['blocks'])        
+        assert pd.Series(out_ds).equals(target_ds)
 
 
 class TestAccuracy(object):
