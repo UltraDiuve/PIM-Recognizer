@@ -7,7 +7,6 @@ ingredient list from an iterable of text blocks.
 import os
 from io import BytesIO
 import numpy as np
-from numpy.testing import assert_allclose
 from scipy.sparse.linalg import norm as sparse_norm
 from scipy.sparse import csr_matrix
 import pandas as pd
@@ -555,11 +554,14 @@ class SimilaritySelector():
             self.compute_embeddings(X, y)
 
         if self.similarity == 'projection':
-            # default use_idf to False.
+            # do NOT modify instance attribute
             kwargs = self.count_vect_kwargs.copy()
+            # remove alternate_sign if present, as it is only allowed for
+            # HashingVectorizer and count_vect MUST be a TfidfVectorizer
             if 'alternate_sign' in kwargs:
                 del(kwargs['alternate_sign'])
-            kwargs['use_idf'] = False
+            # default use_idf to False. Why ?
+            # kwargs['use_idf'] = False
             try:
                 # set a target space TFIDF Vectorizer to measure projected norm
                 # must NOT be a HashingVectorizer as vocabulary should NOT be

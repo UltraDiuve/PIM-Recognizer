@@ -654,7 +654,7 @@ class TestSimilaritySelector(object):
         model = SimilaritySelector(embedding_method='tSVD',
                                    embedding_parms=embed_parms)
         model.fit(simil_df['blocks'], simil_df['Ingrédients'])
-        out_ds = model.predict(simil_df['blocks'])        
+        out_ds = model.predict(simil_df['blocks'])
         assert pd.Series(out_ds).equals(target_ds)
 
 
