@@ -669,11 +669,12 @@ class SimilaritySelector():
                     candidates = np.dot(candidates.toarray(), self.embeddings)
                 # normalize candidates
                 normalize(candidates, norm='l2', axis=1, copy=False)
-                # compute cosine sim via dot product (normalized vectors)
+                # convert to array if still a csr_matrix (case no embedding)
                 try:
                     candidates = candidates.toarray()
                 except AttributeError:
                     pass
+                # compute cosine sim via dot product (normalized vectors)
                 sim = np.dot(candidates, self.target_vector)
             self.computed_sims_.append(sim)
             predicted_texts.append(block_list[np.argmax(sim)])

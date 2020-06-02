@@ -1,69 +1,11 @@
 \part{Construction du modèle}
-    \chapter{Les principes généraux}
-        \section{Les étapes du traitement d'une pièce jointe}
 
-        Le traitement d'une fiche technique se fera toujours en suivant les étapes suivantes : 
-        \begin{itemize}
-            \item récupération du texte de la fiche technique et découpages en blocs de texte
-            \item application de fonctionnalités de text preprocessing sur ces blocs
-            \item représentation de ces textes sous forme de vecteurs
-            \item calcul de la similarité avec les mots représentant des ingrédients pour chacun des blocs, et retour du meilleur candidat
-        \end{itemize}
+    \chapter{Prototypage}
+    \label{prototypes}
 
-        L'apprentissage se fera toujours de la manière suivante :
-        \begin{itemize}
-            \item application des fonctionnalités de text preprocessing identiques à celles qui seront appliquées lors de la prédiction, sur un corpus d'ingrédients
-            \item construction du vocabulaire des ingrédients
-            \item représentation de ce corpus sous forme de vecteur
-        \end{itemize}
-
-        \section{Text preprocessing}
-
-        Pour le text preprocessing, on appliquera toujours une étape de normalisation visant à retirer la casse, la ponctuation et les caractères spéciaux ou accentués.
+    \section{Premier prototype : modèle simple \og ouvert \fg}
         
-        Pour la gestion des stopwords, plusieurs options seront explorées : 
-        \begin{itemize}
-            \item ne rien faire sur ces stopwords
-            \item construire manuellement une liste générique de stopwords en parcourant les mots les plus fréquents du vocabulaire
-            \item construire automatiquement une liste de stopwords en retirant les mots trop ou trop peu fréquents dans le corpus de listes d'ingrédients
-            \item construire automatiquement une liste de stopwords en retirant les mots trop ou trop peu fréquents dans le corpus des blocs de texte candidats
-        \end{itemize}
-
-        \section{Vectorisation des textes}
-
-        Les textes seront représentées sous forme de vecteurs via l'approche \og Bag Of Words \fg.
-        On évaluera les méthodes suivantes pour la transformation des textes en vecteurs :
-        \begin{itemize}
-            \item de manière binaire : la coordonnée est à 1 si le mot est présent au moins une fois dans le texte, 0 sinon
-            \item en term-frequency (tf) : la coordonnée correspond à la fréquence d'apparition du mot dans le texte
-            \item en tf-idf, l'inverse document frequency pouvant être calculée en référence à plusieurs corpus de référence (le corpus des listes d'ingrédients, le corpus des blocs de texte candidats)
-        \end{itemize}
-
-        On évaluera aussi la pertinence de prendre en compte des ngrams, en allant jusqu'à une longueur de 5 si les performances du matériel à disposition le permet.
-
-
-        \section{Calcul de similarité}
-
-            \subsection{Similarité cosinus}
-            
-            Cette méthode nécessite de représenter le vocabulaire des ingrédients sous la forme d'un vecteur, d'une des manières présentées à la section précédente.
-            On calcule le cosinus de l'angle entre le vecteur du vocabulaire et celui du candidat.
-            Plus ce cosinus est élevé, plus la similarité est importante.
-            Cette norme n'a pas de paramètre.
-
-            \subsection{Par projection}
-
-            Cette méthode nécessite uniquement de projeter le candidat sur le vocabulaire des ingrédients.
-            On fait ensuite le rapport entre la norme du vecteur initial, à celle de sa projection.
-            Attention, si on utilise la même norme pour mesurer le vecteur initial et sa projection, on choisira toujours les candidats dont aucun mot n'est hors du vocabulaire.
-            Une manière de s'affranchir de ceci est choisir pour mesurer le vecteur initial une norme $L_{p}$ et pour sa projection une norme $L_{q}$ avec $p > q$.
-            En effet, un résultat d'algèbre linéaire ~\cite{lpnorms} montre que :
-            \[\forall x \in \mathbb{R}^{n}, \; p > q \Rightarrow \lVert x \rVert_{p} \leqslant \lVert x \rVert_{q}\]
-
-
-    \chapter{Construction d'un modèle simple \og ouvert \fg}
-        
-        \section{Principes généraux}
+        \subsection{Principes généraux}
 
             \begin{figure}[htbp]
                 \begin{center}
@@ -89,16 +31,16 @@
             L'hypothèse qui est faite avec ce modèle est la suivante : bien que non parfaitement en qualité (i.e. exactement identiques au contenu des pièces jointes, cf. la comparaison entre la ground truth et le contenu du PIM en section \mref{ingredient_comparison}), les listes d'ingrédients du PIM sont des textes dont le contenu est très similaire à une liste d'ingrédients.
             Un survol rapide de quelques exemples montre que cette hypothèse semble vérifiée (cf. \reftable{tbl:exemple_ingred}).
 
-        \section{Entraînement}
+        \subsection{Entraînement}
 
-            \subsection{Périmètre du set d'entraînement}
+            \subsubsection{Périmètre du set d'entraînement}
             
             Pour l'entraînement de ce modèle, on va uniquement se limiter aux produits d'épicerie ou de boissons non-alcoolisées.
             En effet, ce sont pour ces produits que la réglementation impose d'afficher en clair la composition aux consommateurs.
             On se limitera aussi aux produits qui portent une liste d'ingrédients, et qui sont \og En qualité \fg (cf. les définitions données à la section \mref{statuts} sur les statuts des produits).
             Sur les 13 000+ produits présents dans le PIM, environ 3 400 font partie du périmère et 9 800 en sont exclus.
 
-            \subsection{Constitution du vocabulaire}
+            \subsubsection{Constitution du vocabulaire}
 
             La constitution du vocabulaire se fait de manière très basique : 
             \begin{itemize}
@@ -123,9 +65,9 @@
             (ces valeurs sont susceptibles de changer à la marge par rapport au notebook en annexe, avec les changements potentiels sur les données au sein du PIM)
             Les stopwords 'de' et 'en' apparaissent dans les mots les plus fréquents.        
         
-        \section{Prédiction}
+        \subsection{Prédiction}
             
-            \subsection{Parsing des fiches techniques}
+            \subsubsection{Parsing des fiches techniques}
 
                 Les fiches techniques sont extraites sous formes de binaires depuis de le PIM via des appels API.
                 On utilise ensuite la bibliothèque PDFMiner.six pour récupérer le texte de la fiche technique sous forme d'un long string.
@@ -134,9 +76,10 @@
                 Ce choix de séparateur a été fait car les textes produits par PDFMiner.six portent des retours à la ligne à la fin de chaque ligne typographiée, même si la phrase continue sur la ligne suivante.
                 Cette étape fournit pour chaque fiche technique le texte contenu sous forme d'une liste de strings (les blocs de texte de la \reffig{fig:open_model}).
 
-            \subsection{Sélection du meilleur candidat}
+            \subsubsection{Sélection du meilleur candidat}
+            \label{open_model_similarity}
 
-                \subsubsection{Principe}
+                \paragraph{Principe}
                 L'identification du meilleur candidat parmi les blocs de texte se fait de la manière suivante :
                 \begin{itemize}
                     \item on calcule une similarité avec le vocabulaire des ingrédients pour chacun des blocs de texte
@@ -151,7 +94,7 @@
                 
                 Attention, la norme du vecteur du candidat s'entend \emph{indépendamment du vocabulaire des ingrédients}, c'est à dire que tous les mots comptent, y compris ceux n'appartenant pas au vocabulaire.
 
-                \subsubsection{Exemple}
+                \paragraph{Exemple}
                 Si on illustre par un exemple fictif : imaginons que le vocabulaire des ingrédients soit composé des mots \emph{\og eau \fg, \og sucre \fg et \og farine \fg}.
                 Le bloc de texte candidat est \emph{\og Sucre et farine sont biologiques. La farine est équitable.\fg}
                 Si on vectorise ce bloc de texte \emph{sur son propre vocabulaire}, on obtient le vecteur suivant : 
@@ -178,14 +121,14 @@
                 \[\frac{3}{3.317} \approx 0.905\]
                 \'{E}tant donné son mode de calcul, cette similarité peut tout à fait être supérieure à 1.
 
-        \section{Illustration des résultats obtenus}
+        \subsection{Illustration des résultats obtenus}
     
-            \subsection{Périmètre du test}
+            \subsubsection{Périmètre du test}
             
             Pour éviter de surestimer la performance du modèle, on le fait tourner sur des produits n'ont pas fait partie du set d'entraînement.            
             Comme ce modèle ne permet de toute façon pas de fournir de résultats qui permettent de mesurer la performance, on ne le fera tourner que sur un échantillon réduit de produits, soit 5 d'entre eux.
 
-            \subsection{Résultats}
+            \subsubsection{Résultats}
 
             Les résultats obtenus sont les suivants :
 
@@ -327,22 +270,27 @@ mini 16,56 ( - 10 % )
                 }
                 \end{spacing}
 
-            \subsection{Pistes d'améliorations identifiées}
+            \subsubsection{Pistes d'améliorations identifiées}
 
             En plus de la mesure de la performance, qui est indispensable avant de pouvoir procéder à des ajustements, les pistes identifiées à sont les suivantes :
             \begin{itemize}
                 \item Faire un découpage plus élaboré du texte des pièces jointes en blocs, potentiellement avec des expressions régulières
-                \item Faire des \og ngrams de blocs \og, ce qui permettrait de parfois fusionner des blocs qui ont été séparés (car contenaient des retours à la ligne successifs)
+                \item Essayer d'autres manières de vectoriser les textes (utiliser un comptage de mots binaire : présence/absence, calculer l'inverse document frequency, \dots)
                 \item Essayer une autre manière de calculer la similarité
-                \item Retirer les stop words qui sont susceptibles d'être présents à la fois dans des listes d'ingrédients et dans d'autres types de textes
-                \item \dots
+                \item Utiliser des fonctions plus élaborées de text preprocessing (retrait des stopwords, \dots)
             \end{itemize}
 
-    \chapter{Utilisation des données manuellement étiquetées}
+    \section{Second prototype : industrialisation}
 
+    L'objectif de ce second prototype est de permettre est d'industrialiser un peu le code afin : 
+    \begin{itemize}
+        \item d'être en mesure inspecter les résultats obtenus et pouvoir donner des explications sur la réponse donnée par le modèle
+        \item de pouvoir utiliser des fonctionnalités de mesure de la performance du modèle
+        \item d'être en mesure de faire varier les paramètres du modèle en vue de l'optimiser
+    \end{itemize}
     Comme présenté à la section\mref{ingredient_comparison} relative à la comparaison entre les données du PIM et celles récupérées lors de l'étiquetage, il y a un grand nombre d'écarts.
     Or, si on entraîne le modèle et qu'on mesure sa performance sur des données de mauvaise qualité, on aura de mauvais résultats.
-    On va donc construire un modèle se basant sur les données manuellement étiquetées.
+    Ce second modèle se basera sur les données manuellement étiquetées, afin d'avoir une base de comparaison dans la mesure de la performance.
     Le fonctionnement de ce modèle est présentés à la \reffig{fig:ground_truth_model}.
     La méthodologie utilisée à cette partie est présentée dans le notebook \og Modèle basé sur les données manuellement étiquetées \fg en annexe \mref{code:gt_based_model}.
     Les différents transformateurs et estimateurs spécifiques sont définis dans le module pimest, inclu en annexe \mref{code:pimest}.
@@ -355,7 +303,7 @@ mini 16,56 ( - 10 % )
         \label{fig:ground_truth_model}
     \end{figure}     
 
-        \section{Chargement des données manuellement étiquetées}
+        \subsection{Chargement des données manuellement étiquetées}
 
         La toute première étape est la constution d'un dataframe contenant : 
         \begin{itemize}
@@ -365,7 +313,7 @@ mini 16,56 ( - 10 % )
         \end{itemize}
         On commence par charger les données du fichier csv contenant les uid et les listes d'ingrédients.
         Ensuite, un pipeline scikit learn d'acquisition des données est lancé.
-        Il s'agit de 3 transformateurs en série, qui effectuent les travaux suivants :
+        Il s'agit de 4 transformateurs en série, qui effectuent les travaux suivants :
         \begin{itemize}
             \item construction du chemin pointant vers les fiches techniques (sur la base des uid)
             \item construction d'une feature contenant les données des fichiers, en binaire
@@ -383,13 +331,14 @@ mini 16,56 ( - 10 % )
             \label{tbl:mod_GT_fulltexts}
             \end{center}
         \end{table}
-        }        
+        }
 
-        \section{Découpage des textes en blocs}
+        \subsection{Découpage des textes en blocs}
 
-        Le second travail est le découpage des textes en blocs. 
-        Dans un premier temps, on va simplement effectuer ce découpage en splittant le texte lorsque deux retours à la ligne successifs sont détectés.
-        Un exemple de découpage est présenté ci-dessous.
+        Le second travail est le découpage des textes en blocs.
+        Cette étape étant peu couteuse en temps de calcul, elle est réalisée sur l'ensemble du dataset avant le split entre set d'entrainement et set de test.
+        Dans un premier temps, on va simplement effectuer ce découpage en coupant le texte lorsque deux retours à la ligne successifs sont détectés, comme cela avait été fait pour le premier prototype.
+        Il est maintenant possible d'inspecter les résultats de cette étape, un exemple de découpage est présenté ci-dessous.
 
         \begin{multicols}{3}
         \begin{spacing}{1.0}
@@ -403,15 +352,17 @@ mini 16,56 ( - 10 % )
         On constate que le découpage n'est pas idéal, cf. la fiche technique de ce produit, présentée en annexe \mref{ex:FT_meltrappeur}.
         Les séparations des cellules des tableaux de cette fiche ne sont pas prises en compte, et on a des blocs trop étendus.
 
-        \section{Train/Test split}
+        \subsection{Entrainement et prédiction}
 
         Dans la mesure où l'on possède assez peu de données, on va conserver un échantillon assez important dans le jeu d'entraînement : 400 produits (soit 80\% des données disponibles).
+        Comme cela a été présenté ci-dessus, l'entraînement ne consiste qu'en la détermination du vocabulaire des ingrédients à partir des textes manuellement étiquetés.        
+        On fait tourner de la même manière que sur le modèle dit \og ouvert \fg, à savoir qu'on ne préprocesse que peu les données avant d'appliquer le CountVectorizer.
+        Sur le set d'entraînement retenu, on a un vocabulaire d'ingrédients représentant 1204 mots.
 
-        \section{Entraînement du modèle}
+        La prédiction du meilleur candidat se fait de la même manière que dans le cadre du prototype précédent (cf. section \mref{open_model_similarity}): on compare la norme du vecteur du bloc avec le nombre de mots appartenant au vocabulaire des ingrédients.
+        La représentation des textes sous forme de vecteur se fait simplement via les comptes de chacun des mots du texte.
 
-        On fait tourner de la même manière que sur le modèle dit \og ouvert \fg, à savoir qu'on ne préprocesse pas les données avant d'appliquer le CountVectorizer.
-
-        \section{Illustration des prédictions obtenues}
+        \subsection{Illustration des prédictions obtenues}
         \label{prediction_gt_illustration}
         Un échantillon des prédictions obtenues est présenté dans la \reftable{tbl:GT_prediction_sample}.
         Pour éviter d'avoir des listes d'ingrédients prédites prenant trop de place dans cette table, celles dont la longueur dépasse 500 caractères ont été filtrées avant génération de cet échantillon.
@@ -427,8 +378,7 @@ mini 16,56 ( - 10 % )
 
         Un mot sur les cas où la liste d'ingrédients cible ou prédite sont vides :
         \begin{itemize}
-            \item Les listes d'ingrédients cible sont vides lorsque la pièce jointe ne mentionnait pas de liste d'ingrédients. Cela peut arriver, et les produits concernés n'ont pas été sortis de l'échantillon. Il est 
-            important de pouvoir aussi mesurer les faux positifs, qui sont nombreux avec cette techniques de choix systématique du meilleur candidat
+            \item Les listes d'ingrédients cible sont vides lorsque la pièce jointe ne mentionnait pas de liste d'ingrédients. Cela peut arriver, et les produits concernés n'ont pas été sortis de l'échantillon. Il est important de pouvoir aussi mesurer les faux positifs, qui sont nombreux avec cette techniques de choix systématique du meilleur candidat
             \item Les liste d'ingrédient prédites sont vides lorsque l'outil de parsing des pdf (pdfminer.six) n'a extrait aucun texte. C'est le cas quand la pièce jointe était un document imprimé qui a été scanné. Le texte n'est présent que sous forme d'image (cf. la fiche technique du sel en annexe \mref{ex:FT_sel})
         \end{itemize}
 
@@ -443,9 +393,10 @@ mini 16,56 ( - 10 % )
         }
 
     \chapter{Mesure de la performance}
+    \label{performance}
     
     Comme vu aux chapitre précédents, il est indispensable de mesurer la performance de nos modèles.
-    On le fera sur le modèle se basant sur les données manuellement étiquetées.
+    On le fera sur la base du modèle précédentn, se basant sur les données manuellement étiquetées.
     Le principe est présenté à la \reffig{fig:measured_model}.
 
     \begin{figure}[htbp]
@@ -585,8 +536,8 @@ mini 16,56 ( - 10 % )
             \subsection{Similarité de Jaro}
             
             La similarité de Jaro~\cite{jaro_wiki} est une fonction permettant de mesurer une similarité entre 0 (chaînes complètement différentes) et 1 (chaînes parfaitement identiques).
-            L'heuristique derrière cette similarité est de considérer qu'entre deux chaînes, un caractère est \og correspondant \fg (\og matching \fg) s'il est déplacé d'au moins de la moitié de la longueur de la plus longue des deux chaînes.
-            On compte         
+            L'heuristique derrière cette similarité est de considérer qu'entre deux chaînes, un caractère est \og correspondant \fg (\og matching \fg) s'il est déplacé de moins de la moitié de la longueur de la plus longue des deux chaînes.
+            Ensuite, la similarité est fonction croissante du nombre de caractères \og correspondants \fg et décroissante du nombre de caractères \og correspondants \fg mais mal placés.
             Sur des chaînes longues de quelques dizaines de caractères, la quasi-totalité des caractères seront \og correspondants \fg.
             Elle est en général plutôt adaptée à des comparaison de chaînes courtes telles que des noms propres ou des mots de passe.
 
@@ -628,7 +579,7 @@ mini 16,56 ( - 10 % )
                 \end{center}
             \end{table}
 
-        \section{Performance en fonction de la longueur de la liste d'ingrédients}
+        \subsection{Performance en fonction de la longueur de la liste d'ingrédients}
 
         \`{A} la section \mref{prediction_gt_illustration}, on avait mentionné le fait que le modèle semblait moins performant lorsque la liste d'ingrédients cible était courte.
         Maintenant que nous avons une fonctionnalité de mesure de la performance, il est possible de confirmer ou d'infirmer ce point.
@@ -643,51 +594,327 @@ mini 16,56 ( - 10 % )
             \label{fig:perf_vs_length}
         \end{figure}
 
+
+
+    \chapter{Austement des paramètres}
+        \section{Description des paramètres ajustables}
+
+        Les paramètres ajustables sur le modèle présenté ci-dessus sont multiples (text-preprocessing, découpage des textes en blocs, calcul de similarité, \dots).
+        Maintenant qu'un pipeline équipé d'une fonctionnalité de mesure de la performance est disponible, on va pouvoir faire varier les paramètres et évaluer l'impact sur la performance du modèle.
+
+        \subsection{Text-preprocessing}
+
+        L'étape de text-preprocessing vise à nettoyer et standardiser le contenu des textes.
+        Elle est appliquée aux textes avant entraînemnet et avant prédiction.
+        Il est nécessaire de bien appliquer les mêmes règles à ces deux étapes.
+        Parmi les fonctionnalités classiques de texte préprocessing, on va procéder de la manière suivante : 
+
+        \emph{Mise en minuscule} : 
+        On appliquera systèmatiquement la mise en minuscule. 
+        La casse est plutôt un facteur qui va pénaliser l'interprétation du texte, en contribuant à la création artificielle de mots synonymes.
+
+        \emph{Retrait des accents} : 
+        L'impact du retrait des accents sera mesuré sur la performance du modèle.
+        En effet, même s'il peut amener à la création d'homonymes, sur des textes en français inclus dans des pdf et issus de multiples sources cette fonctionnalité peut avoir une influence positive.
+
+        \emph{Gestion des stopwords} : 
+        On vérifiera l'impact de retirer les stopwords (mots fréquents peu porteurs de sens) de l'ensemble des textes (listes d'ingrédients cible, contenu des documents) avant entraînement ou prédiction.
+        On se basera sur une liste déterminée à partir des mots les plus fréquents dans le corpus des documents, qui ne portent pas de signification.
+        Il est pressenti que ces stopwords risquent d'avoir un impact important sur le résultat de l'algorithme, en ajoutant dans l'ensemble des blocs candidats un grand nombre de mots étant considérés comme des ingrédients.
+
+        \subsection{Découpage du texte des documents en blocs}
+        \label{splitting_functions}
+
+        On peut envisager d'autres méthodes de découpage des textes complets des documents en blocs candidats.
+        Il avait été vu lors du prototypage que cette fonction pouvait influer fortement sur la qualité du résultat (il est inutile de chercher une bonne solution pour trouver le bon candidat si on détermine mal la liste de candidats).
+        On éprouvera les techniques suivantes : 
+        \begin{itemize}
+            \item comme en prototypage, en coupant dès que deux retours à la lignes successifs sont identifiés
+            \item à chaque retour à la ligne
+            \item via une expression régulière, on coupera dès qu'on trouve un ensemble de whitespaces (espaces, retour à la ligne, tabulation, \dots) contenant au moins 2 retours à la ligne
+        \end{itemize}
         
+        \subsection{Vectorisation des textes}
+        \label{vectorisation}
 
-
-    \chapter{Transfer learning}
+        \emph{Bag Of Words} : 
+        Les textes seront représentées sous forme de vecteurs via l'approche \og Bag Of Words \fg.
+        On évaluera les méthodes suivantes pour la transformation des textes en vecteurs :
+        \begin{itemize}
+            \item de manière binaire : la coordonnée est à 1 si le mot est présent au moins une fois dans le texte, 0 sinon
+            \item en term-frequency (tf) : la coordonnée correspond à la fréquence d'apparition du mot dans le texte
+            \item en tf-idf, l'inverse document frequency pouvant être calculée en référence au corpus du contenu des documents
+            \item via une fonction de score absolu, tel que décrit dans la partie sur l'analyse des données, à la section \mref{word_scores}
+            \item via une fonction de score relatif (décrit dans la même section)
+        \end{itemize}
         
-        \section{Principe du pré-entraînement}
-        
-        Expliquer qu'il s'agit d'une approche hybride des 2 modèles précédents
-        On effectue une entraînement à la fois sur une partie des listes d'ingrédients du PIM, et sur une partie des données étiquetées.
-        On vérifie ensuite, uniquement sur 
+        \emph{n-grams} : 
+        On testera également la possibilité de prendre en compte les bigrammes ou les trigrammes de mots et les résultats que cela amène (à la fois dans l'entraînement et dans la prédiction).
 
-        \section{Illustration de l'impact sur la performance}
+        \emph{Embeddings des mots} : 
+        Enfin, on procédera aux calculs d'embeddings de mots, en appliquant les méthodes suivantes :
+        \begin{itemize}
+            \item truncated SVD~\cite{LSA_wiki} : on approxime la matrice des textes vectorisés en calculant ses valeurs singulières et en n'en gardant que les 100 plus importantes (valeur choisie arbitrairement). Les embeddings des mots sont récupérable directements depuis le transformateur TruncatedSVD mis à disposition dans la bibliothèque scikit-learn.
+            \item Word2Vec~\cite{word2vec_wiki} : cette méthode de calcul des embeddings se base sur l'entrainement d'un réseau de neurones pour la prédiction d'un mot à partir des autres mots de son contexte (Continuous Bag Of Words, CBOW), ou de prédire le contexte à partir d'un mot (skip-gram). Les embeddings sont les poids de la couche intermédiaire du réseau de neurones après entraînement. On utilisera l'algorithme CBOW, avec un nombre de features de 100.
+        \end{itemize}
+        Cette manière de représenter les textes et les mots se traduit par une \emph{réduction de la dimensionalité}, qui passe du nombre de mots dans le vocabulaire (plus de 10 000 dans notre cas) au nombre de features conservées (on en gardera 100).
 
-        Ici, on montre l'impact sur la performance, du fait d'intégrer des listes d'ingrédients.
-        On met en abscisse le nombre de listes d'ingrédients qu'on ajoute, et en ordonnée la performance du modèle (avec barre d'erreurs, via cross validation).
-        On regarde si l'effet est positif : cela montrera s'il est intéressant d'avoir plus de données.
-        On regarde si on observe une saturation : cela montrera si on a déjà suffisamment de données sous formes de listes d'ingrédients dans le PIM, ou bien si ce serait intéressant d'en acquérir plus.
+        \subsection{Calcul de similarité}
 
-    \chapter{Hyperparameter tuning}
+            \subsubsection{Similarité cosinus}
+            \label{similarite_cosinus}
+
+            Cette méthode nécessite de représenter le vocabulaire des ingrédients sous la forme d'un vecteur, d'une des manières présentées à la section précédente.
+            On calcule le cosinus de l'angle entre le vecteur du vocabulaire et celui du candidat.
+            Plus ce cosinus est élevé, plus la similarité est importante.
+            Cette similarité n'a pas de paramètre, une fois que les vecteurs ont été calculés.
+            Il est possible d'appliquer ce calcul de similarité y compris après application d'un embedding des vecteurs de texte (ex: Word2Vec, tSVD, \dots).
+            Une illustration de la similarité cosinus est proposée à la \reffig{fig:similarite_cosinus}.
+            Enfin, ce mode de calcul de la similarité permet d'ajuster la direction du vecteur cible en fonction de divers critère (fonctions de scoring spécifiques, cf. section \mref{vectorisation} sur la vectorisation des textes)
+
+            \subsubsection{Par projection}
+            \label{similarite_projection}
+
+            Cette méthode nécessite uniquement de projeter le candidat sur le sous espace généré par les mots du vocabulaire des ingrédients.
+            On fait ensuite le rapport entre la norme du vecteur initial, à celle de sa projection. 
+            On peut envisager cette similarité un peu comme un calcul de l'angle entre le vecteur candidat et le sous-espace cible.
+            Attention, si on utilise la même norme pour mesurer le vecteur initial et sa projection, on choisira toujours les candidats dont aucun mot n'est hors du vocabulaire (cf. l'illustration présentée à la \reffig{fig:similarite_projection}).
+            Une manière de s'affranchir de ceci est choisir pour mesurer le vecteur initial une norme $L_{p}$ et pour sa projection une norme $L_{q}$ avec $p > q$.
+            En effet, un résultat d'algèbre linéaire~\cite{lpnorms} montre que :
+            \[\forall x \in \mathbb{R}^{n}, \; p > q \Rightarrow \lVert x \rVert_{p} \leqslant \lVert x \rVert_{q}\]
+            Pour rappel, la norme $L_{p}$ d'un vecteur $x$ est définie par : 
+            \[\lVert x \rVert_{p} = \left( \sum_{i} |x_{i}|^{p} \right)^{1/p} \]
+            où les $x_{i}$ sont les coordonnées de $x$.
+            Ce calcul de similarité ne peut se faire que dans l'espace initial, où les vecteurs représentant les textes peuvent être projetés sur un espace généré par des mots.
+            Si une réduction de la dimensionalité a eu lieu, par exemple via le calcul d'embeddings, il n'est pas possible de déterminer un sous-espace généré par les mots du vocabulaire des ingrédients.
+            De plus, contrairement au calcul de similarité cosinus, il n'est pas possible de pondérer les différents mots du vocabulaire des ingrédients (via un calcul de score spécifique, un tf-idf, \dots).
+            Ce mode de calcul est paramétrique, c'est à dire qu'il faut définir la norme de l'espace de départ et la norme dans le sous-espace de projection.
+            Par exemple, le mode de calcul retenu dans les prototypes décrits précédemment (chapitre \mref{prototypes}) est un calcul de similarité par projection utilisant les normes $L_{2}$ sur l'espace initial et $L_{1}$ sur le sous-espace de projection.
+            La formule de calcul était : 
+            \[\frac{\text{Nombre de mots du candidat qui sont des ingrédients}}{\text{Norme euclidienne du vecteur du candidat}} = \frac{\lVert\text{Vecteur projeté}\rVert_{1}}{\lVert\text{Vecteur initial}\rVert_{2}}\]
+            où le vecteur initial est la matrice des textes avec les comptes de mots.
+
+            \subsubsection{Illustration de ces calculs de similarité}
+
+            On illustre ces deux manières de mesurer la similarité en prenant l'exemple suivant.
+            Le vocabulaire des ingrédients est constitué des mots \og eau \fg et \og sucre \fg, et le mot \og eau \fg est 2 fois plus représenté que le mot \og sucre \fg.
+            Les textes candidats sont \og sucre eau sucre \fg et \og commercial commercial sucre \fg.
+            Ces deux exemples sont présentés en \reffig{fig:similarite_cosinus} et \reffig{fig:similarite_projection}.
+            Sur ces figures, la similarité correspond aux angles matérialisés en vert.
+            Si on récapitule les valeurs respectives des similarités, on obtient les résultats présentés à la \reftable{tbl:similarites_exemples}
+            
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.5\linewidth]{img/similarite_cosinus.png}
+                \end{center}
+                \caption{Illustration de la similarité cosinus}
+                \label{fig:similarite_cosinus}
+            \end{figure}     
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.6\linewidth]{img/similarite_projection.png}
+                \end{center}
+                \caption{Illustration de la similarité projection}
+                \label{fig:similarite_projection}
+            \end{figure}     
+
+            \begin{table}[hbtp]
+            \begin{center}
+            \begin{small}
+            \begin{tabular}{lcccc}
+                \toprule
+                \textbf{Candidats} &  \textbf{Cosinus} &  \textbf{Projection $L_{1}/L_{1}$} & \textbf{Projection $L_{2}/L_{1}$} & \textbf{Projection $L_{3}/L_{1}$}\\
+                \midrule
+                \textbf{sucre eau sucre} &  0,8 & 1, & 1,34 & 1,44 \\
+                \textbf{commercial commercial sucre} & 0,2 & 0,33 & 0,45 & 0,48 \\
+                \bottomrule
+            \end{tabular}
+            \end{small}
+            \caption{Exemples de calculs de similarité}
+            \label{tbl:similarites_exemples}
+            \end{center}
+            \end{table}
+
+    \section{Ajustements et résultats}
             
     On peut, dans l'optique d'améliorer la performance du modèle, ajuster certains paramètres et d'évaluer l'impact via une grid search.
-    On fera tourner sur le modèle avec transfer learning.
+    Pour l'ensemble des ajustements, on travaillera uniquement sur le set d'entrainement (400 échantillons) afin de se prémunir des effets de data leaking (qui amènerait à surestimer la performance lors de l'évaluation finale).
+    On travaillera avec 8 folds de cross-validation, afin de rester sur des ordres de grandeurs comparables à ce qui avait été fait lors de l'évaluation du second prototype (10 folds sur 500 échantillons).
+    Enfin, on effectuera une évaluation finale sur le set de test, après entraînement du modèle avec les meilleures performances sur le set d'entraînement.
+    La sélection des meilleurs paramètres se fera sur la base de la similarité de Levenshtein (cf. chapitre \mref{performance}), mais on illustrera également la performance via l'accuracy avec text-postprocessing.
+    L'ensemble des résultats présentés à cette section sont issus du notebook \og Tuning du modèle \fg présenté en annexe \mref{code:model_tuning}.
 
-        \section{Les paramètres ajustables}
+        \subsection{Ajustement du text-preprocessing}
 
-            \subsection{La prise en compte des \og n-grams \fg dans la tokeinzation}
+            Les résulats de la grid search sur le text-preprocessing sont présentés à la \reffig{fig:tuning_prepro}.
+            Dans l'ensemble des représentations de ce chapitre, chaque point du swarmplot représente une cross validation de l'ensemble du set de test.
+            Les folds individuels ne sont pas représentés, l'écart type pour un jeu de paramètres donné n'est donc pas représenté (le détail est présenté dans le notebook mentionné précédemment).
+            Dans ce premier run, les paramètres explorés sont : 
+            \begin{description}
+                \item[gestion des accents :] conservation ou retrait des accents sur les textes
+                \item[gestion des stopwords :] conservation ou retrait des stopwords ('pas', 'le', 'en', 'pour', 'ou', 'ce', 'de', 'dans', 'du', 'and', 'un', 'sur', 'et', 'of', 'est', 'par', 'la', 'les', 'dont', 'au', 'des', 'que') des textes
+                \item[constitution des ngrams :] seulement les monogrammes, puis monogrammes et bigrammes, puis monogrammes et bigrammes et trigrammes
+                \item[découpage des textes en blocs :] comparatif des trois fonction présentées précédemment à la section \mref{splitting_functions}
+                \item[fonctions de similarité :] identification du meilleur candidat par similarité cosinus, ou par projection $L_{2}/L_{1}$
+            \end{description}
+            soit un total de 72 jeux de paramètres testés.
+            Il apparaît que :
+            \begin{itemize}
+                \item le retrait des stopwords a un impact fortement positif sur la performance de l'algorithme
+                \item le retrait des accents a un impact positif mais relativement marginal
+                \item l'écart-type sur la similarité est très élevé au sein d'un jeu de paramètre testé : il se situe systématiquement aux alentours de 5-6\% pour une valeur moyenne autour de 50\%
+            \end{itemize}
 
-            On peut utiliser les n-grams lors de la tokenisation.
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tuning_prepro.png}
+                \end{center}
+                \caption{Résultats du tuning du preprocessing}
+                \label{fig:tuning_prepro}
+            \end{figure}     
 
-            \subsection{L'application de \og n-grams \fg de blocs}
+            \subsection{Tuning du découpage du texte des documents}
 
-            Voir si dans la recherche du meilleur candidat, on s'autorise la constitution de \og n-grams \fg de blocs.
+            On se sert des résultats de la grid search présentée précédemment.
+            Les résultats sont présentés à la \reffig{fig:tuning_split}.
+            On en déduit que la fonction qui présente les meilleurs résultats est la troisième fonction (via une expression régulière avec 2 retours à la ligne).
+            L'écart n'est pas énorme avec la fonction 1 (1 à 2\% sur l'accuracy moyenne), mais il est présent de manière consistante.
 
-            \subsection{L'utilisation d'expressions régulières dans le split des blocs}
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tuning_split.png}
+                \end{center}
+                \caption{Résultats du tuning du découpage des textes des documents}
+                \label{fig:tuning_split}
+            \end{figure}
 
-            Voir si certaines expressions régulières pour splitter les blocs procurent de meilleurs résultats.
+            \subsection{Comparatif des fonctions de similarité}
 
-            \subsection{Applications d'autres fonctions de similarité}
+            Dans ce run, on va comparer les similarité cosinus et projection, en faisant varier les paramètres de la similarité projection (normes de l'espace complet et du sous-espace de projection).
+            Les résultats sont présentés à la \reffig{fig:tuning_similarite}.
+            Ils sont issus d'une grid search lors de laquelle on a fixé : 
+            \begin{itemize}
+                \item la tokenisation avec des monogrammes et des bigrammes
+                \item le retrait des accents
+                \item le retrait des stopwords
+                \item la fonction de découpage en blocs numéro 3
+            \end{itemize}
+            et on a fait varier : 
+            \begin{itemize}
+                \item les fonctions de similarité, cosinus ou projection
+                \item les normes utilisées, pour les fonctions de projection
+                \item la construction de la matrice des textes entre les comptes de mots, ou l'identification uniquement de la présence / absence d'un terme (\og binary Bag Of Word \fg)
+            \end{itemize}
+            Dans la représentation qui en a été faite, on a regroupé ensemble les similarité projection en fonction de l'écart de valeur entre les normes dans l'espace initial et le sous-espace de projection (ex : pour la similarité projection $L_{3}/L_{1}$ cet écart vaut 2);
+            En peut en tirer des conclusions intéressantes : 
+            \begin{itemize}
+                \item les écarts-types au sein d'une cross-validation sont toujours importants (5-6\% environ, sur la similarité de Levenshtein)
+                \item la similarité par projection surperforme nettement la similarité cosinus
+                \item comme on pouvait s'y attendre, les performances sont catastrophiques si on applique la même norme dans l'espace de départ et le sous-espace de projection (on choisira toujours un texte qui n'a aucun mot hors du vocabulaire des ingrédients, peu importe sa longueur)
+                \item des tendances régulières se dessinent parmi les groupes avec un delta constant, bien visibles sur l'indicateur de performance en similarité : 
+                \begin{itemize}
+                    \item les performances semblent suivre deux tendances polynomiales avec des coefficient d'ordre maximal négatif, différentes selon que la tokenisation est binaire ou non
+                    \item la tokenisation binaire est systématiquement meilleure que la tokenisation par comptes
+                    \item on atteint un maximum de performance aux alentours des projections $L_{4}/L_{3}$, $L_{6}/L_{4}$, $L_{8}/L_{5}$
+                \end{itemize}
+            \end{itemize}
 
-            Voir l'impact d'utiliser d'autres manières de calculer la similarité.
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tuning_similarite.png}
+                \end{center}
+                \caption{Résultats du tuning des fonctions de similarité}
+                \label{fig:tuning_similarite}
+            \end{figure}
 
-            1 - autre chose que la similarité cosinus (fonction du nombre de mots du bloc et de la proportion de mots issus du vocabulaire des ingrédients)
+            \subsection{Comparaison des méthodes de vectorisation}
 
-            2 - en appliquant du TF et du TF-IDF
+            \subsubsection{Inverse document frequency}
 
-        \section{Application d'une grid search}
+            On peut apprécier l'impact de la prise en compte de l'inverse document frequency lors de la vectorisation, sur la performance du modèle.
+            Cette inverse document frequency se calcule par rapport à la présence des termes dans le corpus des textes des documents.
+            Les résultats sont présentés à la \reffig{fig:tuning_idf}, sur la base d'une grid search faisant varier : 
+            \begin{itemize}
+                \item le type de similarité : cosinus ou projection $L_{4}/L_{3}$
+                \item l'utilisation ou non de l'inverse document frequency
+                \item la prise en compte de ngrams, avec des ngrams de longueur de 1 à 5
+            \end{itemize}
+            L'impact est très différent selon qu'on identifie le meilleur candidat via le cosinus, plutôt que via la projection.
+            La qualité des prédictions s'améliore en utilisant l'inverse document frequency couplée à la similarité cosinus, mais est très fortement dégradée dans le cas de la projection.
 
-        Illustrer ici les résultats d'une grid search ou d'une random search si trop gourmand.
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tuning_idf.png}
+                \end{center}
+                \caption{Résultats du tuning de l'utilisation de l'inverse document frequency}
+                \label{fig:tuning_idf}
+            \end{figure}
+
+            \subsubsection{Prise en compte des n-grams}
+
+            La vectorisation des textes peut également être ajustée, en ajoutant en tant que features des ngrams de longueur variable.
+            L'impact de la prise en compte de ngrams de plus en plus long (de 1 à 5 mots) est illustré à la \reffig{fig:tuning_ngrams}.
+
+            On peut constater que :
+            \begin{itemize}
+                \item la prise en compte de ces ngrams a des effets mitigés dans le cas du cosinus
+                \item elle est par contre bénéfique pour la projection, avec une saturation à partir des trigrammes
+            \end{itemize}
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.9\linewidth]{img/tuning_ngrams.png}
+                \end{center}
+                \caption{Résultats du tuning de l'utilisation de l'inverse document frequency}
+                \label{fig:tuning_ngrams}
+            \end{figure}
+
+            \subsubsection{Fonctions de scoring spécifique}
+
+            Les fonctions de scoring \og absolu \fg et \og relatif \fg ont été présentée dans le chapitre sur l'analyse des données, à la section \mref{word_scores}.
+            Elles permettent de calculer un score pour chaque mot, afin de quantifier son \og affinité \fg pour les listes d'ingrédients.
+            L'utilisation d'un score relatif, qui peut être négatif (i.e. le mot concerné est plus souvent présent dans le corps du texte des documents que dans les listes d'ingrédients), et donc pénaliser le candidat. 
+            C'est par exemple le cas du mot \og sel \fg, qui est évidemment un ingrédient mais qui est également très représenté par ailleurs dans le contenu des fiches techniques.
+            L'utilisation de ces scores ne se peut se faire que pour la similarité cosinus, de la même manière qu'illustré à la \reffig{fig:similarite_score} (qui montre la \og négativité \fg du score du mot \og sel \fg).
+            Il est même possible que la similarité du candidat avec le vecteur cible soit négative.
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.6\linewidth]{img/similarite_score.png}
+                \end{center}
+                \caption{Illustration de la similarité cosinus avec score relatif}
+                \label{fig:similarite_score}
+            \end{figure}
+
+            L'impact des fonctions de scoring a été illustré sur la base d'une grid search s'appliquant uniquement au mode d'identification cosinus, sans n-grams, avec retrait des stopwords et des accents.
+            Elle fait varier :
+            \begin{itemize}
+                \item la comptabilisation des mots de manière binaire ou via les comptes
+                \item la détermination ou non de l'inverse document frequency
+                \item les scores : sans, avec le score absolu ou avec le score relatif
+                \item les embeddings de mots : sans, Word2Vec, truncated SVD
+            \end{itemize}
+            Les résultats sont présentés à la \reffig{fig:tuning_score}.
+
+            TODO : reprendre ici : interprétation des résultats !
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.6\linewidth]{img/tuning_score.png}
+                \end{center}
+                \caption{Illustration de la similarité cosinus avec score relatif}
+                \label{fig:tuning_score}
+            \end{figure}
+
+
+            \subsection{Utilisation d'embeddings}
+
+            \begin{figure}[htbp]
+                \begin{center}
+                \includegraphics[width=0.6\linewidth]{img/tuning_embedding.png}
+                \end{center}
+                \caption{Illustration de la similarité cosinus avec score relatif}
+                \label{fig:tuning_embedding}
+            \end{figure}
+
