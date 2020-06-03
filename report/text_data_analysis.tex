@@ -76,7 +76,8 @@
         }
 
         \section{Répartitions des mots dans et hors des listes d'ingrédients}
-
+        \label{word_scores}
+        
         On calcule la \og document frequency \fg des mots du corpus des ingrédients dans les listes d'ingrédients.
         Elle s'étend simplement au corpus du contenu des documents en la mettant à 0 pour les mots qui n'appartiennent pas au vocabulaire des ingrédients.
         Cela permet de calculer un score absolu $s_{i}$ pour chaque mot $i$ via la formule suivante :
@@ -223,7 +224,7 @@
                 {\scriptsize
                 \input{tbls/tSVD_sample.tex}
                 }
-                \caption{Longueur des textes dans le dataset}
+                \caption{Illustration des listes d'ingrédients des groupes particuliers}
                 \label{tbl:tSVD_sample}
                 \end{center}
             \end{table}
