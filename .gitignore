@@ -12,6 +12,7 @@ ground_truth/*
 !ground_truth/Règles d'annotation.xlsx
 # ms excel temporary files
 ~*
+# nohups
 nohup.out
 
 # LaTeX report build artifacts (keeping only .tex and .pdf)

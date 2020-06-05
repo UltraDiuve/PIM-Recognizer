@@ -17,7 +17,7 @@ class Config:
         self.path = os.path.join(os.path.dirname(__file__),
                                  '..',
                                  'cfg',
-                                 'config.yaml')
+                                 'config_local.yaml')
         stream = open(self.path, 'r')
         data = yaml.safe_load(stream)
         config_keys = data['cross-env'].keys()

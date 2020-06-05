@@ -32,8 +32,8 @@ class Requester(object):
             try:
                 target_proxies = self.cfg.proxies
             except (AttributeError):
-                print('No proxy conf found for env : \'{self.cfg.env}\'.'
-                      'No proxy will be used.')
+                print(f'No proxy conf found for env : \'{self.cfg.env}\'.'
+                      f'No proxy will be used.')
                 target_proxies = None
         else:
             target_proxies = proxies
@@ -562,9 +562,14 @@ class Requester(object):
                         df.df[key] = np.nan
             df = df.df
         else:
-            df = pd.json_normalize(result_json,
-                                   record_path=record_path,
-                                   meta=meta)
+            try:
+                df = pd.json_normalize(result_json,
+                                       record_path=record_path,
+                                       meta=meta)
+            except AttributeError:
+                df = pd.io.json.json_normalize(result_json,
+                                               record_path=record_path,
+                                               meta=meta)
         if index:
             df.set_index(index, inplace=True)
         return(df)
@@ -608,9 +613,17 @@ class CleanJSONDataFrame(object):
     """
     def __init__(self, data, record_path=None, meta=None,
                  prefix='_prev_duplc1'):
-        self.df = pd.json_normalize(data, record_path=record_path,
-                                    meta=meta, record_prefix=prefix,
-                                    meta_prefix=prefix)
+        try:
+            self.df = pd.json_normalize(data, record_path=record_path,
+                                        meta=meta, record_prefix=prefix,
+                                        meta_prefix=prefix)
+        except AttributeError:
+            self.df = pd.io.json.json_normalize(data,
+                                                record_path=record_path,
+                                                meta=meta,
+                                                record_prefix=prefix,
+                                                meta_prefix=prefix,
+                                                )
         self.prefix = prefix
         self.columns = list(self.df.columns.values)
 
