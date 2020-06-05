@@ -102,12 +102,12 @@
 
 %    La première filiale du groupe a fait l'objet d'un déploiement réussi, mais cela a toutefois mis en évidence le fait que des gains à la fois en qualité et en productivité restent accessibles.
 
-    La mise en place d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du groupe.
+    La construction et le déploiement d'outils mettant en oeuvre les principes du Machine Learning appliqués au traitement du langage permettrait d'aider les opérationnels de la gestion de l'information à interpréter plus vite et mieux les documents mis à disposition par les fournisseurs du groupe.
     Le présent rapport détaille la mise en place d'un outil permettant d'extraire les listes d'ingrédients des fiches techniques transmises par les fabricants des produits.
 
     Dans une première partie, on explicitera les objectifs et le cas d'usage retenu.
     Nous analyserons ensuite les données disponibles, et la manière de les exploiter.
-    La troisièeme partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie portera un regard critique sur les résultats obtenus et ouvrira la réflexion sur les travaux à venir.
+    La troisième partie sera consacrée à la construction du modèle à proprement parler, et la dernière partie portera un regard critique sur les résultats obtenus et ouvrira la réflexion sur les travaux à venir.
 
 \end{abstract}
 \normalsize
@@ -284,27 +284,26 @@
 %        \end{table}
 %        }        
 
-    \chapter{Les notebooks de ce projet}
+
+\chapter{Résultats du modèle retenu}
+
+%\begin{landscape}  
+    \begin{tiny}
+    \begin{spacing}{1.0}
+    \input{tbls/final_prediction}
+    \end{spacing}
+\end{tiny}
+%\end{landscape}  
+    
+
+
+\chapter{Les notebooks de ce projet}
 
     % TODO ! Reprendre l'ensemble des inclusions, et faire un include en mettant un titre comme pour les fiches techniques.
     % pour faire juste un label qui permet de pointer vers une page spécifique, utiliser addtotoc en mettant un niveau qui n'est pas présent dans la table des matières (ex : paragraphe)
     % ex: addtotoc={2, paragraph, 0, caption_invisible, label_a_utiliser}
     % labelise la page 2 avec le label "label_a_utiliser"
 '
-        \includepdf[pages=-,
-                    pagecommand={},
-                    addtotoc={1, section, 1, Analyse quantitative, code:analyse_quantitative}]
-                    {notebooks/Analyse quantitative.pdf}
-        
-        \includepdf[pages=-,
-                    pagecommand={},
-                    addtotoc={1,
-                              section,
-                              3,
-                              Analyse des données du PIM,
-                              code:analyse_donnees_PIM}]
-                    {notebooks/Analyse donnees du PIM.pdf}
-
         \includepdf[pages=-,
         pagecommand={},
         addtotoc={1, section, 1, Génération de l'échantillon de données manuellement étiquetées, code:ground_truth
@@ -331,9 +330,23 @@
 
         \includepdf[pages=-,
         pagecommand={},
-        addtotoc={1, section, 1, Mesure de la performance, code:model_tuning
+        addtotoc={1, section, 1, Ajustement des paramètres du modèle, code:model_tuning
                     }]
-        {notebooks/Performance_measurement.pdf}              
+        {notebooks/model_tuning.pdf}              
+
+        \includepdf[pages=-,
+                    pagecommand={},
+                    addtotoc={1, section, 1, Analyse quantitative, code:analyse_quantitative}]
+                    {notebooks/Analyse quantitative.pdf}
+        
+        \includepdf[pages=-,
+                    pagecommand={},
+                    addtotoc={1,
+                              section,
+                              1,
+                              Analyse des données du PIM,
+                              code:analyse_donnees_PIM}]
+                    {notebooks/Analyse donnees du PIM.pdf}
 
     \chapter{Le code des différents modules}
 

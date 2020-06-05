@@ -570,6 +570,7 @@ mini 16,56 ( - 10 % )
 
             Des exemples du début, du milieu et du bas du classement en termes de similarité de Levenshtein sur le jeu de test, après entraînement sur le jeu d'entraînement, sont présentés à la \reftable{tbl:similarity_illustration}.
             \begin{table}[htbp]
+                \begin{spacing}{1.0}
                 \begin{center}
                 {\tiny
                 \input{tbls/similarity_illustration.tex}
@@ -577,6 +578,7 @@ mini 16,56 ( - 10 % )
                 \caption{Illustration de l'évaluation du modèle à l'aide des métriques de similarité}
                 \label{tbl:similarity_illustration}
                 \end{center}
+                \end{spacing}
             \end{table}
 
         \subsection{Performance en fonction de la longueur de la liste d'ingrédients}
@@ -594,9 +596,9 @@ mini 16,56 ( - 10 % )
             \label{fig:perf_vs_length}
         \end{figure}
 
+    \chapter{Ajustement des paramètres}
+    \label{model_tuning}
 
-
-    \chapter{Austement des paramètres}
         \section{Description des paramètres ajustables}
 
         Les paramètres ajustables sur le modèle présenté ci-dessus sont multiples (text-preprocessing, découpage des textes en blocs, calcul de similarité, \dots).
@@ -896,8 +898,15 @@ mini 16,56 ( - 10 % )
                 \item les embeddings de mots : sans, Word2Vec, truncated SVD
             \end{itemize}
             Les résultats sont présentés à la \reffig{fig:tuning_score}.
-
-            TODO : reprendre ici : interprétation des résultats !
+            On constate que : 
+            \begin{itemize}
+                \item l'utilisation du score relatif dégrade très fortement la performance du modèle
+                \item l'utilisation de l'idf avec le score absolu dégrade légèrement la performance
+                \item le seul impact positif à l'utilisation d'une fonction de scoring est que score absolu améliore marginalement la performance en l'absence d'idf
+            \end{itemize}
+            La cause de la très faible performance du score relatif semble être la suivante : comme illustré précédemment à la \reffig{fig:relative_score_bar}, du fait de l'écart entre la taille des vocabulaires ingrédients et documents, les scores relatifs sont en moyenne négatifs.
+            Par conséquent, plus ils sont longs, plus les vecteurs candidats ont en moyenne un produit scalaire négatif avec le vecteur cible.
+            Ce qui signifie que le choix du meilleur candidat revient à prendre en compte le vecteur le moins négatif, voire un bloc de texte vide ou constitué de mots inconnus à l'entrainement\dots            
 
             \begin{figure}[htbp]
                 \begin{center}
@@ -907,8 +916,16 @@ mini 16,56 ( - 10 % )
                 \label{fig:tuning_score}
             \end{figure}
 
-
             \subsection{Utilisation d'embeddings}
+
+            L'utilisation d'embeddings a été évaluée via la même grid search que pour l'évaluation du scoring.
+            Les résultats sont illustrés à la \reffig{fig:tuning_embedding}.
+            On constate que : 
+            \begin{itemize}
+                \item les embeddings issus de la truncated SVD sous-performent par rapport aux autres méthodes (sans embeddings ou Word2vec)
+                \item l'utilisation de Word2vec n'augmente globalement pas la performance du modèle
+            \end{itemize}
+            L'utilisation de ces embeddings, entraînés sur notre jeu de données uniquement, n'est pas concluant.
 
             \begin{figure}[htbp]
                 \begin{center}
@@ -918,3 +935,29 @@ mini 16,56 ( - 10 % )
                 \label{fig:tuning_embedding}
             \end{figure}
 
+            \section{Conclusion, et évaluation finale de la performance}
+
+            On peut tirer les enseignements suivants des travaux menés :
+            \begin{itemize}
+                \item des gains rapides on été obtenus en travaillant sur le preprocessing de base : stopwords, gestion des accents, découpage en blocs
+                \item la similarité projection sur-performe nettement la similarité cosinus
+                \item l'utilisations d'algorithmes plus complexes (embeddings et scoring) ne suffit pas à compenser cet écart de performance
+            \end{itemize}
+
+            Les paramètres ayant obtenu la meilleure performance ($63.31\% \pm 3.83\%$) sur la grid search sont : 
+            \begin{itemize}
+                \item similarité projection, avec les normes $L_{4}/L_{3}$
+                \item retrait des stopwords, des accents
+                \item découpage en blocs via la fonction 3 (avec expression régulière)
+                \item vectorisation des textes binaire, sans appliquer l'inverse document frequency
+                \item prise en compte des monogrammes, bigrammes et trigrammes
+            \end{itemize}
+
+            Si on entraîne un modèle avec ces paramètres sur le set d'entrainement, et qu'on évalue sa performance sur le set de test (qui n'a pas été utilisé lors du tuning des paramètres), on obtient les résultats suivants : 
+            \begin{itemize}
+                \item Similarité de Levenshtein moyenne : $67.18\%$
+                \item Accuracy postprocessée : $27\%$
+            \end{itemize}
+            Ces résultats sont globalement bons, et illustrés en annexe à la \reftable{tbl:final_prediction}.
+            Pour rappel, la performance initiale d'un modèle avant ajustement des paramètres était de $48.86\%$ (cf. \reftable{tbl:similarities_result}).
+            Il apparaît que les principales améliorations passeraient par la mise en place de fonctions de découpage plus précises, de fonctionnalités de text postprocessing pour éliminer les préfixes, et d'OCR pour prendre en compte les documents numérisés.
