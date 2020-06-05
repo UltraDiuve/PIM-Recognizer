@@ -21,7 +21,10 @@ import requests
 from base64 import b64encode
 import json
 
-import pyocr
+try:
+    import pyocr
+except ModuleNotFoundError: 
+    print('Warning: pyocr not installed.')
 
 
 class BaseOCR(object):
