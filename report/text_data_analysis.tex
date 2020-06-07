@@ -5,17 +5,7 @@
         Dans toute cette analyse, on se basera sur les données manuellement étiquetées (ou ground truth), échantillon de 500 fiches techniques avec les listes d'ingrédients associées.
         Le code ayant servi à effectuer ces analyses est présenté dans le notebook en annexe \mref{code:text_analysis}.
 
-        \section{Volumétrie}
-
-        TODO peut-etre : Produits par type, avec les comptes, du PIM et de la GT, avec l'axe en qualité et hors qualité.
-
-        TODO peut-etre : Textes renseignés vs. pas renseignés.
-
-
-
         \section{Distributions des longueurs des textes}
-
-        TODO peyut-être : Longueur des listes d'ingrédients dans le PIM, fonction du type de produit.
 
         L'analyse des longueurs des textes montre que les listes d'ingrédients sont en moyenne longues de 400 caractères, et le contenu des documents de 4000 caractères (cf. \reftable{tbl:text_lengths}).
         La distribution des longueurs de listes d'ingrédients et des longueurs de textes est présentée à la \reffig{fig:text_length}, et leur représentation de l'une en fonction de l'autre à la \reffig{fig:text_length_2}.
@@ -95,8 +85,10 @@
             \begin{center}
             \includegraphics[width=0.6\linewidth]{img/scores_bar.png}
             \includegraphics[width=0.6\linewidth]{img/corpus_score_bar.png}
-            \end{center}
+
             \caption{Exemples de scores absolus de mots}
+            En rouge sont présentés les scores des mots pour les listes d'ingrédients. En bleu les scores pour le reste des documents.
+            \end{center}            
             \label{fig:scores_bar}
         \end{figure}
 
@@ -187,7 +179,7 @@
                 \label{fig:PCA_freq}
             \end{figure}
             Les textes correspondant aux ingrédients sont à nouveau localisés dans la même région, bien que cette fois les normes des vecteurs de l'espace de départ soient comparables entre les deux corpus.
-            Une explication serait que les nombreux \og trous \fg dans les vecteurs correspondants aux ingrédients (pour rappel, le vocabulaire des ingrédients est plus de 10 fois plus petit que le vocabulaire des documents, cf. \reftable{tbl:vocabularies}) les cantonnent à un partie limité de l'espace de départ.
+            Une explication serait que les nombreux \og trous \fg dans les vecteurs correspondants aux ingrédients (pour rappel, le vocabulaire des ingrédients est plus de 10 fois plus petit que le vocabulaire des documents, cf. \reftable{tbl:vocabularies}) les cantonnent à un partie limitée de l'espace de départ.
             D'où la similarité dans l'espace de la PCA.
 
 

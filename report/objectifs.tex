@@ -2,7 +2,7 @@
     
     {\large
     L'objet de ce mémoire est de présenter si et comment le machine learning pourrait appuyer le Groupe Pomona dans la gestion des informations produit qu'il commercialise.
-    Le groupe et sa gestion de l'information produit sont présentés en annexe \mref{business_chap}.
+    Le groupe et sa gestion de l'information produit au travers du système PIM sont présentés en annexe \mref{business_chap}.
     }
 
     \chapter{Les cas d'usage}
@@ -128,10 +128,10 @@
 
                 \subsubsection{Généralités sur les fiches techniques}
             Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
-            Elles portent globalement l'ensemble des informations produit telles que présentées à la section \mref{info_produit}.
+            Elles portent globalement l'ensemble des informations produit telles que présentées à l'annexe \mref{info_produit}.
             C'est le document le plus complet vis-à-vis des informations produit, il porte en général des informations complémentaires à toutes les informations présentes sur l'emballage du produit (les étiquettes).
-            En général, une fiche technique ne porte d'information que pour un unique produit, mais dans le cas d'assortiments, les informations peuvent être relatives à plusieurs d'entre eux. Cf. la fiche technique pour l'assortiment de confitures, présentée en annexe \mref{ex:FT_confiture}.
-            Les fiches techniques fournisseur sont des pièces jointes qui sont collectées par la branche \'{E}piSaveurs depuis la mise en place du logiciel de gestion historique GIP (cf. section \mref{GIP}), et il s'agit d'une données obligatoire dans le PIM également.
+            En général, une fiche technique ne porte d'information que pour un unique produit, mais dans le cas d'assortiments, les informations peuvent être relatives à plusieurs d'entre eux (cf. la fiche technique pour l'assortiment de confitures, présentée en annexe \mref{ex:FT_confiture}).
+            Les fiches techniques fournisseur sont des pièces jointes qui sont collectées par la branche \'{E}piSaveurs depuis la mise en place du logiciel de gestion historique GIP (cf. la description de ce système en annexe \mref{GIP}), et il s'agit d'une données obligatoire dans le PIM également.
             
                 \subsubsection{Le format des fiches techniques}
             Dans le PIM, ces pièces jointes sont collectées et stockées sous forme de pdf (les autres formats de fichier ne sont pas autorisés).
@@ -142,7 +142,9 @@
             On a donc un foisonnement de formats différents.
 
                 \subsubsection{Focus sur le mode de présentation de quelques informations}
-            Les informations produits sont en général présentées de la manière suivantes dans les fiches techniques :
+
+            Les généralités relatives aux informations produit sont présentées en annexe \mref{info_produit}.
+            Dans les fiches techniques, ces informations sont en général présentées de la manière suivante :
             \begin{description}
                 \item[Liste d'ingrédients : ] elle est quasiment toujours présentée sous forme de texte (identique à la liste d'ingrédients telle qu'affichée sur l'emballage du produit), mais elle peut également être présentée sous forme de tableau. Cf. la fiche technique présentée en annexe \mref{ex:FT_poivron} (celle-ci ne porte pas de liste d'ingrédients sous forme de texte)
                 \item[Allergènes : ] il peuvent être :
@@ -197,7 +199,24 @@
 
             \subsection{Complétude des listes d'ingrédients}
 
+            L'analyse de la complétude des listes d'ingrédients dans le PIM est décrite à la \reftable{tbl:ingredients_counts}.
 
+            \begin{table}[htbp]
+                \begin{center}
+                {\scriptsize
+                \input{tbls/ingredients_counts.tex}
+                }
+                \caption{Analyse volumétrique des pièces jointes}
+                \label{tbl:ingredients_counts}
+                \end{center}
+            \end{table}        
+
+            On peut déduire de cette analyse : 
+            \begin{itemize}
+                \item que les produits d'hygiène et de chimie, n'étant pas des produits alimentaires, ne portent pas de listes d'ingrédients
+                \item que les listes d'ingrédients sont systématiquement renseignées sur les produits \og En qualité \fg
+                \item que le taux de complétude reste quand même globalement bon sur les produits \og Hors qualité \fg
+            \end{itemize}
 
             \subsection{Complétude des pièces jointes}
 
@@ -239,9 +258,9 @@
                 \item On constitue un échantillon de 500 fiches techniques étiquetées
                 \item On se limite aux produits d'\'{E}picerie et de Boisson non alcoolisée, car ce sont les produits pour lesquels la réglementation impose d'afficher une liste d'ingrédients aux consommateurs
                 \item On stratifie cet échantillon par type de produit (\'{E}picerie vs. Boisson non alcoolisée)
-                \item On se limite évidemment à des produits qui possèdent une fiche technique
+                \item On se limite à des produits qui possèdent une fiche technique
             \end{itemize}
-            Il aurait pu être intéressant de se limiter aux produits \og en qualité \fg (cf. les définitions données à la section \mref{def:en_qualite} sur les statuts des produits), mais l'étiquetage manuel avait été fait avant l'analyse de ces statuts.
+            Il aurait pu être intéressant de se limiter aux produits \og En qualité \fg (cf. les définitions données en annexe \mref{def:en_qualite} sur les statuts des produits), mais l'étiquetage manuel avait été fait avant l'analyse de ces statuts.
             La constitution de cet échantillon s'est traduite par la génération d'un fichier csv de 500 lignes, avec 3 colonnes : 
             \begin{itemize}
                 \item l'uid du produit de l'échantillon
@@ -353,7 +372,7 @@
             \end{itemize}
 
             Comme vu dans la section \mref{fiches_techniques}, parmi les données présentes dans les fiches techniques, seule la liste d'ingrédients se présente quasiment toujours sous la forme d'un texte brut (par opposition à un affichage au sein d'un tableau).
-            La représentation des données nutritionnelles se fait régulièrement sous forme de tableau, les données logistiques également (cf. les exemples de fiches techniques présentées en annexe, à partir de \mref{ex:FT_sel}).
+            La représentation des données nutritionnelles se fait régulièrement sous forme de tableau, les données logistiques également (cf. les exemples de fiches techniques présentées en annexe, à partir de la section \mref{ex:FT_sel}).
         
             \subsection{L'identification d'une liste d'ingrédient par son contenu}
 

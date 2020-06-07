@@ -48,8 +48,8 @@
                 \item les mots sont ensuite séparés aux whitespaces (espaces, retours à la ligne, tabulations, \dots) et marques de ponctuation
             \end{itemize}
             Pour parvenir à ce résultat, on applique simplement la méthode fit de la classe CountVectorizer de la bibliothèque scikit-learn.
-            Aucunes des autres fonctionnalités standard (retrait des accents, gestion des stopwords) n'a été activée.
-            Lors de cet apprentissage, le vocabulaire obtenu a une longueur de 2 500 mots environ, et les mots les plus fréquents sont :
+            Aucunes des autres fonctionnalités standard (retrait des accents, gestion des stopwords, prise en compte des ngrams) n'a été utilisée.
+            Lors de cet apprentissage, le vocabulaire obtenu a une longueur de 2 500 mots environ, et les mots les plus fréquents sont (ces valeurs sont susceptibles de changer à la marge par rapport au notebook en annexe, avec les changements potentiels sur les données au sein du PIM):
             \begin{itemize}
                 \item de     : 11419 occurences
                 \item sucre  :  2057 occurences 
@@ -62,8 +62,7 @@
                 \item en     :   962 occurences
                 \item arôme  :   938 occurences
             \end{itemize}
-            (ces valeurs sont susceptibles de changer à la marge par rapport au notebook en annexe, avec les changements potentiels sur les données au sein du PIM)
-            Les stopwords 'de' et 'en' apparaissent dans les mots les plus fréquents.        
+            Les stopwords 'de' et 'en' apparaissent dans les mots les plus fréquents.
         
         \subsection{Prédiction}
             
@@ -72,7 +71,7 @@
                 Les fiches techniques sont extraites sous formes de binaires depuis de le PIM via des appels API.
                 On utilise ensuite la bibliothèque PDFMiner.six pour récupérer le texte de la fiche technique sous forme d'un long string.
                 Cette étape fait appel à la méthode statique PDFDecoder.content du module pimpdf, présenté en annexe \mref{code:pimpdf}.
-                On découpe ensuite ce long string en une liste de string plus court, en considérant comme séparateur la présence de deux retours à la ligne consécutifs.
+                On découpe ensuite ce long string en une liste de strings plus court, en considérant comme séparateur la présence de deux retours à la ligne consécutifs.
                 Ce choix de séparateur a été fait car les textes produits par PDFMiner.six portent des retours à la ligne à la fin de chaque ligne typographiée, même si la phrase continue sur la ligne suivante.
                 Cette étape fournit pour chaque fiche technique le texte contenu sous forme d'une liste de strings (les blocs de texte de la \reffig{fig:open_model}).
 
@@ -85,8 +84,7 @@
                     \item on calcule une similarité avec le vocabulaire des ingrédients pour chacun des blocs de texte
                     \item on retourne le bloc de texte avec la similarité la plus élevée
                 \end{itemize}
-                La formule de calcul de la similarité utilisée dans ce modèle a été trouvée par chance (ou plutôt par erreur, pour être honnête).
-                Néanmoins, elle donne des résultats plutôt encourageants.
+                La formule de calcul de la similarité utilisée dans ce modèle a été trouvée par chance, mais elle donne des résultats plutôt encourageants.
                 D'autres modes de calcul de la similarité seront présentés dans la suite de ce rapport.
 
                 La formule de calcul de la similarité est :
@@ -281,6 +279,8 @@ mini 16,56 ( - 10 % )
             \end{itemize}
 
     \section{Second prototype : industrialisation}
+
+            % REPRENDRE LA RELECTURE ICI
 
     L'objectif de ce second prototype est de permettre est d'industrialiser un peu le code afin : 
     \begin{itemize}
