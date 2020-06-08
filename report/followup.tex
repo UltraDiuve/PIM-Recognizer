@@ -17,15 +17,15 @@
         \item analyser les cas d'erreurs, et complexifier un peu l'expression régulière servant à découper le texte des documents en blocs
         \item multiplier les candidats pour une même fiche technique : on pourrait appliquer plusieurs fonctions de découpage différentes sur le document, et proposer l'ensemble des candidats obtenus au sélecteur
         \item dans la même logique, la constitution de \og ngrams de blocs \fg pourrait compenser les cas de mauvais découpages car trop fins, et multiplierait également le nombre de candidats proposés au sélecteur
-        \item enfin, il faudrait se pencher sur les fonctionnalités de clustering des objets (caractères en mots, mots en lignes, lignes en paragraphes) proposées par les bibliothèques de mining de pdf. Les blocs candidats pourraient correspondre aux paragraphes identifiés par l'outil mining.
+        \item enfin, il faudrait se pencher sur les fonctionnalités de clustering des objets (caractères en mots, mots en lignes, lignes en paragraphes) proposées par les bibliothèques de mining de pdf. Les blocs candidats pourraient correspondre aux paragraphes identifiés par l'outil de mining.
     \end{itemize}
 
-    De plus, il apparaît qu'une partie des écarts se situent en début ou en fin de texte (préfixes conservés alors qu'il aurait fallu les supprimer, )
+    De plus, il apparaît qu'une partie des écarts se situent en début ou en fin de texte (préfixes conservés alors qu'il aurait fallu les supprimer, mentions connexes non supprimées, \dots)
     pourrait être corrigés s'il était possible de \og tailler \fg le début et la fin du texte.
     On pourrait là encore procéder par apprentissage en déterminant : 
     \begin{itemize}
         \item une liste de mentions qui améliorent la performance lorsqu'elles sont retirées
-        \item ou d'autres critères (document frequency dans les textes des fiches techniques, document frequency dans les listes d'ingrédients, \dots)
+        \item d'autres critères (document frequency dans les textes des fiches techniques, document frequency dans les listes d'ingrédients, \dots)
     \end{itemize}
 
     \subsection{Amélioration de l'identification par similarité}
@@ -35,7 +35,7 @@
     En particulier, l'utilisation du scoring relatif (cf. section \mref{word_scores}) semblait prometteuse.
     Peut-être que tester une version où les scores relatifs sont calculés pour ne pas décaler les produits scalaires des candidats vers les valeurs négatives en moyenne pourrait être pertinente.
 
-    Une autre piste serait de faire tourner en parallèles plusieurs sélecteurs de blocs, et d'appliquer une méthode ensembliste, par exemple en les faisant voter.
+    Une autre piste serait de faire tourner en parallèles plusieurs sélecteurs de blocs, et d'appliquer une méthode ensembliste en les faisant voter pour le meilleur candidat.
     La performance du modèle est bonne sur les produits dont les listes d'ingrédients sont relativement longues, mais moins pertinente pour les produits plus bruts.
     L'identification d'un modèle performant sur les listes d'ingrédients courtes permettrait de pallier ce point et il faudrait l'associer au modèle actuel.
 
@@ -52,13 +52,12 @@
     \end{itemize}
 
     \section{Extension du périmètre couvert avec la méthode \og textuelle \fg}
-
     Avant de pouvoir mettre en production des fonctionnalités de types extraction de connaissance depuis des documents, il serait intéressant d'en étoffer le périmètre.
     L'approche présentée dans ce document consiste à interpréter uniquement le texte brut, sans avoir recours à des fonctionnalités de spatialisation au sein du document.
 
     \subsection{Prise en compte de nouveaux types de pièces jointes}
     Les étiquettes produit doivent porter l'ensemble des informations réglementaires (données nutritionnelles, composition, allergènes, \dots, cf. section \mref{etiquettes_produit}).
-    Même si les étiquettes ont plus tendance à être des documents pdf dont le contenu textuel n'est pas extractible sans faire appel à des fonctionnalités d'OCR (cf. \reftable{tbl:empty_attached_files}).
+    Même si les étiquettes ont plus tendance à être des documents pdf dont le contenu textuel n'est pas extractible sans faire appel à des fonctionnalités d'OCR (cf. \reftable{tbl:empty_attached_files}), un potentiel accessible existe déjà.
     La performance de l'identification des listes d'ingrédients devrait être d'ailleurs assez bonne sur les étiquettes, dans la mesure où il s'agit de documents bien moins verbeux.
 
     \subsection{Utilisation d'outil d'OCR pour les pdf non structurés}
@@ -74,18 +73,18 @@
 
     Les produits de chimie (cf. annexe \mref{produits_nonal}), commercialisés par la branche \'{E}piSaveurs, font également l'objet d'une déclaration de composition obligatoire sur l'emballage.
     On pourrait envisager de faire la même évaluation du modèle sur ces produits.
-    Comme les \og ingrédients \fg des produits de chimie sont différents de ceux des produits alimentaires, il faudrait évidemment faire un entraînement particulier sur leurs données.
+    Comme les \og ingrédients \fg des produits de chimie sont différents de ceux des produits alimentaires, il faudrait faire un entraînement particulier sur leurs données.
 
     \subsection{Récupération des dénominations réglementaires}
 
     Il est un autre texte qui est normalement présent sur l'emballage et la fiche technique du produit : la dénomination réglementaire (cf. annexe \mref{libelles}).
     Il est envisageable de constuire un modèle qui aurait en charge de récupérer cette information depuis les fiches techniques, ou les étiquettes produit.
-    Comme ces désignations sont en général plus courtes que les liste d'ingrédients, il faudrait prévoir d'ajuster les paramètres du modèle, avec une méthode similaire à ce qui a été fait et présenté au chapitre \og Ajustement des paramètres \fg \mref{model_tuning}.
+    Comme ces désignations sont en général plus courtes que les liste d'ingrédients, il faudrait prévoir d'ajuster les paramètres du modèle, avec une méthode similaire à ce qui a été fait et présenté au chapitre \mref{model_tuning} \og Ajustement des paramètres \fg.
 
     \section{Changement de méthode}
 
-    Dans le cadre d'un use case en lien avec l'extraction de connaissance sur les produits depuis des documents pdf, on pourrait également envisager de tout autres méthodes.
-    Cela rendrait accessible un grand nombre d'autres fonctionnalités, voire cas d'usage.
+    Dans le cadre d'un use case en lien avec l'extraction de connaissance sur les produits depuis des documents pdf, on pourrait également envisager d'autres méthodes.
+    Cela rendrait accessible un grand nombre d'autres fonctionnalités, voire d'autres cas d'usage, en lien ou non avec la gestion de l'information produit.
 
     \subsection{Mise en place d'outil de spatialisation des textes}
     
@@ -119,7 +118,7 @@
             \subsection{Sponsor et Client}
 
             La toute première étape pour le lancement d'un projet visant à mettre en \oe uvre ce modèle, serait d'indentifier un sponsor capable de mobiliser une enveloppe budgétaire, et de prendre les décisions de niveau stratégique.
-            Ensuite, il faudrait identifier quelques représentant métier (gestionnaires de référentiel, ingénieurs qualité, acheteurs, \dots) qui seraient capable de se prononcer sur les règles de gestion et les décisions organisationnelles.
+            Ensuite, il faudrait identifier quelques représentants métier (gestionnaires de référentiel, ingénieurs qualité, acheteurs, \dots) qui seraient capable de se prononcer sur les règles de gestion et les décisions organisationnelles.
             Il est indispensable d'avoir ces deux niveaux engagés dans le projet dès son lancement.
 
             La toute première décision attendu du sponsor serait le choix du cas d'usage, tel que décrit au chapitre \mref{use_cases} sur le cas d'usage.
@@ -133,7 +132,7 @@
             De plus, il faudrait dès le début du projet définir la criticité de ces fonctionnalités, et prévoir dès le départ le mode de redondance et l'éventuel plan de reprise d'activité.
             Enfin, même si les travaux effectués ont montré que le modèle en l'état était peu gourmand en mémoire et puissance de calcul, il faudrait extrapoler le dimensionnement nécessaire pour tenir la charge pour l'ensemble des branches du groupe.
 
-            \subsection{Développement microservice ?}
+            \subsection{Développement microservice}
 
             Tant la préalimentation, que l'aide au contrôle des données seraient implémentables comme un service.
             Il suffirait pour cela de publier un service, qui fonctionnerait de la manière suivante (illustré à la \reffig{fig:sequence_diag}) : 
@@ -167,7 +166,7 @@
             Pour cela, il faudrait : 
             \begin{itemize}
                 \item procéder au refactoring de certaines classes. Le requester porte trop de responsabilités (requêtage des données du PIM, conversion en DataFrame, conservation persistantes des données stockées localement, \dots) et devrait être séparé en classes plus petites. Le calcul de similarité par projection devrait être réécrit, pour éviter d'utiliser deux TFIDFVectorizer, mais plutôt d'effectuer une projection par produit de matrices.
-                \item mettre en place les foncionnalités de typage statique
+                \item mettre en place les fonctionnalités de typage statique
                 \item poursuivre la rédaction de tests unitaires, avec une cible de couverture à 80\%
                 \item revoir ou réécrire l'ensemble des docstrings, et générer la documentation du code via des outils tels que Sphinx
             \end{itemize}
@@ -199,3 +198,8 @@
             Dans le cas de la préalimentation d'information, l'utilisateur a-t-il corrigé la valeur qui lui a été fournie ?
             Ces décisions devraient être enregistrées, puis analysées afin de s'assurer que la performance du modèle ne se dégrade pas au fil du temps.
             
+            \section{Conclusion}
+
+            Les résultats obtenus démontrent la faisabilité de la mise en place d'un outil d'extraction automatique de connaissance depuis des documents.
+            Même s'il reste encore des travaux à mener avant de pouvoir déployer un outil apportant de la valeur au groupe, ce démonstrateur permet d'illustrer les fonctionnalités rendues accessibles par l'analyse de données et le machine learning.
+            Cette ouverture, si elle est partagée avec le management du Groupe Pomona, peut permettre le lancement de nombreux projets innovants et porteurs de valeur.

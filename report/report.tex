@@ -362,18 +362,64 @@
 
     \begin{multicols}{2}
     \begin{spacing}{1.0}
-    %    \inputminted[fontsize=\tiny]{python}{../src/conf.py}
+        \inputminted[fontsize=\tiny]{python}{../src/conf.py}
     \end{spacing}
     \end{multicols}
 
     Un exemple de fichier de configuration (dont certains champs ont été anonymisés pour des raisons de confidentialité) est présenté ci-dessous.
-    TODO !! Mettre le fichier ici.
+
+    \begin{verbatim}
+cross-env:
+  suffixid: nuxeo/api/v1/id/
+  uiddirectory: directory.csv
+  rootuid: 00000000-0000-0000-0000-000000000000
+  maxpage: -1
+  pagesize: 1000
+  filedefs: 
+    supplierdatasheet:
+      nuxeopath: 
+        - properties
+        - pprodad:technicalSheet
+    supplierlabel:
+      nuxeopath: 
+        - properties
+        - pprodad:label
+  apikeys:
+    azure: <anonymise>
+    google: <anonymise>
+dev:
+  baseurl: http://devpim/
+  password: <anonymise>
+  user: <anonymise>
+int:
+  baseurl: http://intpim/
+  password: <anonymise>
+  user: <anonymise>
+rec:
+  baseurl: https://rec-produits.groupe-pomona.fr/
+  proxies:
+    http: http://redhat:<anonymise>@pomproxy:8080
+    https: http://redhat:<anonymise>@pomproxy:8080  
+  password: <anonymise>
+  user: consult
+qat:
+  baseurl: None
+  password: None
+  user: None
+prd:
+  baseurl: https://produits.groupe-pomona.fr/
+  proxies:
+    http: http://redhat:<anonymise>@pomproxy:8080
+    https: http://redhat:<anonymise>@pomproxy:8080
+  password: <anonymise>
+  user: consult
+\end{verbatim}
 
     \section{Extraction des données du PIM - Module pimapi}
     \label{code:pimapi}
     \begin{multicols}{2}
     \begin{spacing}{1.0}
-    %\inputminted[fontsize=\tiny]{python}{../src/pimapi.py}
+    \inputminted[fontsize=\tiny]{python}{../src/pimapi.py}
     \end{spacing}
     \end{multicols}
 
@@ -381,7 +427,7 @@
     \label{code:pimpdf}
     \begin{multicols}{2}
     \begin{spacing}{1.0}
-    %\inputminted[fontsize=\tiny]{python}{../src/pimpdf.py}
+    \inputminted[fontsize=\tiny]{python}{../src/pimpdf.py}
     \end{spacing}
     \end{multicols}
     
@@ -394,7 +440,7 @@
     
     \begin{multicols}{2}
     \begin{spacing}{1.0}
-    %\inputminted[fontsize=\tiny]{python}{../src/pimest.py}
+    \inputminted[fontsize=\tiny]{python}{../src/pimest.py}
     \end{spacing}
     \end{multicols}
 

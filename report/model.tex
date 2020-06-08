@@ -288,7 +288,7 @@ mini 16,56 ( - 10 % )
         \item de pouvoir utiliser des fonctionnalités de mesure de la performance du modèle
         \item d'être en mesure de faire varier les paramètres du modèle en vue de l'optimiser
     \end{itemize}
-    Comme présenté à la section\mref{ingredient_comparison} relative à la comparaison entre les données du PIM et celles récupérées lors de l'étiquetage, il y a un grand nombre d'écarts.
+    Comme présenté à la section \mref{ingredient_comparison} relative à la comparaison entre les données du PIM et celles récupérées lors de l'étiquetage, il y a un grand nombre d'écarts.
     Or, si on entraîne le modèle et qu'on mesure sa performance sur des données de mauvaise qualité, on aura de mauvais résultats.
     Ce second modèle se basera sur les données manuellement étiquetées, afin d'avoir une base de comparaison dans la mesure de la performance.
     Le fonctionnement de ce modèle est présentés à la \reffig{fig:ground_truth_model}.
@@ -336,7 +336,7 @@ mini 16,56 ( - 10 % )
         \subsection{Découpage des textes en blocs}
 
         Le second travail est le découpage des textes en blocs.
-        Cette étape étant peu couteuse en temps de calcul, elle est réalisée sur l'ensemble du dataset avant le split entre set d'entrainement et set de test.
+        Cette étape étant peu coûteuse en temps de calcul, elle est réalisée sur l'ensemble du dataset avant le split entre set d'entrainement et set de test.
         Dans un premier temps, on va simplement effectuer ce découpage en coupant le texte lorsque deux retours à la ligne successifs sont détectés, comme cela avait été fait pour le premier prototype.
         Il est maintenant possible d'inspecter les résultats de cette étape, un exemple de découpage est présenté ci-dessous.
 
@@ -367,7 +367,6 @@ mini 16,56 ( - 10 % )
         Un échantillon des prédictions obtenues est présenté dans la \reftable{tbl:GT_prediction_sample}.
         Pour éviter d'avoir des listes d'ingrédients prédites prenant trop de place dans cette table, celles dont la longueur dépasse 500 caractères ont été filtrées avant génération de cet échantillon.
         Les résultats présentés à cette table sont donc vraisemblablement biaisés, dans la mesure où les très longues listes prédites doivent avoir plus de chance d'être erronées.
-
         Les grandes tendances qui se dégagent à l'analyse de cette liste sont les suivantes : 
         \begin{itemize}
             \item globalement, les résultats sont bons. On retrouve régulièrement des morceaux de texte qui sont similaires à la liste cible
@@ -375,7 +374,6 @@ mini 16,56 ( - 10 % )
             \item à l'inverse, le modèle n'a pas retiré des listes d'ingrédients prédites des mentions qui ont été rétirées lors de l'étiquetage manuel (cf. les règles d'annotation présentées en annexe \mref{annotation_rules}) : les préfixes de type \og Liste d'ingrédients : \fg, les allégations telles que \og Teneur totale en sucres : 60g pour 100g \fg \dots
             \item le modèle semble plus perfomant lorsque la liste d'ingrédients réelle est longue. On le vérifiera dans le chapitre relatif à la mesure de la performance du modèle
         \end{itemize}
-
         Un mot sur les cas où la liste d'ingrédients cible ou prédite sont vides :
         \begin{itemize}
             \item Les listes d'ingrédients cible sont vides lorsque la pièce jointe ne mentionnait pas de liste d'ingrédients. Cela peut arriver, et les produits concernés n'ont pas été sortis de l'échantillon. Il est important de pouvoir aussi mesurer les faux positifs, qui sont nombreux avec cette techniques de choix systématique du meilleur candidat
@@ -396,7 +394,7 @@ mini 16,56 ( - 10 % )
     \label{performance}
     
     Comme vu aux chapitre précédents, il est indispensable de mesurer la performance de nos modèles.
-    On le fera sur la base du modèle précédentn, se basant sur les données manuellement étiquetées.
+    On le fera sur la base du modèle précédent, se basant sur les données manuellement étiquetées.
     Le principe est présenté à la \reffig{fig:measured_model}.
 
     \begin{figure}[htbp]
@@ -422,15 +420,15 @@ mini 16,56 ( - 10 % )
                 \begin{itemize}
                     \item les règles d'étiquetage manuel, détaillées à l'annexe \mref{annotation_rules}, montrent que des transformations sont parfois appliquées au contenu des listes d'ingrédients des pièces jointes avant d'établir la ground truth
                     \item les textes à comparer sont longs (jusqu'à quelques centaines de caractères), cf. \reftable{tbl:GT_prediction_sample}
-                    \item la mise en forme, en particulier les retours à la ligne, ne sont pas positionnés aux mêmes endroits. Dans le parsing des documents pdf, lorsque le texte revient à la ligne après avoir atteint le bord de la page, on a un retour à la ligne. Ce comportement n'a pas été reproduit dans l'établissement de la ground truth
+                    \item la mise en forme, en particulier les retours à la ligne, ne sont pas positionnés aux mêmes endroits. Dans le parsing des documents pdf, lorsque le texte revient à la ligne après avoir atteint le bord de la page, l'outil positionne un retour à la ligne. Ce comportement n'a pas été reproduit dans l'établissement de la ground truth
                     \item le découpage en blocs de texte, de manière simple, produit des textes qui ne sont pas toujours le reflet du contenu spatialisé de ce document (cf. l'exemple donné à la section \mref{blocks_examples}, et la fiche technique associée en annexe \mref{ex:FT_meltrappeur})
                 \end{itemize}
                 On s'attend donc à avoir une \og accuracy naïve \fg faible.
 
                 \subsubsection{Les résultats obtenus}
 
-                Comme présenté dans notebook \og Analyse de la performance \fg (cf. annexe \mref{code:performance_measurement}), les résultats obtenus sont conformes à l'attendu : l'accuracy est très faible.
-                Elle vaut 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure sur l'échantillon de test après entraînement sur l'échantillon d'entraînement.
+                Comme présenté dans notebook \og Analyse de la performance \fg (cf. annexe \mref{code:performance_measurement}), les résultats obtenus sont conformes à l'attendu.
+                L'accuracy est très faible : 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure sur l'échantillon de test après entraînement sur l'échantillon d'entraînement.
                 Le seul produit pour lequel la liste d'ingrédients a été correctement identifiée porte les ingrédients suivants.
                 \begin{quotation}
                     Sirop de glucose, sucre, eau, stabilisants (E440i, E440ii, E415), acidifiants (E330, E450i), conversateur (E202).
@@ -489,10 +487,10 @@ mini 16,56 ( - 10 % )
         On peut définir des fonctions de similarité, qui permettent d'être plus fin qu'une simple évaluation binaire du résultat du modèle.
         Cela permet de prendre plus finement en compte les cas où le modèle a identifié un bloc très similaire à la ground truth.
         On va pour cela s'appuyer sur diverses métriques permettant de mesurer l'écart entre des chaînes de caractères.
-        \`{A} chaque fois, on définira une fonction de scoring qui sera une similarité : \og higher is better \fg.
+        \`{A} chaque fois, on définira une fonction de scoring qui sera une similarité.
         De plus, elles seront normées pour prendre leurs valeurs entre 0 (chaînes de caractères totalement différentes) et 1 (chaînes identiques), ce qui permettra d'exprimer ces métriques en pourcentage.
         Ces similarités seront calculées après application du text-postprocessing, comme décrit à la section \mref{text_postprocessing}.
-        L'ensemble de ces similarités seront calculées sur les caractères (on pourrait envisager de les calculer sur les mots).
+        L'ensemble de ces similarités seront calculées sur les caractères.
 
             \subsection{Similarité basée sur la distance de Levenshtein}
 
@@ -544,7 +542,7 @@ mini 16,56 ( - 10 % )
             \subsection{Similarité de Jaro-Wrinkler}
             
             La similarité de Jaro-Winkler~\cite{jaro_winkler_wiki} est une variante de la similarité de Jaro.
-            Elle possède la même heuristique que la distance de Jaro, avec en plus comme caractéristique de donner un poids plus important aux 4 caractères qui font le début de la chaîne de caractères.
+            Elle possède la même heuristique que la distance de Jaro, avec en plus comme caractéristique de donner un poids plus important aux 4 caractères formant le début de la chaîne de caractères.
             Cette métrique est encore moins adaptée au cas d'usage que la précédente.
 
             \subsection{\'{E}valuation de ces similarités sur la ground truth}
@@ -566,7 +564,7 @@ mini 16,56 ( - 10 % )
             \subsection{Décision sur la métrique à utiliser et illustration}
             
             Les similarités de Jaro et Jaro-Winkler sont abandonnées car non pertinentes pour notre cas d'usage, qui se base sur des textes de plusieurs dizaines de caractères.
-            Les similarités de Levenshtein et Damerau-Levenshtein donnant des résultats identiques, on choisira plutôt la distance de Levenshtein car son implémentation en C (bibliothèque python-Levenshtein) semble plus performante que celle en C++ de la bibliothèque Jellyfish.
+            Les similarités de Levenshtein et Damerau-Levenshtein donnant des résultats identiques, on choisit la distance de Levenshtein car son implémentation en C (bibliothèque python-Levenshtein) semble plus performante que celle en C++ de la bibliothèque Jellyfish.
 
             Des exemples du début, du milieu et du bas du classement en termes de similarité de Levenshtein sur le jeu de test, après entraînement sur le jeu d'entraînement, sont présentés à la \reftable{tbl:similarity_illustration}.
             \begin{table}[htbp]
@@ -607,7 +605,7 @@ mini 16,56 ( - 10 % )
         \subsection{Text-preprocessing}
 
         L'étape de text-preprocessing vise à nettoyer et standardiser le contenu des textes.
-        Elle est appliquée aux textes avant entraînemnet et avant prédiction.
+        Elle est appliquée aux textes avant entraînement et avant prédiction.
         Il est nécessaire de bien appliquer les mêmes règles à ces deux étapes.
         Parmi les fonctionnalités classiques de texte préprocessing, on va procéder de la manière suivante : 
 
@@ -651,7 +649,7 @@ mini 16,56 ( - 10 % )
         \end{itemize}
         
         \emph{n-grams} : 
-        On testera également la possibilité de prendre en compte les bigrammes ou les trigrammes de mots et les résultats que cela amène (à la fois dans l'entraînement et dans la prédiction).
+        On testera également la possibilité de prendre en compte des n-grams de mots (mots successifs) et les résultats que cela amène (à la fois dans l'entraînement et dans la prédiction).
 
         \emph{Embeddings des mots} : 
         Enfin, on procédera aux calculs d'embeddings de mots, en appliquant les méthodes suivantes :
@@ -666,18 +664,19 @@ mini 16,56 ( - 10 % )
             \subsubsection{Similarité cosinus}
             \label{similarite_cosinus}
 
-            Cette méthode nécessite de représenter le vocabulaire des ingrédients sous la forme d'un vecteur, d'une des manières présentées à la section précédente.
+            Cette méthode nécessite de représenter le vocabulaire des ingrédients sous la forme d'un vecteur, en faisant la moyenne des vecteurs de textes obtenus lors de la vectorisation des listes d'ingrédients.
             On calcule le cosinus de l'angle entre le vecteur du vocabulaire et celui du candidat.
             Plus ce cosinus est élevé, plus la similarité est importante.
             Cette similarité n'a pas de paramètre, une fois que les vecteurs ont été calculés.
             Il est possible d'appliquer ce calcul de similarité y compris après application d'un embedding des vecteurs de texte (ex: Word2Vec, tSVD, \dots).
             Une illustration de la similarité cosinus est proposée à la \reffig{fig:similarite_cosinus}.
-            Enfin, ce mode de calcul de la similarité permet d'ajuster la direction du vecteur cible en fonction de divers critère (fonctions de scoring spécifiques, cf. section \mref{vectorisation} sur la vectorisation des textes)
+            Enfin, ce mode de calcul de la similarité permet d'ajuster la direction du vecteur cible en fonction de divers critères (fonctions de scoring spécifiques, cf. section \mref{vectorisation} sur la vectorisation des textes).
+            La similarité cosinus est toujours comprise entre 0 (vecteurs orthogonaux) et 1 (vecteurs colinéaires), sauf dans le cas où on applique des coefficients négatifs à certains mots (cas de la fonction de scoring relatif, où des poids sont négatifs).
 
             \subsubsection{Par projection}
             \label{similarite_projection}
 
-            Cette méthode nécessite uniquement de projeter le candidat sur le sous espace généré par les mots du vocabulaire des ingrédients.
+            Cette méthode nécessite uniquement de projeter le candidat sur le sous-espace généré par les mots du vocabulaire des ingrédients.
             On fait ensuite le rapport entre la norme du vecteur initial, à celle de sa projection. 
             On peut envisager cette similarité un peu comme un calcul de l'angle entre le vecteur candidat et le sous-espace cible.
             Attention, si on utilise la même norme pour mesurer le vecteur initial et sa projection, on choisira toujours les candidats dont aucun mot n'est hors du vocabulaire (cf. l'illustration présentée à la \reffig{fig:similarite_projection}).
@@ -691,7 +690,9 @@ mini 16,56 ( - 10 % )
             Si une réduction de la dimensionalité a eu lieu, par exemple via le calcul d'embeddings, il n'est pas possible de déterminer un sous-espace généré par les mots du vocabulaire des ingrédients.
             De plus, contrairement au calcul de similarité cosinus, il n'est pas possible de pondérer les différents mots du vocabulaire des ingrédients (via un calcul de score spécifique, un tf-idf, \dots).
             Ce mode de calcul est paramétrique, c'est à dire qu'il faut définir la norme de l'espace de départ et la norme dans le sous-espace de projection.
-            Par exemple, le mode de calcul retenu dans les prototypes décrits précédemment (chapitre \mref{prototypes}) est un calcul de similarité par projection utilisant les normes $L_{2}$ sur l'espace initial et $L_{1}$ sur le sous-espace de projection.
+            Contrairement à la similarité cosinus, la similarité projection peut être supérieure à 1.
+
+            Le mode de calcul retenu dans les prototypes décrits précédemment (chapitre \mref{prototypes}) est un calcul de similarité par projection utilisant les normes $L_{2}$ sur l'espace initial et $L_{1}$ sur le sous-espace de projection.
             La formule de calcul était : 
             \[\frac{\text{Nombre de mots du candidat qui sont des ingrédients}}{\text{Norme euclidienne du vecteur du candidat}} = \frac{\lVert\text{Vecteur projeté}\rVert_{1}}{\lVert\text{Vecteur initial}\rVert_{2}}\]
             où le vecteur initial est la matrice des textes avec les comptes de mots.
@@ -744,7 +745,7 @@ mini 16,56 ( - 10 % )
     Pour l'ensemble des ajustements, on travaillera uniquement sur le set d'entrainement (400 échantillons) afin de se prémunir des effets de data leaking (qui amènerait à surestimer la performance lors de l'évaluation finale).
     On travaillera avec 8 folds de cross-validation, afin de rester sur des ordres de grandeurs comparables à ce qui avait été fait lors de l'évaluation du second prototype (10 folds sur 500 échantillons).
     Enfin, on effectuera une évaluation finale sur le set de test, après entraînement du modèle avec les meilleures performances sur le set d'entraînement.
-    La sélection des meilleurs paramètres se fera sur la base de la similarité de Levenshtein (cf. chapitre \mref{performance}), mais on illustrera également la performance via l'accuracy avec text-postprocessing.
+    La sélection des meilleurs paramètres se fera sur la base de la similarité de Levenshtein (cf. chapitre \mref{performance}), mais on illustrera également la performance du modèle retenu via l'accuracy avec text-postprocessing.
     L'ensemble des résultats présentés à cette section sont issus du notebook \og Tuning du modèle \fg présenté en annexe \mref{code:model_tuning}.
 
         \subsection{Ajustement du text-preprocessing}
@@ -765,7 +766,7 @@ mini 16,56 ( - 10 % )
             \begin{itemize}
                 \item le retrait des stopwords a un impact fortement positif sur la performance de l'algorithme
                 \item le retrait des accents a un impact positif mais relativement marginal
-                \item l'écart-type sur la similarité est très élevé au sein d'un jeu de paramètre testé : il se situe systématiquement aux alentours de 5-6\% pour une valeur moyenne autour de 50\%
+                \item l'écart-type sur la performance (similarité de Levenshtein) est très élevé au sein d'un jeu de paramètre testé : il se situe systématiquement aux alentours de 5-6\% pour une valeur moyenne autour de 50\%
             \end{itemize}
 
             \begin{figure}[htbp]
@@ -793,14 +794,14 @@ mini 16,56 ( - 10 % )
 
             \subsection{Comparatif des fonctions de similarité}
 
-            Dans ce run, on va comparer les similarité cosinus et projection, en faisant varier les paramètres de la similarité projection (normes de l'espace complet et du sous-espace de projection).
+            Dans une seconde grid search, on va comparer les similarité cosinus et projection, en faisant varier les paramètres de la similarité projection (normes de l'espace complet et du sous-espace de projection).
             Les résultats sont présentés à la \reffig{fig:tuning_similarite}.
             Ils sont issus d'une grid search lors de laquelle on a fixé : 
             \begin{itemize}
                 \item la tokenisation avec des monogrammes et des bigrammes
                 \item le retrait des accents
                 \item le retrait des stopwords
-                \item la fonction de découpage en blocs numéro 3
+                \item la fonction de découpage en blocs numéro 3 (avec l'expression régulière)
             \end{itemize}
             et on a fait varier : 
             \begin{itemize}
@@ -813,7 +814,7 @@ mini 16,56 ( - 10 % )
             \begin{itemize}
                 \item les écarts-types au sein d'une cross-validation sont toujours importants (5-6\% environ, sur la similarité de Levenshtein)
                 \item la similarité par projection surperforme nettement la similarité cosinus
-                \item comme on pouvait s'y attendre, les performances sont catastrophiques si on applique la même norme dans l'espace de départ et le sous-espace de projection (on choisira toujours un texte qui n'a aucun mot hors du vocabulaire des ingrédients, peu importe sa longueur)
+                \item comme on pouvait s'y attendre, les performances sont catastrophiques si on applique pour la similarité projection la même norme dans l'espace de départ et le sous-espace de projection (on choisira toujours un texte qui n'a aucun mot hors du vocabulaire des ingrédients, peu importe sa longueur)
                 \item des tendances régulières se dessinent parmi les groupes avec un delta constant, bien visibles sur l'indicateur de performance en similarité : 
                 \begin{itemize}
                     \item les performances semblent suivre deux tendances polynomiales avec des coefficient d'ordre maximal négatif, différentes selon que la tokenisation est binaire ou non
@@ -935,7 +936,7 @@ mini 16,56 ( - 10 % )
                 \label{fig:tuning_embedding}
             \end{figure}
 
-            \section{Conclusion, et évaluation finale de la performance}
+            \section{\'{E}valuation finale de la performance}
 
             On peut tirer les enseignements suivants des travaux menés :
             \begin{itemize}
@@ -949,7 +950,7 @@ mini 16,56 ( - 10 % )
                 \item similarité projection, avec les normes $L_{4}/L_{3}$
                 \item retrait des stopwords, des accents
                 \item découpage en blocs via la fonction 3 (avec expression régulière)
-                \item vectorisation des textes binaire, sans appliquer l'inverse document frequency
+                \item vectorisation binaire des textes, sans appliquer l'inverse document frequency
                 \item prise en compte des monogrammes, bigrammes et trigrammes
             \end{itemize}
 
