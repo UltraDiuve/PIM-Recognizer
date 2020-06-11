@@ -195,7 +195,8 @@
 
         \section{Récapitulatif de la complétude des données}
 
-            Dans cette section, les indicateurs présentés se basent sur les notions \og En qualité \fg et \og Hors qualité \fg, qui sont explicitées en annexe \mref{statuts}. 
+            Dans cette section, les indicateurs présentés se basent sur les notions \og En qualité \fg et \og Hors qualité \fg, dont la définition est donnée en annexe \mref{statuts}. 
+            Les tableaux de cette section ont été produit via le notebook \og Analyse des données du PIM \fg, présenté en annexe \mref{code:analyse_donnees_PIM}.
 
             \subsection{Complétude des listes d'ingrédients}
 
@@ -206,7 +207,7 @@
                 {\scriptsize
                 \input{tbls/ingredients_counts.tex}
                 }
-                \caption{Analyse volumétrique des pièces jointes}
+                \caption{Analyse du taux de complétude des listes d'ingrédients}
                 \label{tbl:ingredients_counts}
                 \end{center}
             \end{table}        
@@ -236,11 +237,11 @@
 
             On en tire comme conclusions que : 
             \begin{itemize}
-                \item le taux de collecte de ces documents est quasiment parfait pour les produits dits \og En qualité \fg (cf. les définitions données à la section \mref{statuts})
-                \item la volumétrie d'étiquettes sur les produits \og Hors qualité \fg est bien plus faible, de l'ordre de 30\%
+                \item le taux de collecte de ces documents est quasiment parfait pour les produits dits \og En qualité \fg
+                \item le taux de collecte des étiquettes sur les produits \og Hors qualité \fg est bien plus faible, de l'ordre de 30\%
             \end{itemize}
 
-        \section{Les données \og manuellement étiquetées \fg}
+        \section{Les données \og manuellement étiquetées \fg, ou \og Ground truth \fg}
         \label{manually_labelled_data}
 
             \subsection{Pour répondre à quel besoin ?}
@@ -251,11 +252,10 @@
 
             \subsection{Mode de constitution de l'échantillon}
             
-            Le code pour la constitution de l'échantillon est présenté dans le notebook en annexe \mref{code:ground_truth}.
-
+            Le code pour la constitution de l'échantillon est présenté dans le notebook \og Construction de la ground truth \fg en annexe \mref{code:ground_truth}.
             Les règles de gestion adoptées pour la constitution de cet échantillon sont les suivantes :
             \begin{itemize}
-                \item On constitue un échantillon de 500 fiches techniques étiquetées
+                \item On constitue un échantillon de 500 produits
                 \item On se limite aux produits d'\'{E}picerie et de Boisson non alcoolisée, car ce sont les produits pour lesquels la réglementation impose d'afficher une liste d'ingrédients aux consommateurs
                 \item On stratifie cet échantillon par type de produit (\'{E}picerie vs. Boisson non alcoolisée)
                 \item On se limite à des produits qui possèdent une fiche technique
@@ -263,7 +263,7 @@
             Il aurait pu être intéressant de se limiter aux produits \og En qualité \fg (cf. les définitions données en annexe \mref{def:en_qualite} sur les statuts des produits), mais l'étiquetage manuel avait été fait avant l'analyse de ces statuts.
             La constitution de cet échantillon s'est traduite par la génération d'un fichier csv de 500 lignes, avec 3 colonnes : 
             \begin{itemize}
-                \item l'uid du produit de l'échantillon
+                \item l'uid du produit de l'échantillon (l'identifiant univoque du produit, cf. l'illustration qui en est donnée en annexe \mref{uid})
                 \item la désignation produit fournisseur
                 \item une colonne vide, visant à accueillir les listes d'ingrédients lors de l'étiquetage manuel
             \end{itemize}
@@ -274,18 +274,17 @@
             \begin{itemize}
                 \item les pièces jointes ont été téléchargées localement, dans des dossiers portant l'uid du produit associé
                 \item le csv contenant les uid et les désignation produit fournisseur a été ouvert dans le tableur Microsoft Excel
-                \item en prenant chaque uid séquentiellement, il était relativement rapide de rechercher localement la fiche technique correspondante dans l'explorateur de fichier et de l'ouvrir
-                \item le plus souvent, il était possible de copier/coller la liste d'ingrédient dans le tableur Excel
+                \item en prenant chaque uid séquentiellement, il est rapide de rechercher localement la fiche technique correspondante dans l'explorateur de fichier et de l'ouvrir
+                \item le plus souvent, il est possible de copier/coller la liste d'ingrédients dans le tableur Excel depuis le logiciel de lecture du pdf
+                \item  une passe de nettoyage des caractères spéciaux issus des copier/coller a ensuite été faite dans excel
                 \item le fichier a ensuite été à nouveau sauvegardé au format csv, afin de pouvoir être chargé dans pandas
             \end{itemize}
-            Une passe de nettoyage des caractères spéciaux issus des copier/coller a ensuite été faite dans excel.
 
             \subsection{Règles de gestion pour l'étiquetage manuel}
         
             Malgré le fait que l'exercice semble à priori peu complexe, en pratique un nombre assez élevé de cas particuliers ont nécessité de prendre des décisions, parfois arbitraires.
             En général, il s'agit de décisions à prendre lorsque des mentions qui ne sont pas des ingrédients au sens strict sont incluses dans le texte des ingrédients.
             Le principe de base qui a été retenu est d'essayer de coller au plus à ce qui est attendu dans le PIM. 
-            Par exemple, dans le PIM on demande de retirer les préfixes du type \og Ingrédients : \fg car ces mentions sont reprises telles sur les sites internet, ce qui peut se traduire par l'affichage de \og Ingrédients : Ingrédients : \dots \fg.
             L'esnsemble des règles sont documentées à l'annexe \mref{annotation_rules}.
 
             \subsection{Confrontation avec le contenu du PIM}
@@ -295,17 +294,29 @@
             Des exemples de liste d'ingrédients en écart sont présentées à la \reftable{tbl:ingredient_comparison}.
             Il apparaît clairement que l'essentiel des écarts sur cet échantillon sont dus à des ajustements de forme (mise en majuscule des allergènes, retrait de parenthèses, retours à la ligne, \dots).
 
-            {\renewcommand{\arraystretch}{1.5}%
-            \begin{table}[htbp]
-                \begin{center}
+            \begin{spacing}{1.0}
+            \begin{centering}
+                {\renewcommand{\arraystretch}{1.5}%                
                 {\scriptsize
-                \input{tbls/ingredient_comparison.tex}
+                \input{tbls/ingredient_comparison}
                 }
-                \caption{Exemples d'écarts entre les données étiquetées et celles du PIM}
-                \label{tbl:ingredient_comparison}
-                \end{center}
-            \end{table}
-            }
+                }                
+            \end{centering}
+            \end{spacing}
+
+    
+
+%            {\renewcommand{\arraystretch}{1.5}%
+ %           \begin{table}[htbp]
+ %               \begin{center}
+ %               {\scriptsize
+ %               \input{tbls/ingredient_comparison.tex}
+ %               }
+ %               \caption{Exemples d'écarts entre les données étiquetées et celles du PIM}
+ %               \label{tbl:ingredient_comparison}
+ %               \end{center}
+ %           \end{table}
+ %           }
 
     \chapter{Le choix du cas d'usage}
 
@@ -325,15 +336,19 @@
                 \item \dots
             \end{itemize}
             Les textes présents dans ces pdf se présentent donc parfois sous forme de textes extractibles par des bibliothèques de pdf mining, soit sous forme d'images qui nécessitent alors des fonctionnalités d'OCR (Optical Character Recognition~\cite{OCR_wiki}).
-            Le taux de pièces jointes avec des textes extractibles est présenté à la \reftable{tbl:empty_attached_files} ; pour mémoire seul un tiers des étiquettes ont un contenu exploitable par les outils de pdfmining.
+            Le taux de pièces jointes avec des textes extractibles est présenté à la \reftable{tbl:empty_attached_files} (produite à la fin du notebook \og Constitution de la ground truth \fg, présenté en annexe \mref{code:ground_truth})
+            Seul un tiers des étiquettes ont un contenu exploitable par les outils de pdfmining.
             De plus, l'orientation des textes peut parfois faire l'objet d'une rotation (cf. l'étiquette des lentilles en annexe \mref{ex:ET_lentilles}), voire n'être pas toujours la même selon les faces de l'emballage (cf. l'étiquette de la panna cotta, en annexe \mref{ex:ET_pannacotta}).
             Ces contraintes, bien que surmontables, imposent des travaux qui n'auraient pas d'intérêt dans le cadre de ce mémoire.
 
             \begin{table}[htbp]
                 \begin{center}
-                \input{tbls/empty_attached_files.tex}
                 \caption{Pièces jointes dont les textes ne sont pas extractibles}
                 \label{tbl:empty_attached_files}
+                \input{tbls/empty_attached_files.tex}
+                \bigskip
+
+                Dans ce tableau, le terme \og vide \fg signifie que l'outil de mining des pdf n'a extrait aucun texte du document, et donc que son contenu semble ne pas être exploitable via cet outil.
                 \end{center}
             \end{table}
 
@@ -346,7 +361,7 @@
         On a donc beaucoup de formats différents, à peu de choses près on a un format par fournisseur.
         On pourrait imaginer développer un outil qui sur la base d'un template permet d'extraire de manière fiable le contenu de documents qui ont toujours le même format (cela se fait par exemple pour les commandes clients reçues par mail).
         L'établissement d'un \og traducteur \fg de documents de ce type représente une charge d'une dizaine de jours de travail par format de fichier.
-        Le Pareto des produits par fournisseur présenté à la \reffig{fig:rappel_pdt_par_frn} montre qu'il ne serait pas économiquement pertinent de construire ce genre d'outil (10 templates ne permettraient de couvrir que 3000 produits, et le gain marginal ne cesserait de diminuer ensuite).
+        Le Pareto des produits par fournisseur présenté à la \reffig{fig:rappel_pdt_par_frn} (produite dans le notebook \og Analyse des données du PIM \fg en annexe \mref{code:analyse_donnees_PIM}) montre qu'il ne serait pas économiquement pertinent de construire ce genre d'outil (10 templates ne permettraient de couvrir que 3000 produits, et le gain marginal ne cesserait de diminuer ensuite).
         On n'approche pas du seuil de rentabilité requis. 
         En comparaison, les outils de parsing des commandes mail permettent de traiter plus de 20 000 postes de commandes par jour, avec moins de 5 templates.
 
@@ -388,16 +403,16 @@
             \`{A} l'inverse, les autres grands types d'information nécessitent du contexte dans le document.
             Par exemple, \og 14g \fg peut être une quantité de glucides, de lipides, le poids d'une pièce unitaire, \dots
             
-            \emphbox{L'identification de listes d'ingrédients pourrait se faire sans avoir à construire de fonctionnalités s'appuyant sur le contexte au sein du document}
+            \emphbox{L'identification de listes d'ingrédients pourrait se faire sans avoir à construire de fonctionnalités s'appuyant sur le contexte au sein du document (fonctionnalités de spatialisation)}
 
         \section{Quels produits ?}
         
-        Pour des raisons d'accessibilité de la donnée, on travaillera sur les produits de la branche \'{E}piSaveurs. 
-        Il est de toute façon prévu de déployer le PIM sur l'ensemble des autres branches du groupe, on pourra adresser leurs produits à ce moment-là.
+        Pour des raisons d'accessibilité de la donnée, on travaillera sur les produits de la branche \'{E}piSaveurs (cf. la structure du Groupe Pomona, présentée en annexe \mref{les_branches}). 
+        Il est de toute façon prévu de déployer le PIM sur l'ensemble des autres branches du groupe, on pourra adresser leurs périmètres produit à ce moment-là.
         La notion d'ingrédients n'a pas de sens pour les produits d'hygiène (cf. section \mref{produits_nonal} sur les produits non-alimentaires), mais existe pour les produits de chimie.
         Comme les ingrédients des produits alimentaires sont en général différents des produits de chimie, on se limitera d'abord aux premiers.
         Enfin, la réglementation étant moins stricte pour les boissons alcoolisées sur le sujet spécifique de l'étiquetage de la composition, on ne les prendra pas non plus en compte dans ce mémoire.
 
         \section{Conclusion quant au choix du cas d'usage}
 
-        \emphbox{Au vu des différentes contraintes listées dans cette partie, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{EpiSaveurs} (épicerie et boissons non alcoolisées) depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}
+        \emphbox{Au vu des différentes contraintes listées dans cette partie, on s'attachera à extraire \emph{les listes d'ingrédients} des produits \emph{alimentaires} de la branche \emph{\'{E}piSaveurs} (épicerie et boissons non alcoolisées) depuis \emph{les fiches techniques fournisseur}, en se basant sur \emph{le contenu textuel} de ces documents.}

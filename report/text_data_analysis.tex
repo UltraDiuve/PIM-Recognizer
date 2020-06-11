@@ -1,11 +1,16 @@
 \part{Analyse des données textuelles}
 
-    \chapter{Caractéristiques générales du jeu de données}
+    \chapter{Analyse des données manuellement étiquetées}
 
         Dans toute cette analyse, on se basera sur les données manuellement étiquetées (ou ground truth), échantillon de 500 fiches techniques avec les listes d'ingrédients associées.
-        Le code ayant servi à effectuer ces analyses est présenté dans le notebook en annexe \mref{code:text_analysis}.
+        Dans cette partie, on analysera les textes suivants : 
+        \begin{itemize}
+            \item les listes d'ingrédients de la ground truth
+            \item le contenu des documents pdf faisant partie de cet échantillon
+        \end{itemize}
+        Le code ayant servi à effectuer les analyses de ce chapitre est présenté dans le notebook \og Analyse des listes d’ingrédients et contenu des fiches techniques \fg en annexe \mref{code:text_analysis}.
 
-        \section{Distributions des longueurs des textes}
+        \section{Longueurs des textes}
 
         L'analyse des longueurs des textes montre que les listes d'ingrédients sont en moyenne longues de 400 caractères, et le contenu des documents de 4000 caractères (cf. \reftable{tbl:text_lengths}).
         La distribution des longueurs de listes d'ingrédients et des longueurs de textes est présentée à la \reffig{fig:text_length}, et leur représentation de l'une en fonction de l'autre à la \reffig{fig:text_length_2}.
@@ -33,15 +38,12 @@
             \caption{Corrélation entre longueurs des textes}
             \label{fig:text_length_2}
         \end{figure}     
-        
-        
-    \chapter{Analyse textuelle}
 
         \section{Mots de chacun des corpus}
 
         Pour l'analyse des mots de chacun des corpus (listes d'ingrédients et contenu des documents), on fait d'abord un preprocessing de ces textes bruts :
         \begin{itemize}
-            \item mise en minuscule de ces textes
+            \item mise en minuscule
             \item retrait des accents
             \item retrait des stopwords suivants : {'pas', 'le', 'en', 'pour', 'ou', 'ce', 'de', 'dans', 'du', 'and', 'un', 'sur', 'et', 'of', 'est', 'par', 'la', 'les', 'dont', 'au', 'des', 'que'}
             \item split des textes à chaque whitespace (espace, tabulation, retour à la ligne, \dots)
@@ -51,7 +53,11 @@
         Un descriptif des vocabulaires est présenté à la \reftable{tbl:vocabularies}.
         Un rapide parcours de ces exemples montre que l'utilisation des mots dans ces deux corpus (ingrédients et contenu des documents) est différente.
         On s'attend à pouvoir différencier automatiquement ces types de textes.
-        Le vocabulaire des ingrédients est, comme on pouvait s'y attendre, entièrement inclus dans le vocabulaire du contenu des fiches techniques.
+        L'analyse présentée dans le notebook que :
+        \begin{itemize}
+            \item le vocabulaire des ingrédients est entièrement inclus dans celui du contenu des fiches techniques
+            \item certains mots qui sont des ingrédients sont également très présents dans le reste du contenu des documents : \og sel \fg, \og sucre \fg, \og lait \fg, \dots
+        \end{itemize}
         
         {\renewcommand{\arraystretch}{1.5}%
         \begin{table}[htbp]
@@ -68,9 +74,8 @@
         \section{Répartitions des mots dans et hors des listes d'ingrédients}
         \label{word_scores}
         
-        On calcule la \og document frequency \fg des mots du corpus des ingrédients dans les listes d'ingrédients.
-        Elle s'étend simplement au corpus du contenu des documents en la mettant à 0 pour les mots qui n'appartiennent pas au vocabulaire des ingrédients.
-        Cela permet de calculer un score absolu $s_{i}$ pour chaque mot $i$ via la formule suivante :
+        Comme les vocabulaires des ingrédients et des contenus des fiches techniques ne sont pas disjoints, on va définir des notions de \og scores \fg qui permettront ensuite de produire des représentations graphiques.
+        On peut définir un score absolu $s_{i}$ pour chaque mot $i$ via la formule suivante :
         \[s_{i} = \log_{2}(1 + c_{i})\]
         où $c_{i}$ est le nombre de listes d'ingrédients dans lequel le mot $i$ apparaît (proportionnel à la document frequency).
        
@@ -85,11 +90,10 @@
             \begin{center}
             \includegraphics[width=0.6\linewidth]{img/scores_bar.png}
             \includegraphics[width=0.6\linewidth]{img/corpus_score_bar.png}
-
             \caption{Exemples de scores absolus de mots}
-            En rouge sont présentés les scores des mots pour les listes d'ingrédients. En bleu les scores pour le reste des documents.
-            \end{center}            
             \label{fig:scores_bar}
+            En rouge sont présentés les scores des mots pour les listes d'ingrédients. En bleu les scores pour le contenu des fiches techniques.
+            \end{center}            
         \end{figure}
 
         La \reftable{tbl:vocabularies} montre que certains mots sont répandus à la fois au sein des listes d'ingrédients, mais également dans le corps des documents (ex: \og sel \fg, \og sucre \fg, \og lait \fg, \dots).
@@ -104,10 +108,8 @@
         Cette manière de calculer le score : 
         \begin{itemize}
             \item fait qu'un mot autant présent (au sens de la document frequency) dans les deux corpus a un score de $0$
-            \item un mot 2 fois plus présent dans le corpus des ingrédients que dans le corpus des documents aura un score de $1$
             \item un mot plus présent dans le corpus des documents que dans le corpus des ingrédients aura un score négatif
             \item un mot plus présent dans le corpus des ingrédients que dans le corpus des documents aura un score positif
-            \item peut fonctionner parce que la taille des corpus est équilibrée (il faudrait passer en document frequency en cas de déséquilibre)
         \end{itemize}
         Une illustration de ces scores est présentée à la \reffig{fig:relative_score_bar}.
 
@@ -120,7 +122,7 @@
         \end{figure} 
 
 
-        \section{Représentations graphiques des textes et mots}
+        \section{Représentations graphiques des mots et des textes}
 
             \subsection{Vectorisation des mots}
 

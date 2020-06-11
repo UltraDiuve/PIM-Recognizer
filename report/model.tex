@@ -17,7 +17,7 @@
 
             Le fonctionnement global de ce premier modèle (présenté à la \reffig{fig:open_model}) ne respecte pas les principes du machine learning.
             Il permet juste d'éprouver la méthode pressentie, ainsi que de se faire une idée de l'efficacité d'un modèle de ce type.
-            En effet, même si on utilise des fonctionnalités d'extraction de features depuis des textes classiques dans des modèles de machine learning, il manque une partie de mesure de la performance, indispensable pour pouvoir évaluer et améliorer la pertinence du modèle.
+            En effet, même si on utilise des fonctionnalités d'extraction de features classiques dans des modèles de machine learning appliqués au langage, il manque une partie de mesure de la performance, indispensable pour pouvoir évaluer et améliorer la pertinence du modèle.
             Les illustrations de ce chapitre sont issues du notebook présenté en annexe \mref{code:open_model}, et le code des classes utilisées (IngredientExtractor et PIMIngredientExtractor) est inclus dans le module pimest, en annexe \mref{code:pimest}.
 
             La classe PIMIngredientExtractor est juste un habillage du CountVectorizer de la bibliothèque scikit-learn et du Requester construit dans le module pimapi, permettant d'aller récupérer les données du PIM.
@@ -70,7 +70,7 @@
 
                 Les fiches techniques sont extraites sous formes de binaires depuis de le PIM via des appels API.
                 On utilise ensuite la bibliothèque PDFMiner.six pour récupérer le texte de la fiche technique sous forme d'un long string.
-                Cette étape fait appel à la méthode statique PDFDecoder.content du module pimpdf, présenté en annexe \mref{code:pimpdf}.
+                Cette étape fait appel au fonctionnalités offertes par le module pimpdf, présenté en annexe \mref{code:pimpdf}.
                 On découpe ensuite ce long string en une liste de strings plus court, en considérant comme séparateur la présence de deux retours à la ligne consécutifs.
                 Ce choix de séparateur a été fait car les textes produits par PDFMiner.six portent des retours à la ligne à la fin de chaque ligne typographiée, même si la phrase continue sur la ligne suivante.
                 Cette étape fournit pour chaque fiche technique le texte contenu sous forme d'une liste de strings (les blocs de texte de la \reffig{fig:open_model}).
@@ -280,8 +280,6 @@ mini 16,56 ( - 10 % )
 
     \section{Second prototype : industrialisation}
 
-            % REPRENDRE LA RELECTURE ICI
-
     L'objectif de ce second prototype est de permettre est d'industrialiser un peu le code afin : 
     \begin{itemize}
         \item d'être en mesure inspecter les résultats obtenus et pouvoir donner des explications sur la réponse donnée par le modèle
@@ -396,6 +394,7 @@ mini 16,56 ( - 10 % )
     Comme vu aux chapitre précédents, il est indispensable de mesurer la performance de nos modèles.
     On le fera sur la base du modèle précédent, se basant sur les données manuellement étiquetées.
     Le principe est présenté à la \reffig{fig:measured_model}.
+    L'ensemble des travaux présentés dans ce chapitre ont été réalisés dans le notebook \og Mesure de la performance du modèle \fg présenté en annexe \mref{code:performance_measurement}.
 
     \begin{figure}[htbp]
         \begin{center}
@@ -409,7 +408,6 @@ mini 16,56 ( - 10 % )
         
         La métrique qui tombe le plus sous le sens est l'accuracy (on utilisera le terme anglais pour éviter les confusions avec la notion de \og precision \fg telle qu'elle est utilisée par exemple dans le f1-score).
         On mesure simplement la proportion de prédictions qui sont égales à la ground truth.
-        La méthodologie utilisée est détaillée dans le notebook \og Mesure de la performance \fg présenté en annexe \mref{code:performance_measurement}.
 
             \subsection{Approche naïve}
 
@@ -427,7 +425,7 @@ mini 16,56 ( - 10 % )
 
                 \subsubsection{Les résultats obtenus}
 
-                Comme présenté dans notebook \og Analyse de la performance \fg (cf. annexe \mref{code:performance_measurement}), les résultats obtenus sont conformes à l'attendu.
+                Les résultats obtenus sont conformes à l'attendu.
                 L'accuracy est très faible : 1\% (1 échantillon sur 100 produits) lorsqu'on la mesure sur l'échantillon de test après entraînement sur l'échantillon d'entraînement.
                 Le seul produit pour lequel la liste d'ingrédients a été correctement identifiée porte les ingrédients suivants.
                 \begin{quotation}
@@ -490,7 +488,6 @@ mini 16,56 ( - 10 % )
         \`{A} chaque fois, on définira une fonction de scoring qui sera une similarité.
         De plus, elles seront normées pour prendre leurs valeurs entre 0 (chaînes de caractères totalement différentes) et 1 (chaînes identiques), ce qui permettra d'exprimer ces métriques en pourcentage.
         Ces similarités seront calculées après application du text-postprocessing, comme décrit à la section \mref{text_postprocessing}.
-        L'ensemble de ces similarités seront calculées sur les caractères.
 
             \subsection{Similarité basée sur la distance de Levenshtein}
 
@@ -509,6 +506,8 @@ mini 16,56 ( - 10 % )
             Pour construire une fonction de similarité telle que présentée en introduction de cette section, on appliquera la transformation suivante : 
             \[sim_{lev}(s_{1}, s_{2}) = 1 - \frac{dist_{lev}(s_{1}, s_{2})}{max(len(s_{1}), len(s_{2}))}\]
             en notant $dist_{lev}$ la distance de Levenshtein, $len(s)$ la longueur de la chaîne $s$, et $s_{1}$ et $s_{2}$ les chaînes de caractères à comparer.
+            Cette transformation permet d'avoir une similarité comprise entre $0$ et $1$.
+
             Par exemple, la distance entre les chaînes \og rateaux \fg et \og chameau \fg vaut 4 :
             \begin{itemize}
                 \item substitution du \og r \fg par un \og c \fg
@@ -516,6 +515,7 @@ mini 16,56 ( - 10 % )
                 \item substitution du \og t \fg par un \og m \fg
                 \item suppression du \og x \fg
             \end{itemize}
+            La similarité entre ces deux chaînes vaut $\frac{4}{7} \approx 0.571$
 
             \subsection{Similarité basée sur la distance de Damerau-Levenshtein}
 
@@ -688,7 +688,7 @@ mini 16,56 ( - 10 % )
             où les $x_{i}$ sont les coordonnées de $x$.
             Ce calcul de similarité ne peut se faire que dans l'espace initial, où les vecteurs représentant les textes peuvent être projetés sur un espace généré par des mots.
             Si une réduction de la dimensionalité a eu lieu, par exemple via le calcul d'embeddings, il n'est pas possible de déterminer un sous-espace généré par les mots du vocabulaire des ingrédients.
-            De plus, contrairement au calcul de similarité cosinus, il n'est pas possible de pondérer les différents mots du vocabulaire des ingrédients (via un calcul de score spécifique, un tf-idf, \dots).
+            De plus, contrairement au calcul de similarité cosinus, il n'est pas possible de pondérer les différents mots du vocabulaire des ingrédients (via un calcul de score spécifique, \dots).
             Ce mode de calcul est paramétrique, c'est à dire qu'il faut définir la norme de l'espace de départ et la norme dans le sous-espace de projection.
             Contrairement à la similarité cosinus, la similarité projection peut être supérieure à 1.
 
@@ -729,8 +729,8 @@ mini 16,56 ( - 10 % )
                 \toprule
                 \textbf{Candidats} &  \textbf{Cosinus} &  \textbf{Projection $L_{1}/L_{1}$} & \textbf{Projection $L_{2}/L_{1}$} & \textbf{Projection $L_{3}/L_{1}$}\\
                 \midrule
-                \textbf{sucre eau sucre} &  0,8 & 1, & 1,34 & 1,44 \\
-                \textbf{commercial commercial sucre} & 0,2 & 0,33 & 0,45 & 0,48 \\
+                \textbf{sucre eau sucre} &  0.8 & 1. & 1.34 & 1.44 \\
+                \textbf{commercial commercial sucre} & 0.2 & 0.33 & 0.45 & 0.48 \\
                 \bottomrule
             \end{tabular}
             \end{small}
@@ -782,7 +782,7 @@ mini 16,56 ( - 10 % )
             On se sert des résultats de la grid search présentée précédemment.
             Les résultats sont présentés à la \reffig{fig:tuning_split}.
             On en déduit que la fonction qui présente les meilleurs résultats est la troisième fonction (via une expression régulière avec 2 retours à la ligne).
-            L'écart n'est pas énorme avec la fonction 1 (1 à 2\% sur l'accuracy moyenne), mais il est présent de manière consistante.
+            L'écart n'est pas énorme avec la fonction 1 (1 à 2\% sur la similarité de Levenshtein moyenne), mais il est présent de manière consistante.
 
             \begin{figure}[htbp]
                 \begin{center}
@@ -884,7 +884,7 @@ mini 16,56 ( - 10 % )
 
             \begin{figure}[htbp]
                 \begin{center}
-                \includegraphics[width=0.6\linewidth]{img/similarite_score.png}
+                \includegraphics[width=0.9\linewidth]{img/similarite_score.png}
                 \end{center}
                 \caption{Illustration de la similarité cosinus avec score relatif}
                 \label{fig:similarite_score}
@@ -911,7 +911,7 @@ mini 16,56 ( - 10 % )
 
             \begin{figure}[htbp]
                 \begin{center}
-                \includegraphics[width=0.6\linewidth]{img/tuning_score.png}
+                \includegraphics[width=0.9\linewidth]{img/tuning_score.png}
                 \end{center}
                 \caption{Illustration de la similarité cosinus avec score relatif}
                 \label{fig:tuning_score}
