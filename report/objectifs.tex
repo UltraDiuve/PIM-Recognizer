@@ -108,7 +108,7 @@
         \section{Pièces jointes}
             \label{pieces_jointes}
 
-            Dans le PIM, les pièces jointes - intéressantes au titre de l'information produit - gérées au niveau du produit sont les suivantes :
+            Dans le PIM (Product Information Management, système de gestion de l'information produit, cf. annexe \mref{PIM}), les pièces jointes - intéressantes au titre de l'information produit - gérées au niveau du produit sont les suivantes :
             \begin{itemize}
                 \item les fiches techniques fournisseur
                 \item les étiquettes produits
@@ -127,7 +127,7 @@
             \label{fiches_techniques}
 
                 \subsubsection{Généralités sur les fiches techniques}
-            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques à propos du produit.
+            Une fiche technique fournisseur est un document, d'une à une dizaine de pages, qui reprend l'essentiel des informations techniques du produit.
             Elles portent globalement l'ensemble des informations produit telles que présentées à l'annexe \mref{info_produit}.
             C'est le document le plus complet vis-à-vis des informations produit, il porte en général des informations complémentaires à toutes les informations présentes sur l'emballage du produit (les étiquettes).
             En général, une fiche technique ne porte d'information que pour un unique produit, mais dans le cas d'assortiments, les informations peuvent être relatives à plusieurs d'entre eux (cf. la fiche technique pour l'assortiment de confitures, présentée en annexe \mref{ex:FT_confiture}).
@@ -138,7 +138,7 @@
             Sauf de rares exceptions, il s'agit de fichiers issus de logiciels de traitement de texte, au format A4 portrait.
             Ce sont des documents techniques, et sont donc en général très structurés, avec des paragraphes, sous-paragraphes, tableaux, \dots
             Comme cela se constate aisément sur les exemples présentés en annexe, même si les informations portées sont sensiblement toujours les mêmes, les formats de ces documents sont extrêmement variables.
-            Il n'y a aucun standard réglementaire ou normatif relatif à la construction de ces fiches, chaque fournisseur constitue donc son propre format.
+            Il n'y a aucun standard réglementaire ou normatif relatif à la construction de ces fiches, chaque fournisseur constitue son propre format.
             On a donc un foisonnement de formats différents.
 
                 \subsubsection{Focus sur le mode de présentation de quelques informations}
@@ -170,7 +170,7 @@
                 \item d'un applat de l'emballage, ou son bon-à-tirer, qui est le document qui est ensuite envoyé aux chaînes de production pour impression (cf. exemple du bon à tirer pour la préparation pour panna cotta \mref{ex:ET_pannacotta})
                 \item ou de tout autre visuel montrant une partie indissociable de l'emballage physique du produit (ex : un photo de la face de l'emballage qui porte les inforations produit, cf. l'étiquette des madeleines \mref{ex:ET_madeleine})
             \end{itemize}
-            Pour résumer, l'étiquette est une pièce jointe qui représente l'information produit qui \og voyage avec le produit \fg.
+            Pour résumer, l'étiquette est une pièce jointe représentant l'information produit qui \og voyage avec le produit \fg.
             La cohérence entre les données de l'étiquette et l'information produit transmises aux client est un enjeu majeur, dans la mesure où ce sont les informations portées par le produit physique qui sont réputées correctes.
             La collecte systématique des étiquettes produit est une nouveauté arrivée avec la mise en place du PIM pour \'{E}piSaveurs (mai 2019).
             En théorie, les étiquettes mises à disposition par les fournisseurs devraient systématiquement porter les informations réglementaires.
@@ -185,7 +185,7 @@
             Par exemple, elles ne portent pas d'information sur la hiérarchie logistique, les données administratives (tel que le taux de TVA ou la nomenclature douanière), les codes d'identification (hormis le GTIN qui est présent sur le code à barre), \dots
             Les durées de vie ne sont pas mentionnées : sur l'emballage d'un produit seule la date limite apparaît, et elle dépend du lot de production.
             En règle générale, hormis quelques allégations volontairement affichées par l'industriel, l'étiquette ne porte que les informations réglementaires.
-            Les information produit positionnées sur l'étiquette se présentent de la manière suivante :
+            Les informations produit positionnées sur l'étiquette se présentent de la manière suivante :
             \begin{description}
                 \item[Liste d'ingrédients : ] elle est toujours présentée sous forme d'un texte énumérant les ingrédients (cf. la section \mref{listes_ingredients} qui détaille le contenu d'une liste d'ingrédients)
                 \item[Allergènes : ] ils sont uniquement mis en évidence dans la liste d'ingrédients, par l'utilisation d'une police spécifique (gras, souligné, majuscule, \dots). Cela peut se constater par exemple sur l'étiquette de madeleines en annexe \mref{ex:ET_madeleine} ou celle de la sauce soja en annexe \mref{ex:ET_saucesoja}
@@ -275,7 +275,7 @@
                 \item les pièces jointes ont été téléchargées localement, dans des dossiers portant l'uid du produit associé
                 \item le csv contenant les uid et les désignation produit fournisseur a été ouvert dans le tableur Microsoft Excel
                 \item en prenant chaque uid séquentiellement, il est rapide de rechercher localement la fiche technique correspondante dans l'explorateur de fichier et de l'ouvrir
-                \item le plus souvent, il est possible de copier/coller la liste d'ingrédients dans le tableur Excel depuis le logiciel de lecture du pdf
+                \item quand cela était possible, la liste des ingrédients a été copiée/collée dans le tableur excel ; elle était recopiée sinon
                 \item  une passe de nettoyage des caractères spéciaux issus des copier/coller a ensuite été faite dans excel
                 \item le fichier a ensuite été à nouveau sauvegardé au format csv, afin de pouvoir être chargé dans pandas
             \end{itemize}
@@ -290,7 +290,7 @@
             \subsection{Confrontation avec le contenu du PIM}
             \label{ingredient_comparison}
             Il est possible de comparer les liste d'ingrédients du PIM, et ceux des données étiquetées manuellement.
-            Si on prend uniquement en compte les égalités strictes, on a un niveau de cohérence exactement à 10\% (50 produits sur les 500 du périmère).
+            Si l'on prend uniquement en compte les égalités strictes, on a un niveau de cohérence exactement à 10\% (50 produits sur les 500 du périmère).
             Des exemples de liste d'ingrédients en écart sont présentées à la \reftable{tbl:ingredient_comparison}.
             Il apparaît clairement que l'essentiel des écarts sur cet échantillon sont dus à des ajustements de forme (mise en majuscule des allergènes, retrait de parenthèses, retours à la ligne, \dots).
 
@@ -331,7 +331,7 @@
 
             Comme cela a été décrit à la section \mref{etiquettes_produit} Les étiquettes sont des pièces jointes au format pdf, mais qui peuvent être générées de multiples façons : 
             \begin{itemize}
-                \item issues d'un logiciel graphique pour la constitution du applat du packaging
+                \item issues d'un logiciel graphique pour la constitution de l'applat du packaging
                 \item construites à partir d'une ou plusieurs photos insérées dans outil de traitement de texte
                 \item \dots
             \end{itemize}
@@ -352,14 +352,14 @@
                 \end{center}
             \end{table}
 
-            \emphbox{On va donc dans un premier temps travailler avec les fiches techniques plutôt qu'avec les étiquettes}
+            \emphbox{On va donc dans un premier temps travailler avec les fiches techniques plutôt qu'avec les étiquettes.}
 
         
         \section{Impossibilité de produire des templates pour l'exploitation de ces documents}
 
         Chaque fournisseur décide du format des fiches techniques qu'il souhaite produire.
         On a donc beaucoup de formats différents, à peu de choses près on a un format par fournisseur.
-        On pourrait imaginer développer un outil qui sur la base d'un template permet d'extraire de manière fiable le contenu de documents qui ont toujours le même format (cela se fait par exemple pour les commandes clients reçues par mail).
+        On pourrait imaginer développer un outil qui sur la base d'un template permettrait d'extraire de manière fiable le contenu de documents qui ont toujours le même format (cela se fait par exemple pour les commandes clients reçues par mail).
         L'établissement d'un \og traducteur \fg de documents de ce type représente une charge d'une dizaine de jours de travail par format de fichier.
         Le Pareto des produits par fournisseur présenté à la \reffig{fig:rappel_pdt_par_frn} (produite dans le notebook \og Analyse des données du PIM \fg en annexe \mref{code:analyse_donnees_PIM}) montre qu'il ne serait pas économiquement pertinent de construire ce genre d'outil (10 templates ne permettraient de couvrir que 3000 produits, et le gain marginal ne cesserait de diminuer ensuite).
         On n'approche pas du seuil de rentabilité requis. 

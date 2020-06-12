@@ -227,6 +227,17 @@
                 C'est ce statut qui sera utilisé dans les paragraphes suivants, lorsqu'on fera des anlyses relatives à la qualité des données.
                 \label{def:en_qualite}
                 On nommera ces statuts \og En qualité \fg et \og Hors qualité \fg pour la suite de ce document.
+                La définition du statut \og En qualité \fg est la suivante : 
+                \begin{itemize}
+                    \item le produit est au statut \og Validé \fg, c'est-à-dire qu'il est dans un statut terminal sans erreur
+                    \item ET
+                    \begin{itemize}
+                        \item le produit a été créé depuis le démarrage du PIM, en respectant les règles de gestion de ce nouveau système
+                        \item OU BIEN
+                        \item le produit a été repris depuis le système de gestion historique (le GIP), et il a fait l'objet d'un processus de remise à niveau complet. Il est donc conforme aux règles de gestion de ce nouveau système
+                    \end{itemize}
+                \end{itemize}
+                Les autres produits sont considérés \og Hors qualité \fg.
                 La volumétrie des produits en fonction de chacun de ces statuts est présentée à la \reftable{tbl:products_quality}.
 
                 \begin{table}[htbp]
@@ -347,14 +358,6 @@
                 }
             \end{table}
             }
-
-
-
-        \section{Analyse qualitative des données}
-        
-            \subsection{\'{E}valuation de la qualité des données}
-        Montrer qu'un sondage basique fait que la qualité actuelle est perfectible
-
 
             \subsection{Types de pdf possédés}
 
