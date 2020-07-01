@@ -13,27 +13,15 @@
 {% endblock %}
 
 {% block content %}
-  <label for="result">Liste d'ingrédients extraite :</label>
-  <p name="result">{{ result }}</p>
-
-{# 
-  {{ url_for('home.currentfile') }} 
-  {{ url_for('static', filename='FT.pdf') }}
-#}
-
+  <label style="padding-top: 25px;padding-bottom: 25px;" for="result">Liste d'ingrédients extraite :</label>
+  <div style="white-space: pre-wrap; flex: auto" name="result">{{ result }}</div>
+  <label for="pdf">Fiche technique</label>
   <embed src="{{ url_for('home.currentfile') }} "
-          title="PDF Viewer"
-          width="900"
-          height="1000"
-          type="application/pdf">
+         title="PDF Viewer"
+         width="900"
+         height="1000"
+         name="pdf"
+         type="application/pdf">
   </embed>
 
-  {#   
-  <iframe id="pdfViewer"
-          title="PDF Viewer"
-          width="900"
-          height="1000"
-          src="{{ url_for('home.viewer') }}">
-  </iframe>
-  #}
 {% endblock %}
