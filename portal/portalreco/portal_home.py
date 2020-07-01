@@ -31,8 +31,6 @@ def index():
         session['result'] = result
         attached.stream.seek(0)
         session['filecontent'] = attached.read()
-        attached.stream.seek(0)
-        attached.save(os.path.join('./portal/uploads/', 'FT.pdf'))
         return redirect(url_for('home.result'))
     else:
         return render_template('home/index.html')
