@@ -1,5 +1,6 @@
 from flask import (
-    Blueprint, render_template, request, redirect, url_for, session,  # flash
+    Blueprint, render_template, request, redirect, url_for, session,  
+    make_response,  # flash
 )
 # from werkzeug.exceptions import abort
 import joblib
@@ -7,7 +8,7 @@ from pathlib import Path
 from src.pimpdf import PDFDecoder
 import re
 import pandas as pd
-import io
+import os
 
 
 bp = Blueprint('home', __name__)
@@ -30,6 +31,8 @@ def index():
         session['result'] = result
         attached.stream.seek(0)
         session['filecontent'] = attached.read()
+        attached.stream.seek(0)
+        attached.save(os.path.join('./portal/uploads/', 'FT.pdf'))
         return redirect(url_for('home.result'))
     else:
         return render_template('home/index.html')
@@ -44,7 +47,7 @@ def result(result=None, filecontent=None):
                            filecontent=filecontent,
                            ))
 
-
+# TODO : remove, not needed anymore since not using PDF.js
 @bp.route('/pdfviewer', methods=('GET', ))
 def viewer():
     return(render_template('web/viewer.html'))
@@ -53,4 +56,6 @@ def viewer():
 # TODO : finir ici. Ca remonte un contenu que le navigateur n'interprète pas.
 @bp.route('/currentfile.pdf', methods=('GET', ))
 def currentfile():
-    return(session['filecontent'])
+    response = make_response(session['filecontent'])
+    response.headers['Content-Type'] = 'application/pdf'
+    return(response)

@@ -16,7 +16,12 @@
   <label for="result">Liste d'ingrédients extraite :</label>
   <p name="result">{{ result }}</p>
 
-  <embed src="{{ url_for('home.currentfile') }}"
+{# 
+  {{ url_for('home.currentfile') }} 
+  {{ url_for('static', filename='FT.pdf') }}
+#}
+
+  <embed src="{{ url_for('home.currentfile') }} "
           title="PDF Viewer"
           width="900"
           height="1000"
