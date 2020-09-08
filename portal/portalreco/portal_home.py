@@ -8,7 +8,6 @@ from pathlib import Path
 from src.pimpdf import PDFDecoder
 import re
 import pandas as pd
-import os
 
 
 bp = Blueprint('home', __name__)
